@@ -19,12 +19,17 @@ class FailClosedWebMvcTest {
     private MockMvc mockMvc;
 
     @Test
-    void publicEndpointReachesTheSkeletonWithoutAuthentication() throws Exception {
+    void publicSafetyConfigurationWorksWithoutAuthentication() throws Exception {
         mockMvc.perform(get("/api/v1/app-config"))
-                .andExpect(status().isNotImplemented())
+                .andExpect(status().isOk())
                 .andExpect(header().exists("X-Request-ID"))
-                .andExpect(jsonPath("$.data").doesNotExist())
-                .andExpect(jsonPath("$.error.code").value("API_NOT_IMPLEMENTED"))
+                .andExpect(jsonPath("$.data.product_code").value("RELATIONSHIP_CLARITY_CARD_V1"))
+                .andExpect(jsonPath("$.data.feature_flags.assessment").value(false))
+                .andExpect(jsonPath("$.data.feature_flags.venting").value(false))
+                .andExpect(jsonPath("$.data.feature_flags.payment").value(false))
+                .andExpect(jsonPath("$.data.entry_paths.length()").value(1))
+                .andExpect(jsonPath("$.data.entry_paths[0]").value("DIRECT"))
+                .andExpect(jsonPath("$.error").doesNotExist())
                 .andExpect(jsonPath("$.meta.api_version").value("v1"));
     }
 

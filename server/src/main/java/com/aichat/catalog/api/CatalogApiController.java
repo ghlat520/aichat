@@ -2,13 +2,16 @@
 package com.aichat.catalog.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,13 +31,19 @@ import java.util.Map;
 @Validated
 @RestController
 public class CatalogApiController {
+    private final CatalogApiDelegate delegate;
+
+    public CatalogApiController(ObjectProvider<CatalogApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new CatalogApiDelegate() { });
+    }
 
     @GetMapping("/api/v1/products/{sku}/offer")
     @ContractOperation(operationId = "getProductOffer", domainOwner = "Catalog")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getProductOffer(
-            @PathVariable("sku") String sku
+            @PathVariable("sku") String sku,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getProductOffer");
+        return delegate.getProductOffer(ApiCallContext.from(httpRequest), sku);
     }
 }

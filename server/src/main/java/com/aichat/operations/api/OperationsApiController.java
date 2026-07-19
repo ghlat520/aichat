@@ -2,13 +2,16 @@
 package com.aichat.operations.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,51 +31,65 @@ import java.util.Map;
 @Validated
 @RestController
 public class OperationsApiController {
+    private final OperationsApiDelegate delegate;
+
+    public OperationsApiController(ObjectProvider<OperationsApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new OperationsApiDelegate() { });
+    }
 
     @GetMapping("/ops/v1/dashboard/summary")
     @ContractOperation(operationId = "getOpsDashboardSummary", domainOwner = "Analytics")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-dashboard-analyst", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"analyst"}, mfaRequired = true, rawBodyRequired = false)
-    public ApiEnvelope<Map<String, Object>> getOpsDashboardSummary() {
-        return SkeletonResponses.notImplemented("getOpsDashboardSummary");
+    public ApiEnvelope<Map<String, Object>> getOpsDashboardSummary(
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.getOpsDashboardSummary(ApiCallContext.from(httpRequest));
     }
 
     @GetMapping("/ops/v1/catalog/price-versions")
     @ContractOperation(operationId = "listOpsPriceVersions", domainOwner = "Catalog")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-catalog", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"product-admin"}, mfaRequired = true, rawBodyRequired = false)
-    public ApiEnvelope<Map<String, Object>> listOpsPriceVersions() {
-        return SkeletonResponses.notImplemented("listOpsPriceVersions");
+    public ApiEnvelope<Map<String, Object>> listOpsPriceVersions(
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.listOpsPriceVersions(ApiCallContext.from(httpRequest));
     }
 
     @PostMapping("/ops/v1/catalog/price-versions")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createOpsPriceVersion", domainOwner = "Catalog")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-catalog-price-change", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"product-admin"}, mfaRequired = true, rawBodyRequired = false)
     @MakerChecker(makerRoles = {}, approverRoles = {"approver"}, requesterMustDiffer = true, effectBeforeApproval = false)
     public ApiEnvelope<Map<String, Object>> createOpsPriceVersion(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.CreatePriceVersionRequest request
+            @Valid @RequestBody ContractRequests.CreatePriceVersionRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createOpsPriceVersion");
+        return delegate.createOpsPriceVersion(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @GetMapping("/ops/v1/orders/{orderId}")
     @ContractOperation(operationId = "getOpsOrder", domainOwner = "Ordering")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-order-support", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"support", "finance"}, mfaRequired = true, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getOpsOrder(
-            @PathVariable("orderId") String orderId
+            @PathVariable("orderId") String orderId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getOpsOrder");
+        return delegate.getOpsOrder(ApiCallContext.from(httpRequest), orderId);
     }
 
     @PostMapping("/ops/v1/refunds/{refundId}/approve")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @ContractOperation(operationId = "approveOpsRefund", domainOwner = "Refund")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-refund-approval", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"second-approver"}, mfaRequired = true, rawBodyRequired = false)
     @MakerChecker(makerRoles = {"finance"}, approverRoles = {"second-approver"}, requesterMustDiffer = true, effectBeforeApproval = false)
     public ApiEnvelope<Map<String, Object>> approveOpsRefund(
             @PathVariable("refundId") String refundId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.OpsCommandRequest request
+            @Valid @RequestBody ContractRequests.OpsCommandRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("approveOpsRefund");
+        return delegate.approveOpsRefund(ApiCallContext.from(httpRequest), refundId, idempotencyKey, request);
     }
 
     @GetMapping("/ops/v1/reconciliations")
@@ -79,18 +97,20 @@ public class OperationsApiController {
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-reconciliation", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"finance"}, mfaRequired = true, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> listOpsReconciliations(
             @RequestParam(name = "cursor", required = false) String cursor,
-            @RequestParam(name = "limit", required = false) Integer limit
+            @RequestParam(name = "limit", required = false) Integer limit,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("listOpsReconciliations");
+        return delegate.listOpsReconciliations(ApiCallContext.from(httpRequest), cursor, limit);
     }
 
     @GetMapping("/ops/v1/support/tickets/{ticketId}")
     @ContractOperation(operationId = "getOpsSupportTicket", domainOwner = "Support")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-support", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"support"}, mfaRequired = true, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getOpsSupportTicket(
-            @PathVariable("ticketId") String ticketId
+            @PathVariable("ticketId") String ticketId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getOpsSupportTicket");
+        return delegate.getOpsSupportTicket(ApiCallContext.from(httpRequest), ticketId);
     }
 
     @PatchMapping("/ops/v1/support/tickets/{ticketId}")
@@ -99,18 +119,20 @@ public class OperationsApiController {
     public ApiEnvelope<Map<String, Object>> patchOpsSupportTicket(
             @PathVariable("ticketId") String ticketId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.OpsCommandRequest request
+            @Valid @RequestBody ContractRequests.OpsCommandRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("patchOpsSupportTicket");
+        return delegate.patchOpsSupportTicket(ApiCallContext.from(httpRequest), ticketId, idempotencyKey, request);
     }
 
     @GetMapping("/ops/v1/safety-review-cases/{caseId}")
     @ContractOperation(operationId = "getOpsSafetyReviewCase", domainOwner = "Safety")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-safety", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"safety-reviewer"}, mfaRequired = true, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getOpsSafetyReviewCase(
-            @PathVariable("caseId") String caseId
+            @PathVariable("caseId") String caseId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getOpsSafetyReviewCase");
+        return delegate.getOpsSafetyReviewCase(ApiCallContext.from(httpRequest), caseId);
     }
 
     @PatchMapping("/ops/v1/safety-review-cases/{caseId}")
@@ -119,89 +141,107 @@ public class OperationsApiController {
     public ApiEnvelope<Map<String, Object>> patchOpsSafetyReviewCase(
             @PathVariable("caseId") String caseId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.OpsCommandRequest request
+            @Valid @RequestBody ContractRequests.OpsCommandRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("patchOpsSafetyReviewCase");
+        return delegate.patchOpsSafetyReviewCase(ApiCallContext.from(httpRequest), caseId, idempotencyKey, request);
     }
 
     @GetMapping("/ops/v1/privacy/deletion-requests/{deletionRequestId}")
     @ContractOperation(operationId = "getOpsDeletionRequest", domainOwner = "Privacy")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-privacy", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"privacy-admin"}, mfaRequired = true, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getOpsDeletionRequest(
-            @PathVariable("deletionRequestId") String deletionRequestId
+            @PathVariable("deletionRequestId") String deletionRequestId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getOpsDeletionRequest");
+        return delegate.getOpsDeletionRequest(ApiCallContext.from(httpRequest), deletionRequestId);
     }
 
     @GetMapping("/ops/v1/feature-flags")
     @ContractOperation(operationId = "listOpsFeatureFlags", domainOwner = "Operations")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-feature-flags", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"release-admin"}, mfaRequired = true, rawBodyRequired = false)
-    public ApiEnvelope<Map<String, Object>> listOpsFeatureFlags() {
-        return SkeletonResponses.notImplemented("listOpsFeatureFlags");
+    public ApiEnvelope<Map<String, Object>> listOpsFeatureFlags(
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.listOpsFeatureFlags(ApiCallContext.from(httpRequest));
     }
 
     @PostMapping("/ops/v1/feature-flags")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createOpsFeatureFlagRevision", domainOwner = "Operations")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-feature-flag-change", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"release-admin"}, mfaRequired = true, rawBodyRequired = false)
     @MakerChecker(makerRoles = {}, approverRoles = {"approver"}, requesterMustDiffer = true, effectBeforeApproval = false)
     public ApiEnvelope<Map<String, Object>> createOpsFeatureFlagRevision(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.FeatureFlagRequest request
+            @Valid @RequestBody ContractRequests.FeatureFlagRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createOpsFeatureFlagRevision");
+        return delegate.createOpsFeatureFlagRevision(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @GetMapping("/ops/v1/artifact-versions")
     @ContractOperation(operationId = "listOpsArtifactVersions", domainOwner = "Operations")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-artifacts", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"release-admin"}, mfaRequired = true, rawBodyRequired = false)
-    public ApiEnvelope<Map<String, Object>> listOpsArtifactVersions() {
-        return SkeletonResponses.notImplemented("listOpsArtifactVersions");
+    public ApiEnvelope<Map<String, Object>> listOpsArtifactVersions(
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.listOpsArtifactVersions(ApiCallContext.from(httpRequest));
     }
 
     @PostMapping("/ops/v1/artifact-versions")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createOpsArtifactVersion", domainOwner = "Operations")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-artifacts", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"release-admin"}, mfaRequired = true, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createOpsArtifactVersion(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.ArtifactVersionRequest request
+            @Valid @RequestBody ContractRequests.ArtifactVersionRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createOpsArtifactVersion");
+        return delegate.createOpsArtifactVersion(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @GetMapping("/ops/v1/releases")
     @ContractOperation(operationId = "listOpsReleases", domainOwner = "Operations")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-releases", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"release-admin", "release-owner"}, mfaRequired = true, rawBodyRequired = false)
-    public ApiEnvelope<Map<String, Object>> listOpsReleases() {
-        return SkeletonResponses.notImplemented("listOpsReleases");
+    public ApiEnvelope<Map<String, Object>> listOpsReleases(
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.listOpsReleases(ApiCallContext.from(httpRequest));
     }
 
     @PostMapping("/ops/v1/releases")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createOpsRelease", domainOwner = "Operations")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-release-create", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"release-admin"}, mfaRequired = true, rawBodyRequired = false)
     @MakerChecker(makerRoles = {}, approverRoles = {"release-owner"}, requesterMustDiffer = true, effectBeforeApproval = false)
     public ApiEnvelope<Map<String, Object>> createOpsRelease(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.ReleaseRequest request
+            @Valid @RequestBody ContractRequests.ReleaseRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createOpsRelease");
+        return delegate.createOpsRelease(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @GetMapping("/ops/v1/experiments")
     @ContractOperation(operationId = "listOpsExperiments", domainOwner = "Analytics")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-experiments", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"analyst", "product-owner"}, mfaRequired = true, rawBodyRequired = false)
-    public ApiEnvelope<Map<String, Object>> listOpsExperiments() {
-        return SkeletonResponses.notImplemented("listOpsExperiments");
+    public ApiEnvelope<Map<String, Object>> listOpsExperiments(
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.listOpsExperiments(ApiCallContext.from(httpRequest));
     }
 
     @PostMapping("/ops/v1/experiments")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createOpsExperiment", domainOwner = "Analytics")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-experiment-create", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"analyst"}, mfaRequired = true, rawBodyRequired = false)
     @MakerChecker(makerRoles = {}, approverRoles = {"product-owner"}, requesterMustDiffer = true, effectBeforeApproval = false)
     public ApiEnvelope<Map<String, Object>> createOpsExperiment(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.ExperimentRequest request
+            @Valid @RequestBody ContractRequests.ExperimentRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createOpsExperiment");
+        return delegate.createOpsExperiment(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @GetMapping("/ops/v1/audit-logs")
@@ -211,8 +251,9 @@ public class OperationsApiController {
             @RequestParam(name = "cursor", required = false) String cursor,
             @RequestParam(name = "limit", required = false) Integer limit,
             @RequestParam(name = "actor", required = false) String actor,
-            @RequestParam(name = "action", required = false) String action
+            @RequestParam(name = "action", required = false) String action,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("listOpsAuditLogs");
+        return delegate.listOpsAuditLogs(ApiCallContext.from(httpRequest), cursor, limit, actor, action);
     }
 }

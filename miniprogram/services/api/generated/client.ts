@@ -117,7 +117,7 @@ export class AiChatApiClient {
     return this.invoke("POST", path, undefined, undefined, "access", ["Visitor","Principal"], true, options);
   }
 
-  mapAssessmentToTask(runId: string, request: Types.ExpectedVersionRequest, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
+  mapAssessmentToTask(runId: string, request: Types.AssessmentTaskMappingRequest, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
     const path = "/api/v1/assessment-runs/{runId}/map-to-task".replace("{runId}", encodeURIComponent(String(runId)));
     return this.invoke("POST", path, request, undefined, "access", ["Visitor","Principal"], true, options);
   }

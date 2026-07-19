@@ -75,13 +75,19 @@ function resolvedParameters(pathItem, operation) {
   return result;
 }
 
-function javaParameter(parameter) {
+function javaType(parameter) {
   const schema = resolveRef(parameter.schema ?? {});
   const name = lowerCamel(parameter.name);
   let type = 'String';
   if (schema.type === 'integer') type = 'Integer';
   if (schema.type === 'boolean') type = 'Boolean';
   if (schema.type === 'array') type = 'List<String>';
+
+  return {name, type};
+}
+
+function javaParameter(parameter) {
+  const {name, type} = javaType(parameter);
 
   if (parameter.in === 'path') {
     return `@PathVariable(${javaString(parameter.name)}) ${type} ${name}`;
@@ -93,6 +99,11 @@ function javaParameter(parameter) {
     return `@RequestHeader(name = ${javaString(parameter.name)}, required = ${parameter.required === true}) ${type} ${name}`;
   }
   throw new Error(`Unsupported parameter location: ${parameter.in}`);
+}
+
+function plainJavaParameter(parameter) {
+  const {name, type} = javaType(parameter);
+  return `${type} ${name}`;
 }
 
 function requestSchemaName(operation) {
@@ -117,19 +128,38 @@ function tagPackage(tag) {
   return tag === 'Public' ? 'publicapi' : tag.toLowerCase();
 }
 
+function successStatusAnnotation(operation) {
+  const successStatus = Object.keys(operation.responses ?? {})
+    .filter(status => /^2\d\d$/.test(status))
+    .sort()[0];
+  if (successStatus === '201') return '@ResponseStatus(HttpStatus.CREATED)';
+  if (successStatus === '202') return '@ResponseStatus(HttpStatus.ACCEPTED)';
+  if (successStatus === '204') return '@ResponseStatus(HttpStatus.NO_CONTENT)';
+  return undefined;
+}
+
 function controllerSource(tag, operations) {
   const className = `${tag}ApiController`;
+  const delegateName = `${tag}ApiDelegate`;
   const packageName = `com.aichat.${tagPackage(tag)}.api`;
   const methods = operations.map(({route, pathItem, method, operation}) => {
-    const parameters = resolvedParameters(pathItem, operation).map(javaParameter);
+    const resolved = resolvedParameters(pathItem, operation);
+    const parameters = resolved.map(javaParameter);
+    const delegateArguments = [
+      'ApiCallContext.from(httpRequest)',
+      ...resolved.map(parameter => javaType(parameter).name),
+    ];
     const schemaName = requestSchemaName(operation);
     if (schemaName) {
       if (operation.operationId === 'acceptWechatPayWebhook') {
         parameters.push('@RequestBody byte[] rawBody');
+        delegateArguments.push('rawBody');
       } else {
         parameters.push(`@Valid @RequestBody ContractRequests.${schemaName} request`);
+        delegateArguments.push('request');
       }
     }
+    parameters.push('HttpServletRequest httpRequest');
 
     const authLevel = upperSnake(operation['x-auth-level']);
     const accepted = javaArray(authAccepted(operation), value => `AuthLevel.${upperSnake(value)}`);
@@ -140,15 +170,16 @@ function controllerSource(tag, operations) {
     const makerChecker = approval
       ? `\n    @MakerChecker(makerRoles = ${javaArray(approval.maker_roles ?? [], javaString)}, approverRoles = ${javaArray(approval.approver_roles, javaString)}, requesterMustDiffer = ${approval.requester_must_differ === true}, effectBeforeApproval = ${approval.effect_before_approval !== 'none'})`
       : '';
+    const responseStatus = successStatusAnnotation(operation);
     const formattedParameters = parameters.length === 0
       ? ''
       : `\n            ${parameters.join(',\n            ')}\n    `;
 
     return `    ${mappingAnnotation(method, route)}
-    ${contractOperation}
+${responseStatus ? `    ${responseStatus}\n` : ''}    ${contractOperation}
     ${authPolicy}${makerChecker}
     public ApiEnvelope<Map<String, Object>> ${operation.operationId}(${formattedParameters}) {
-        return SkeletonResponses.notImplemented(${javaString(operation.operationId)});
+        return delegate.${operation.operationId}(${delegateArguments.join(', ')});
     }`;
   }).join('\n\n');
 
@@ -156,13 +187,16 @@ function controllerSource(tag, operations) {
 package ${packageName};
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -173,6 +207,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -181,6 +216,49 @@ import java.util.Map;
 @Validated
 @RestController
 public class ${className} {
+    private final ${delegateName} delegate;
+
+    public ${className}(ObjectProvider<${delegateName}> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new ${delegateName}() { });
+    }
+
+${methods}
+}
+`;
+}
+
+function delegateSource(tag, operations) {
+  const delegateName = `${tag}ApiDelegate`;
+  const packageName = `com.aichat.${tagPackage(tag)}.api`;
+  const methods = operations.map(({pathItem, operation}) => {
+    const parameters = [
+      'ApiCallContext context',
+      ...resolvedParameters(pathItem, operation).map(plainJavaParameter),
+    ];
+    const schemaName = requestSchemaName(operation);
+    if (schemaName) {
+      parameters.push(operation.operationId === 'acceptWechatPayWebhook'
+        ? 'byte[] rawBody'
+        : `ContractRequests.${schemaName} request`);
+    }
+    const formattedParameters = `\n            ${parameters.join(',\n            ')}\n    `;
+    return `    default ApiEnvelope<Map<String, Object>> ${operation.operationId}(${formattedParameters}) {
+        return SkeletonResponses.notImplemented(${javaString(operation.operationId)});
+    }`;
+  }).join('\n\n');
+
+  return `// Generated by contracts/generate-api-skeleton.mjs. Do not edit manually.
+package ${packageName};
+
+import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
+import com.aichat.kernel.api.ApiEnvelope;
+import com.aichat.kernel.api.SkeletonResponses;
+
+import java.util.List;
+import java.util.Map;
+
+public interface ${delegateName} {
 
 ${methods}
 }
@@ -193,6 +271,7 @@ function writeControllers(operations) {
     const directory = path.join(javaRoot, tagPackage(tag), 'api');
     fs.mkdirSync(directory, {recursive: true});
     fs.writeFileSync(path.join(directory, `${tag}ApiController.java`), controllerSource(tag, entries));
+    fs.writeFileSync(path.join(directory, `${tag}ApiDelegate.java`), delegateSource(tag, entries));
   }
 }
 

@@ -2,13 +2,16 @@
 package com.aichat.refund.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,24 +31,32 @@ import java.util.Map;
 @Validated
 @RestController
 public class RefundApiController {
+    private final RefundApiDelegate delegate;
+
+    public RefundApiController(ObjectProvider<RefundApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new RefundApiDelegate() { });
+    }
 
     @PostMapping("/api/v1/orders/{orderId}/refund-requests")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @ContractOperation(operationId = "createRefundRequest", domainOwner = "Refund")
     @AuthPolicy(ruleId = "private-principal-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createRefundRequest(
             @PathVariable("orderId") String orderId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.RefundRequest request
+            @Valid @RequestBody ContractRequests.RefundRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createRefundRequest");
+        return delegate.createRefundRequest(ApiCallContext.from(httpRequest), orderId, idempotencyKey, request);
     }
 
     @GetMapping("/api/v1/refunds/{refundId}")
     @ContractOperation(operationId = "getRefund", domainOwner = "Refund")
     @AuthPolicy(ruleId = "private-principal-refunds", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getRefund(
-            @PathVariable("refundId") String refundId
+            @PathVariable("refundId") String refundId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getRefund");
+        return delegate.getRefund(ApiCallContext.from(httpRequest), refundId);
     }
 }

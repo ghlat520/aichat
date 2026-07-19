@@ -2,13 +2,16 @@
 package com.aichat.identity.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,26 +31,35 @@ import java.util.Map;
 @Validated
 @RestController
 public class IdentityApiController {
+    private final IdentityApiDelegate delegate;
+
+    public IdentityApiController(ObjectProvider<IdentityApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new IdentityApiDelegate() { });
+    }
 
     @PostMapping("/api/v1/sessions")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createVisitorSession", domainOwner = "Identity")
     @AuthPolicy(ruleId = "legacy-public-entrypoints", operatorPolicyRuleId = "", level = AuthLevel.PUBLIC, accepted = {AuthLevel.PUBLIC}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createVisitorSession(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.CreateSessionRequest request
+            @Valid @RequestBody ContractRequests.CreateSessionRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createVisitorSession");
+        return delegate.createVisitorSession(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/sessions/{sessionId}/consents")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "recordConsent", domainOwner = "Access")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> recordConsent(
             @PathVariable("sessionId") String sessionId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.ConsentRequest request
+            @Valid @RequestBody ContractRequests.ConsentRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("recordConsent");
+        return delegate.recordConsent(ApiCallContext.from(httpRequest), sessionId, idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/identity/wechat/bind")
@@ -54,17 +67,19 @@ public class IdentityApiController {
     @AuthPolicy(ruleId = "private-wechat-bind-visitor-only", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> bindWechatIdentity(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.WechatBindRequest request
+            @Valid @RequestBody ContractRequests.WechatBindRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("bindWechatIdentity");
+        return delegate.bindWechatIdentity(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/tokens/refresh")
     @ContractOperation(operationId = "refreshSessionToken", domainOwner = "Access")
     @AuthPolicy(ruleId = "private-refresh-token", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> refreshSessionToken(
-            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey
+            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("refreshSessionToken");
+        return delegate.refreshSessionToken(ApiCallContext.from(httpRequest), idempotencyKey);
     }
 }

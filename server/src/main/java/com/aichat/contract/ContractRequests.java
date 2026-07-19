@@ -60,6 +60,15 @@ public final class ContractRequests {
     ) {
     }
 
+    public record AssessmentTaskMappingRequest(
+            @JsonProperty("expected_version") @Min(1) int expectedVersion,
+            @NotBlank
+            @Pattern(regexp = "dating_or_partner|family|friendship|workplace|other_relationship") String context,
+            @JsonProperty("clarity_pre") @NotNull @Min(0) @Max(10) Integer clarityPre,
+            @AssertTrue boolean confirmed
+    ) {
+    }
+
     public record CreateVentSessionRequest(
             @JsonProperty("policy_version") @NotBlank @Size(max = 64) String policyVersion
     ) {
@@ -93,13 +102,15 @@ public final class ContractRequests {
     }
 
     public record ClarityFields(
-            @NotBlank @Size(max = 64) String context,
-            @JsonProperty("observed_fact") @NotBlank @Size(max = 2000) String observedFact,
-            @NotBlank @Size(max = 2000) String interpretation,
-            @NotEmpty @Size(max = 5) @UniqueElements List<@Size(max = 40) String> emotion,
+            @NotBlank
+            @Pattern(regexp = "dating_or_partner|family|friendship|workplace|other_relationship") String context,
+            @JsonProperty("observed_fact") @NotBlank @Size(min = 20, max = 500) String observedFact,
+            @NotNull @Size(max = 500) String interpretation,
+            @NotEmpty @Size(max = 3) @UniqueElements
+            List<@Pattern(regexp = "anxious|hurt|angry|confused|sad|hopeful|afraid|disappointed|calm|other") String> emotion,
             @JsonProperty("need_or_boundary")
-            @NotEmpty @Size(max = 5) @UniqueElements List<@Size(max = 80) String> needOrBoundary,
-            @JsonProperty("next_step_goal") @NotBlank @Size(max = 500) String nextStepGoal
+            @NotEmpty @Size(max = 3) @UniqueElements List<@Size(max = 80) String> needOrBoundary,
+            @JsonProperty("next_step_goal") @NotBlank @Size(max = 200) String nextStepGoal
     ) {
     }
 

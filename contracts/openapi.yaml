@@ -150,6 +150,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
 
   /api/v1/identity/wechat/bind:
     post:
@@ -226,6 +228,10 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 
   /api/v1/assessment-runs/{runId}/answers/{itemId}:
     parameters:
@@ -251,8 +257,14 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 
   /api/v1/assessment-runs/{runId}/complete:
     parameters:
@@ -268,8 +280,14 @@ paths:
           $ref: '#/components/responses/Success'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 
   /api/v1/assessment-runs/{runId}/map-to-task:
     parameters:
@@ -285,7 +303,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExpectedVersionRequest'
+              $ref: '#/components/schemas/AssessmentTaskMappingRequest'
       responses:
         '201':
           $ref: '#/components/responses/Created'
@@ -293,8 +311,14 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 
   /api/v1/assessment-runs/{runId}/share-card:
     parameters:
@@ -310,8 +334,16 @@ paths:
           $ref: '#/components/responses/Created'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 
   /api/v1/vent-sessions:
     post:
@@ -426,6 +458,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
 
   /api/v1/tasks/{taskId}:
     parameters:
@@ -444,6 +478,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
 
   /api/v1/tasks/{taskId}/fields:
     parameters:
@@ -468,6 +504,10 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '409':
           $ref: '#/components/responses/Conflict'
         '503':
@@ -1865,6 +1905,24 @@ components:
           type: string
           minLength: 1
           maxLength: 64
+    AssessmentTaskMappingRequest:
+      type: object
+      additionalProperties: false
+      required: [expected_version, context, clarity_pre, confirmed]
+      properties:
+        expected_version:
+          type: integer
+          minimum: 1
+        context:
+          type: string
+          enum: [dating_or_partner, family, friendship, workplace, other_relationship]
+        clarity_pre:
+          type: integer
+          minimum: 0
+          maximum: 10
+        confirmed:
+          type: boolean
+          const: true
     CreateVentSessionRequest:
       type: object
       additionalProperties: false
@@ -1932,29 +1990,28 @@ components:
           properties:
             context:
               type: string
-              maxLength: 64
+              enum: [dating_or_partner, family, friendship, workplace, other_relationship]
             observed_fact:
               type: string
-              minLength: 1
-              maxLength: 2000
+              minLength: 20
+              maxLength: 500
               writeOnly: true
             interpretation:
               type: string
-              minLength: 1
-              maxLength: 2000
+              maxLength: 500
               writeOnly: true
             emotion:
               type: array
               minItems: 1
-              maxItems: 5
+              maxItems: 3
               uniqueItems: true
               items:
                 type: string
-                maxLength: 40
+                enum: [anxious, hurt, angry, confused, sad, hopeful, afraid, disappointed, calm, other]
             need_or_boundary:
               type: array
               minItems: 1
-              maxItems: 5
+              maxItems: 3
               uniqueItems: true
               items:
                 type: string
@@ -1962,7 +2019,7 @@ components:
             next_step_goal:
               type: string
               minLength: 1
-              maxLength: 500
+              maxLength: 200
               writeOnly: true
     MirrorConfirmationRequest:
       type: object

@@ -2,13 +2,16 @@
 package com.aichat.report.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,44 +31,55 @@ import java.util.Map;
 @Validated
 @RestController
 public class ReportApiController {
+    private final ReportApiDelegate delegate;
+
+    public ReportApiController(ObjectProvider<ReportApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new ReportApiDelegate() { });
+    }
 
     @PostMapping("/api/v1/tasks/{taskId}/reports")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @ContractOperation(operationId = "createTaskReport", domainOwner = "Generation")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createTaskReport(
             @PathVariable("taskId") String taskId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.CreateReportRequest request
+            @Valid @RequestBody ContractRequests.CreateReportRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createTaskReport");
+        return delegate.createTaskReport(ApiCallContext.from(httpRequest), taskId, idempotencyKey, request);
     }
 
     @GetMapping("/api/v1/reports/{reportId}/free-summary")
     @ContractOperation(operationId = "getFreeReportSummary", domainOwner = "Generation")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getFreeReportSummary(
-            @PathVariable("reportId") String reportId
+            @PathVariable("reportId") String reportId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getFreeReportSummary");
+        return delegate.getFreeReportSummary(ApiCallContext.from(httpRequest), reportId);
     }
 
     @GetMapping("/api/v1/reports/{reportId}")
     @ContractOperation(operationId = "getSealedReport", domainOwner = "Generation")
     @AuthPolicy(ruleId = "private-principal-sealed-report", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getSealedReport(
-            @PathVariable("reportId") String reportId
+            @PathVariable("reportId") String reportId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getSealedReport");
+        return delegate.getSealedReport(ApiCallContext.from(httpRequest), reportId);
     }
 
     @PostMapping("/api/v1/reports/{reportId}/copy-receipts")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createReportCopyReceipt", domainOwner = "Generation")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createReportCopyReceipt(
             @PathVariable("reportId") String reportId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.CopyReceiptRequest request
+            @Valid @RequestBody ContractRequests.CopyReceiptRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createReportCopyReceipt");
+        return delegate.createReportCopyReceipt(ApiCallContext.from(httpRequest), reportId, idempotencyKey, request);
     }
 }

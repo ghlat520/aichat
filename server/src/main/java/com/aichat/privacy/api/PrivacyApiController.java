@@ -2,13 +2,16 @@
 package com.aichat.privacy.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,40 +31,52 @@ import java.util.Map;
 @Validated
 @RestController
 public class PrivacyApiController {
+    private final PrivacyApiDelegate delegate;
+
+    public PrivacyApiController(ObjectProvider<PrivacyApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new PrivacyApiDelegate() { });
+    }
 
     @GetMapping("/api/v1/me/data-map")
     @ContractOperation(operationId = "getMyDataMap", domainOwner = "Privacy")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
-    public ApiEnvelope<Map<String, Object>> getMyDataMap() {
-        return SkeletonResponses.notImplemented("getMyDataMap");
+    public ApiEnvelope<Map<String, Object>> getMyDataMap(
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.getMyDataMap(ApiCallContext.from(httpRequest));
     }
 
     @PostMapping("/api/v1/privacy/exports")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @ContractOperation(operationId = "createPrivacyExport", domainOwner = "Privacy")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createPrivacyExport(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.PrivacyScopeRequest request
+            @Valid @RequestBody ContractRequests.PrivacyScopeRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createPrivacyExport");
+        return delegate.createPrivacyExport(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/privacy/deletion-requests")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @ContractOperation(operationId = "createDeletionRequest", domainOwner = "Privacy")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createDeletionRequest(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.PrivacyScopeRequest request
+            @Valid @RequestBody ContractRequests.PrivacyScopeRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createDeletionRequest");
+        return delegate.createDeletionRequest(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @GetMapping("/api/v1/privacy/deletion-requests/{deletionRequestId}")
     @ContractOperation(operationId = "getDeletionRequest", domainOwner = "Privacy")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getDeletionRequest(
-            @PathVariable("deletionRequestId") String deletionRequestId
+            @PathVariable("deletionRequestId") String deletionRequestId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getDeletionRequest");
+        return delegate.getDeletionRequest(ApiCallContext.from(httpRequest), deletionRequestId);
     }
 }

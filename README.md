@@ -6,7 +6,7 @@ AIChat 是“关系清晰卡”微信小程序的独立工程。工程名与 Git
 
 - `docs/`：PRD、MVP 产品规格、架构设计、领域语言和第三方仓库审计。
 - `contracts/`：业务 OpenAPI 源码、中央鉴权规则、编译契约和代码生成器。
-- `server/`：Java 17 源码兼容、JDK 25 运行目标的 Spring Boot 模块化单体骨架。
+- `server/`：Java 17 源码兼容、JDK 25 运行目标的 Spring Boot 模块化单体；使用 MyBatis、Flyway 和 MySQL 8。
 - `miniprogram/services/api/`：由编译契约生成的小程序 TypeScript Client。
 - `.github/workflows/`：契约、Java 和 TypeScript 持续集成门禁。
 
@@ -26,4 +26,6 @@ mvn --file server/pom.xml --batch-mode --no-transfer-progress test
 npx --yes -p typescript@5.9.3 tsc -p miniprogram/services/api/tsconfig.json
 ```
 
-本仓库目前是代码与契约骨架，不表示微信公开上线、真实支付、生产 AI 服务或合规审批已经完成。
+当前按 [P0 持续实施目标](docs/P0_IMPLEMENTATION_GOAL.md) 分阶段交付。已经实现 Public 配置/安全资源、匿名 Visitor 会话、18+ 同意、数据库令牌鉴权，Clarity 任务/六字段的 PII 遮蔽、S1 路由和 Envelope Encryption，以及默认关闭的原创 8 题 Assessment、确定性计分、脱敏分享预览和核心映射；其余能力仍按 Goal 状态实施，未实现接口保持显式 `501`，不会伪装成功。
+
+本仓库不表示微信公开上线、真实支付、生产 AI 服务或合规审批已经完成。生产启动必须通过环境变量提供 `AICHAT_DB_URL`、`AICHAT_DB_USERNAME`、`AICHAT_DB_PASSWORD`、至少 32 字节 Base64 编码的 `AICHAT_SESSION_TOKEN_KEY`、恰好 32 字节 Base64 编码的 `AICHAT_CONTENT_MASTER_KEY` 和 `AICHAT_CONTENT_KEY_VERSION`；Assessment 即使代码就绪也默认关闭，只有受控环境显式设置 `AICHAT_FEATURE_ASSESSMENT_ENABLED=true` 才开放。测试使用隔离的 H2 MySQL 模式数据库和非生产测试密钥。

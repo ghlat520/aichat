@@ -2,13 +2,16 @@
 package com.aichat.assessment.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,22 +31,31 @@ import java.util.Map;
 @Validated
 @RestController
 public class AssessmentApiController {
+    private final AssessmentApiDelegate delegate;
+
+    public AssessmentApiController(ObjectProvider<AssessmentApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new AssessmentApiDelegate() { });
+    }
 
     @GetMapping("/api/v1/assessments/current")
     @ContractOperation(operationId = "getCurrentAssessment", domainOwner = "Assessment")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
-    public ApiEnvelope<Map<String, Object>> getCurrentAssessment() {
-        return SkeletonResponses.notImplemented("getCurrentAssessment");
+    public ApiEnvelope<Map<String, Object>> getCurrentAssessment(
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.getCurrentAssessment(ApiCallContext.from(httpRequest));
     }
 
     @PostMapping("/api/v1/assessment-runs")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createAssessmentRun", domainOwner = "Assessment")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createAssessmentRun(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.CreateAssessmentRunRequest request
+            @Valid @RequestBody ContractRequests.CreateAssessmentRunRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createAssessmentRun");
+        return delegate.createAssessmentRun(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @PutMapping("/api/v1/assessment-runs/{runId}/answers/{itemId}")
@@ -52,9 +65,10 @@ public class AssessmentApiController {
             @PathVariable("runId") String runId,
             @PathVariable("itemId") String itemId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.AssessmentAnswerRequest request
+            @Valid @RequestBody ContractRequests.AssessmentAnswerRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("putAssessmentAnswer");
+        return delegate.putAssessmentAnswer(ApiCallContext.from(httpRequest), runId, itemId, idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/assessment-runs/{runId}/complete")
@@ -62,29 +76,34 @@ public class AssessmentApiController {
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> completeAssessmentRun(
             @PathVariable("runId") String runId,
-            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey
+            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("completeAssessmentRun");
+        return delegate.completeAssessmentRun(ApiCallContext.from(httpRequest), runId, idempotencyKey);
     }
 
     @PostMapping("/api/v1/assessment-runs/{runId}/map-to-task")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "mapAssessmentToTask", domainOwner = "Assessment")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> mapAssessmentToTask(
             @PathVariable("runId") String runId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.ExpectedVersionRequest request
+            @Valid @RequestBody ContractRequests.AssessmentTaskMappingRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("mapAssessmentToTask");
+        return delegate.mapAssessmentToTask(ApiCallContext.from(httpRequest), runId, idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/assessment-runs/{runId}/share-card")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createAssessmentShareCard", domainOwner = "Assessment")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createAssessmentShareCard(
             @PathVariable("runId") String runId,
-            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey
+            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createAssessmentShareCard");
+        return delegate.createAssessmentShareCard(ApiCallContext.from(httpRequest), runId, idempotencyKey);
     }
 }

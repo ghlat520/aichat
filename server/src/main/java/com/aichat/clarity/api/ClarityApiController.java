@@ -2,13 +2,16 @@
 package com.aichat.clarity.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,24 +31,32 @@ import java.util.Map;
 @Validated
 @RestController
 public class ClarityApiController {
+    private final ClarityApiDelegate delegate;
+
+    public ClarityApiController(ObjectProvider<ClarityApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new ClarityApiDelegate() { });
+    }
 
     @PostMapping("/api/v1/tasks")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createClarityTask", domainOwner = "Clarity")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createClarityTask(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.CreateTaskRequest request
+            @Valid @RequestBody ContractRequests.CreateTaskRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createClarityTask");
+        return delegate.createClarityTask(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @GetMapping("/api/v1/tasks/{taskId}")
     @ContractOperation(operationId = "getClarityTask", domainOwner = "Clarity")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getClarityTask(
-            @PathVariable("taskId") String taskId
+            @PathVariable("taskId") String taskId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getClarityTask");
+        return delegate.getClarityTask(ApiCallContext.from(httpRequest), taskId);
     }
 
     @PutMapping("/api/v1/tasks/{taskId}/fields")
@@ -53,20 +65,23 @@ public class ClarityApiController {
     public ApiEnvelope<Map<String, Object>> putClarityFields(
             @PathVariable("taskId") String taskId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.ClarityFieldsRequest request
+            @Valid @RequestBody ContractRequests.ClarityFieldsRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("putClarityFields");
+        return delegate.putClarityFields(ApiCallContext.from(httpRequest), taskId, idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/tasks/{taskId}/mirror")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @ContractOperation(operationId = "createTaskMirror", domainOwner = "Generation")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createTaskMirror(
             @PathVariable("taskId") String taskId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.ExpectedVersionRequest request
+            @Valid @RequestBody ContractRequests.ExpectedVersionRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createTaskMirror");
+        return delegate.createTaskMirror(ApiCallContext.from(httpRequest), taskId, idempotencyKey, request);
     }
 
     @PutMapping("/api/v1/tasks/{taskId}/mirror-confirmation")
@@ -75,20 +90,23 @@ public class ClarityApiController {
     public ApiEnvelope<Map<String, Object>> confirmTaskMirror(
             @PathVariable("taskId") String taskId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.MirrorConfirmationRequest request
+            @Valid @RequestBody ContractRequests.MirrorConfirmationRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("confirmTaskMirror");
+        return delegate.confirmTaskMirror(ApiCallContext.from(httpRequest), taskId, idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/tasks/{taskId}/reflections")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createTaskReflection", domainOwner = "Clarity")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createTaskReflection(
             @PathVariable("taskId") String taskId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.ReflectionRequest request
+            @Valid @RequestBody ContractRequests.ReflectionRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createTaskReflection");
+        return delegate.createTaskReflection(ApiCallContext.from(httpRequest), taskId, idempotencyKey, request);
     }
 
     @GetMapping("/api/v1/me/tasks")
@@ -96,8 +114,9 @@ public class ClarityApiController {
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> listMyTasks(
             @RequestParam(name = "cursor", required = false) String cursor,
-            @RequestParam(name = "limit", required = false) Integer limit
+            @RequestParam(name = "limit", required = false) Integer limit,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("listMyTasks");
+        return delegate.listMyTasks(ApiCallContext.from(httpRequest), cursor, limit);
     }
 }

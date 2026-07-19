@@ -2,13 +2,16 @@
 package com.aichat.payment.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,26 +31,34 @@ import java.util.Map;
 @Validated
 @RestController
 public class PaymentApiController {
+    private final PaymentApiDelegate delegate;
+
+    public PaymentApiController(ObjectProvider<PaymentApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new PaymentApiDelegate() { });
+    }
 
     @PostMapping("/api/v1/orders/{orderId}/wechat-prepay")
     @ContractOperation(operationId = "createWechatPrepay", domainOwner = "Payment")
     @AuthPolicy(ruleId = "private-principal-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createWechatPrepay(
             @PathVariable("orderId") String orderId,
-            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey
+            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createWechatPrepay");
+        return delegate.createWechatPrepay(ApiCallContext.from(httpRequest), orderId, idempotencyKey);
     }
 
     @PostMapping("/api/v1/webhooks/wechat-pay")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ContractOperation(operationId = "acceptWechatPayWebhook", domainOwner = "Payment")
     @AuthPolicy(ruleId = "internal-wechat-webhooks", operatorPolicyRuleId = "", level = AuthLevel.INTERNAL, accepted = {AuthLevel.INTERNAL}, roles = {}, mfaRequired = false, rawBodyRequired = true)
     public ApiEnvelope<Map<String, Object>> acceptWechatPayWebhook(
             @RequestHeader(name = "Wechatpay-Timestamp", required = true) String wechatpayTimestamp,
             @RequestHeader(name = "Wechatpay-Nonce", required = true) String wechatpayNonce,
             @RequestHeader(name = "Wechatpay-Serial", required = true) String wechatpaySerial,
-            @RequestBody byte[] rawBody
+            @RequestBody byte[] rawBody,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("acceptWechatPayWebhook");
+        return delegate.acceptWechatPayWebhook(ApiCallContext.from(httpRequest), wechatpayTimestamp, wechatpayNonce, wechatpaySerial, rawBody);
     }
 }

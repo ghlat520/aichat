@@ -2,13 +2,16 @@
 package com.aichat.support.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,23 +31,31 @@ import java.util.Map;
 @Validated
 @RestController
 public class SupportApiController {
+    private final SupportApiDelegate delegate;
+
+    public SupportApiController(ObjectProvider<SupportApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new SupportApiDelegate() { });
+    }
 
     @PostMapping("/api/v1/support/tickets")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createSupportTicket", domainOwner = "Support")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createSupportTicket(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.SupportTicketRequest request
+            @Valid @RequestBody ContractRequests.SupportTicketRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createSupportTicket");
+        return delegate.createSupportTicket(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @GetMapping("/api/v1/support/tickets/{ticketId}")
     @ContractOperation(operationId = "getSupportTicket", domainOwner = "Support")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getSupportTicket(
-            @PathVariable("ticketId") String ticketId
+            @PathVariable("ticketId") String ticketId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getSupportTicket");
+        return delegate.getSupportTicket(ApiCallContext.from(httpRequest), ticketId);
     }
 }

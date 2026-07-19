@@ -2,13 +2,16 @@
 package com.aichat.publicapi.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,18 +31,27 @@ import java.util.Map;
 @Validated
 @RestController
 public class PublicApiController {
+    private final PublicApiDelegate delegate;
+
+    public PublicApiController(ObjectProvider<PublicApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new PublicApiDelegate() { });
+    }
 
     @GetMapping("/api/v1/app-config")
     @ContractOperation(operationId = "getAppConfig", domainOwner = "Operations")
     @AuthPolicy(ruleId = "legacy-public-entrypoints", operatorPolicyRuleId = "", level = AuthLevel.PUBLIC, accepted = {AuthLevel.PUBLIC}, roles = {}, mfaRequired = false, rawBodyRequired = false)
-    public ApiEnvelope<Map<String, Object>> getAppConfig() {
-        return SkeletonResponses.notImplemented("getAppConfig");
+    public ApiEnvelope<Map<String, Object>> getAppConfig(
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.getAppConfig(ApiCallContext.from(httpRequest));
     }
 
     @GetMapping("/api/v1/safety-resources")
     @ContractOperation(operationId = "getSafetyResources", domainOwner = "Safety")
     @AuthPolicy(ruleId = "legacy-public-entrypoints", operatorPolicyRuleId = "", level = AuthLevel.PUBLIC, accepted = {AuthLevel.PUBLIC}, roles = {}, mfaRequired = false, rawBodyRequired = false)
-    public ApiEnvelope<Map<String, Object>> getSafetyResources() {
-        return SkeletonResponses.notImplemented("getSafetyResources");
+    public ApiEnvelope<Map<String, Object>> getSafetyResources(
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.getSafetyResources(ApiCallContext.from(httpRequest));
     }
 }

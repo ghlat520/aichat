@@ -2,13 +2,16 @@
 package com.aichat.action.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,6 +31,11 @@ import java.util.Map;
 @Validated
 @RestController
 public class ActionApiController {
+    private final ActionApiDelegate delegate;
+
+    public ActionApiController(ObjectProvider<ActionApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new ActionApiDelegate() { });
+    }
 
     @PutMapping("/api/v1/tasks/{taskId}/action")
     @ContractOperation(operationId = "putTaskAction", domainOwner = "Action")
@@ -34,20 +43,23 @@ public class ActionApiController {
     public ApiEnvelope<Map<String, Object>> putTaskAction(
             @PathVariable("taskId") String taskId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.ActionRequest request
+            @Valid @RequestBody ContractRequests.ActionRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("putTaskAction");
+        return delegate.putTaskAction(ApiCallContext.from(httpRequest), taskId, idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/actions/{actionId}/reminder-grants")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createReminderGrant", domainOwner = "Notification")
     @AuthPolicy(ruleId = "private-principal-reminder-grants", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createReminderGrant(
             @PathVariable("actionId") String actionId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.ReminderGrantRequest request
+            @Valid @RequestBody ContractRequests.ReminderGrantRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createReminderGrant");
+        return delegate.createReminderGrant(ApiCallContext.from(httpRequest), actionId, idempotencyKey, request);
     }
 
     @PutMapping("/api/v1/actions/{actionId}/checkins/{stage}")
@@ -57,8 +69,9 @@ public class ActionApiController {
             @PathVariable("actionId") String actionId,
             @PathVariable("stage") String stage,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.CheckinRequest request
+            @Valid @RequestBody ContractRequests.CheckinRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("putActionCheckin");
+        return delegate.putActionCheckin(ApiCallContext.from(httpRequest), actionId, stage, idempotencyKey, request);
     }
 }

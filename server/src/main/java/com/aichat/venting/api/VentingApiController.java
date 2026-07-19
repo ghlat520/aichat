@@ -2,13 +2,16 @@
 package com.aichat.venting.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,15 +31,22 @@ import java.util.Map;
 @Validated
 @RestController
 public class VentingApiController {
+    private final VentingApiDelegate delegate;
+
+    public VentingApiController(ObjectProvider<VentingApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new VentingApiDelegate() { });
+    }
 
     @PostMapping("/api/v1/vent-sessions")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createVentSession", domainOwner = "Venting")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createVentSession(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.CreateVentSessionRequest request
+            @Valid @RequestBody ContractRequests.CreateVentSessionRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createVentSession");
+        return delegate.createVentSession(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/vent-sessions/{ventSessionId}/turns")
@@ -44,19 +55,22 @@ public class VentingApiController {
     public ApiEnvelope<Map<String, Object>> createVentTurn(
             @PathVariable("ventSessionId") String ventSessionId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.VentTurnRequest request
+            @Valid @RequestBody ContractRequests.VentTurnRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createVentTurn");
+        return delegate.createVentTurn(ApiCallContext.from(httpRequest), ventSessionId, idempotencyKey, request);
     }
 
     @PostMapping("/api/v1/vent-sessions/{ventSessionId}/finish")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @ContractOperation(operationId = "finishVentSession", domainOwner = "Venting")
     @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> finishVentSession(
             @PathVariable("ventSessionId") String ventSessionId,
-            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey
+            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("finishVentSession");
+        return delegate.finishVentSession(ApiCallContext.from(httpRequest), ventSessionId, idempotencyKey);
     }
 
     @PutMapping("/api/v1/vent-sessions/{ventSessionId}/summary")
@@ -65,8 +79,9 @@ public class VentingApiController {
     public ApiEnvelope<Map<String, Object>> confirmVentSummary(
             @PathVariable("ventSessionId") String ventSessionId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.VentSummaryRequest request
+            @Valid @RequestBody ContractRequests.VentSummaryRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("confirmVentSummary");
+        return delegate.confirmVentSummary(ApiCallContext.from(httpRequest), ventSessionId, idempotencyKey, request);
     }
 }

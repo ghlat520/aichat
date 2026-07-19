@@ -2,13 +2,16 @@
 package com.aichat.ordering.api;
 
 import com.aichat.contract.ContractRequests;
+import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
-import com.aichat.kernel.api.SkeletonResponses;
 import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.auth.AuthPolicy;
 import com.aichat.kernel.auth.ContractOperation;
 import com.aichat.kernel.auth.MakerChecker;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,23 +31,31 @@ import java.util.Map;
 @Validated
 @RestController
 public class OrderingApiController {
+    private final OrderingApiDelegate delegate;
+
+    public OrderingApiController(ObjectProvider<OrderingApiDelegate> delegateProvider) {
+        this.delegate = delegateProvider.getIfAvailable(() -> new OrderingApiDelegate() { });
+    }
 
     @PostMapping("/api/v1/orders")
+    @ResponseStatus(HttpStatus.CREATED)
     @ContractOperation(operationId = "createOrder", domainOwner = "Ordering")
     @AuthPolicy(ruleId = "private-principal-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> createOrder(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.CreateOrderRequest request
+            @Valid @RequestBody ContractRequests.CreateOrderRequest request,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("createOrder");
+        return delegate.createOrder(ApiCallContext.from(httpRequest), idempotencyKey, request);
     }
 
     @GetMapping("/api/v1/orders/{orderId}")
     @ContractOperation(operationId = "getOrder", domainOwner = "Ordering")
     @AuthPolicy(ruleId = "private-principal-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> getOrder(
-            @PathVariable("orderId") String orderId
+            @PathVariable("orderId") String orderId,
+            HttpServletRequest httpRequest
     ) {
-        return SkeletonResponses.notImplemented("getOrder");
+        return delegate.getOrder(ApiCallContext.from(httpRequest), orderId);
     }
 }

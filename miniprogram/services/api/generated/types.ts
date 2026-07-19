@@ -48,6 +48,13 @@ export type AssessmentAnswerRequest = {
   option_code: string;
 };
 
+export type AssessmentTaskMappingRequest = {
+  expected_version: number;
+  context: "dating_or_partner" | "family" | "friendship" | "workplace" | "other_relationship";
+  clarity_pre: number;
+  confirmed: true;
+};
+
 export type CreateVentSessionRequest = {
   policy_version: string;
 };
@@ -72,10 +79,10 @@ export type CreateTaskRequest = {
 export type ClarityFieldsRequest = {
   expected_version: number;
   fields: {
-  context: string;
+  context: "dating_or_partner" | "family" | "friendship" | "workplace" | "other_relationship";
   observed_fact: string;
   interpretation: string;
-  emotion: Array<string>;
+  emotion: Array<"anxious" | "hurt" | "angry" | "confused" | "sad" | "hopeful" | "afraid" | "disappointed" | "calm" | "other">;
   need_or_boundary: Array<string>;
   next_step_goal: string;
 };
