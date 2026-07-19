@@ -1,0 +1,28 @@
+# Build outputs
+server/target/
+target/
+dist/
+build/
+coverage/
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+npm-debug.log*

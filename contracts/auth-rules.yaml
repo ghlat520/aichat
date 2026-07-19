@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "description": "中央鉴权规则。文件使用 YAML 1.2 的 JSON 兼容子集，便于 Node.js 零依赖解析。规则按 priority 从高到低匹配；同优先级多重命中视为配置冲突。",
+  "defaults": {
+    "unmatched": "deny",
+    "operator_role_semantics": "any_of"
+  },
+  "classification_rules": [
+    {
+      "id": "internal-wechat-webhooks",
+      "priority": 1000,
+      "match": {"path_regex": "^/api/v1/webhooks(?:/.*)?$"},
+      "policy": {
+        "level": "Internal",
+        "accepted_levels": ["Internal"],
+        "security_scheme": "wechatPaySignature",
+        "raw_body_required": true
+      }
+    },
+    {
+      "id": "admin-operations",
+      "priority": 900,
+      "match": {"path_prefix": "/ops/v1/"},
+      "policy": {
+        "level": "Operator",
+        "accepted_levels": ["Operator"],
+        "security_scheme": "operatorBearer",
+        "mfa_required": true
+      }
+    },
+    {
+      "id": "public-namespace",
+      "priority": 800,
+      "match": {"path_prefix": "/public/"},
+      "policy": {
+        "level": "Public",
+        "accepted_levels": ["Public"],
+        "security_scheme": null
+      }
+    },
+    {
+      "id": "legacy-public-entrypoints",
+      "priority": 800,
+      "match": {
+        "operation_ids": ["getAppConfig", "getSafetyResources", "createVisitorSession"]
+      },
+      "policy": {
+        "level": "Public",
+        "accepted_levels": ["Public"],
+        "security_scheme": null
+      }
+    },
+    {
+      "id": "private-wechat-bind-visitor-only",
+      "priority": 750,
+      "match": {"operation_ids": ["bindWechatIdentity"]},
+      "policy": {
+        "level": "Visitor",
+        "accepted_levels": ["Visitor"],
+        "security_scheme": "opaqueBearer"
+      }
+    },
+    {
+      "id": "private-refresh-token",
+      "priority": 750,
+      "match": {"path_exact": "/api/v1/tokens/refresh"},
+      "policy": {
+        "level": "Visitor",
+        "accepted_levels": ["Visitor", "Principal"],
+        "security_scheme": "refreshToken"
+      }
+    },
+    {
+      "id": "private-principal-orders",
+      "priority": 700,
+      "match": {"path_prefix": "/api/v1/orders"},
+      "policy": {
+        "level": "Principal",
+        "accepted_levels": ["Principal"],
+        "security_scheme": "opaqueBearer"
+      }
+    },
+    {
+      "id": "private-principal-refunds",
+      "priority": 700,
+      "match": {"path_prefix": "/api/v1/refunds"},
+      "policy": {
+        "level": "Principal",
+        "accepted_levels": ["Principal"],
+        "security_scheme": "opaqueBearer"
+      }
+    },
+    {
+      "id": "private-principal-reminder-grants",
+      "priority": 700,
+      "match": {"path_regex": "^/api/v1/actions/\\{actionId\\}/reminder-grants$"},
+      "policy": {
+        "level": "Principal",
+        "accepted_levels": ["Principal"],
+        "security_scheme": "opaqueBearer"
+      }
+    },
+    {
+      "id": "private-principal-sealed-report",
+      "priority": 700,
+      "match": {
+        "methods": ["GET"],
+        "path_regex": "^/api/v1/reports/\\{reportId\\}$"
+      },
+      "policy": {
+        "level": "Principal",
+        "accepted_levels": ["Principal"],
+        "security_scheme": "opaqueBearer"
+      }
+    },
+    {
+      "id": "private-user-default",
+      "priority": 100,
+      "match": {"path_prefix": "/api/v1/"},
+      "policy": {
+        "level": "Visitor",
+        "accepted_levels": ["Visitor", "Principal"],
+        "security_scheme": "opaqueBearer"
+      }
+    }
+  ],
+  "operator_policy_rules": [
+    {
+      "id": "admin-dashboard-analyst",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/dashboard/"},
+      "roles": ["analyst"]
+    },
+    {
+      "id": "admin-catalog-price-change",
+      "priority": 200,
+      "match": {"methods": ["POST"], "path_exact": "/ops/v1/catalog/price-versions"},
+      "roles": ["product-admin"],
+      "approval": {"type": "maker-checker", "approver_roles": ["approver"]}
+    },
+    {
+      "id": "admin-catalog",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/catalog/"},
+      "roles": ["product-admin"]
+    },
+    {
+      "id": "admin-order-support",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/orders/"},
+      "roles": ["support", "finance"]
+    },
+    {
+      "id": "admin-refund-approval",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/refunds/"},
+      "roles": ["second-approver"],
+      "approval": {
+        "type": "maker-checker",
+        "maker_roles": ["finance"],
+        "approver_roles": ["second-approver"]
+      }
+    },
+    {
+      "id": "admin-reconciliation",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/reconciliations"},
+      "roles": ["finance"]
+    },
+    {
+      "id": "admin-support",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/support/"},
+      "roles": ["support"]
+    },
+    {
+      "id": "admin-safety",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/safety-review-cases/"},
+      "roles": ["safety-reviewer"]
+    },
+    {
+      "id": "admin-privacy",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/privacy/"},
+      "roles": ["privacy-admin"]
+    },
+    {
+      "id": "admin-feature-flag-change",
+      "priority": 200,
+      "match": {"methods": ["POST"], "path_exact": "/ops/v1/feature-flags"},
+      "roles": ["release-admin"],
+      "approval": {"type": "maker-checker", "approver_roles": ["approver"]}
+    },
+    {
+      "id": "admin-feature-flags",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/feature-flags"},
+      "roles": ["release-admin"]
+    },
+    {
+      "id": "admin-artifacts",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/artifact-versions"},
+      "roles": ["release-admin"]
+    },
+    {
+      "id": "admin-release-create",
+      "priority": 200,
+      "match": {"methods": ["POST"], "path_exact": "/ops/v1/releases"},
+      "roles": ["release-admin"],
+      "approval": {"type": "maker-checker", "approver_roles": ["release-owner"]}
+    },
+    {
+      "id": "admin-releases",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/releases"},
+      "roles": ["release-admin", "release-owner"]
+    },
+    {
+      "id": "admin-experiment-create",
+      "priority": 200,
+      "match": {"methods": ["POST"], "path_exact": "/ops/v1/experiments"},
+      "roles": ["analyst"],
+      "approval": {"type": "maker-checker", "approver_roles": ["product-owner"]}
+    },
+    {
+      "id": "admin-experiments",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/experiments"},
+      "roles": ["analyst", "product-owner"]
+    },
+    {
+      "id": "admin-audit",
+      "priority": 100,
+      "match": {"path_prefix": "/ops/v1/audit-logs"},
+      "roles": ["auditor"]
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+apis:
+  aichat@v1:
+    root: ./openapi.generated.json
+
+extends:
+  - recommended
+
+rules:
+  info-license: error
+  no-unresolved-refs: error
+  no-unused-components: error
+  operation-operationId: error
+  operation-operationId-unique: error
+  operation-summary: error
+  operation-2xx-response: error
+  operation-4xx-response: error
+  security-defined: error
+
+  rule/operation-auth-level:
+    subject:
+      type: Operation
+      property: x-auth-level
+    assertions:
+      defined: true
+      enum:
+        - Public
+        - Visitor
+        - Principal
+        - Internal
+        - Operator
+    message: 每个操作必须声明五级鉴权之一的 x-auth-level。
+    severity: error
+
+  rule/operation-auth-rule-id:
+    subject:
+      type: Operation
+      property: x-auth-rule-id
+    assertions:
+      defined: true
+      nonEmpty: true
+    message: 每个操作必须能追溯到中央鉴权规则 x-auth-rule-id。
+    severity: error
+
+  rule/operation-domain-owner:
+    subject:
+      type: Operation
+      property: x-domain-owner
+    assertions:
+      defined: true
+      nonEmpty: true
+    message: 每个操作必须声明唯一业务所有者 x-domain-owner。
+    severity: error
+
+  rule/visitor-principal-accepted-levels:
+    where:
+      - subject:
+          type: Operation
+          property: x-auth-level
+        assertions:
+          enum:
+            - Visitor
+            - Principal
+    subject:
+      type: Operation
+      property: x-accepted-auth-levels
+    assertions:
+      defined: true
+      nonEmpty: true
+    message: Visitor 或 Principal 操作必须显式列出可接受身份等级。
+    severity: error
+
+  rule/operator-roles:
+    where:
+      - subject:
+          type: Operation
+          property: x-auth-level
+        assertions:
+          const: Operator
+    subject:
+      type: Operation
+      property: x-required-roles
+    assertions:
+      defined: true
+      nonEmpty: true
+    message: Operator 操作必须声明非空 x-required-roles。
+    severity: error
+
+  rule/operator-policy-rule-id:
+    where:
+      - subject:
+          type: Operation
+          property: x-auth-level
+        assertions:
+          const: Operator
+    subject:
+      type: Operation
+      property: x-operator-policy-rule-id
+    assertions:
+      defined: true
+      nonEmpty: true
+    message: Operator 操作必须能追溯到中央 RBAC 规则。
+    severity: error
+
+  rule/operator-mfa:
+    where:
+      - subject:
+          type: Operation
+          property: x-auth-level
+        assertions:
+          const: Operator
+    subject:
+      type: Operation
+      property: x-mfa-required
+    assertions:
+      defined: true
+      const: true
+    message: Operator 操作必须显式要求 MFA。
+    severity: error

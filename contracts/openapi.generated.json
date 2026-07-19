@@ -1,0 +1,4524 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "AIChat API",
+    "version": "0.1.0",
+    "description": "关系清晰卡 P0 的业务接口源码。本文件冻结领域所有权、请求边界、错误语义\n和 P0 接口面；操作级鉴权不得在这里逐项维护，而由 auth-rules.yaml 统一分类，\n编译后写入 openapi.generated.json，供文档、代码生成和 CI 安全检查使用。\n",
+    "contact": {
+      "name": "关系清晰卡产品与工程负责人"
+    },
+    "license": {
+      "name": "Proprietary",
+      "identifier": "LicenseRef-Proprietary"
+    }
+  },
+  "jsonSchemaDialect": "https://spec.openapis.org/oas/3.1/dialect/base",
+  "servers": [
+    {
+      "url": "https://{apiHost}",
+      "description": "按环境注入的 API 主机；不得把生产域名硬编码到契约",
+      "variables": {
+        "apiHost": {
+          "default": "api.aichat.invalid",
+          "description": "local、test、staging 或 production 的受控主机名"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "Public",
+      "description": "无登录静态配置、安全资源和匿名会话入口。"
+    },
+    {
+      "name": "Identity",
+      "description": "访客会话、同意、微信身份绑定和令牌轮换。"
+    },
+    {
+      "name": "Assessment",
+      "description": "六至八题确定性自测、答案和结果映射。"
+    },
+    {
+      "name": "Venting",
+      "description": "限时限轮深夜倾诉、总结确认和安全前置。"
+    },
+    {
+      "name": "Clarity",
+      "description": "六字段、镜像确认、两轮反思和关系清晰任务。"
+    },
+    {
+      "name": "Report",
+      "description": "报告生成、免费摘要和逐报告权益校验读取。"
+    },
+    {
+      "name": "Action",
+      "description": "四十八小时行动、逐次提醒授权和复盘。"
+    },
+    {
+      "name": "Catalog",
+      "description": "服务端权威商品、价格版本和有效窗口。"
+    },
+    {
+      "name": "Ordering",
+      "description": "密封报告之后的订单、成交快照和幂等写入。"
+    },
+    {
+      "name": "Payment",
+      "description": "微信支付预下单、签名回调和已验证资金事实。"
+    },
+    {
+      "name": "Refund",
+      "description": "用户退款申请、渠道退款状态和售后协作。"
+    },
+    {
+      "name": "Privacy",
+      "description": "用户数据地图、导出、分域删除和回执。"
+    },
+    {
+      "name": "Support",
+      "description": "计费、交付、安全、隐私、纠错和投诉工单。"
+    },
+    {
+      "name": "Operations",
+      "description": "运营后台的受控查询、审批、配置、发布和审计。"
+    }
+  ],
+  "paths": {
+    "/api/v1/app-config": {
+      "get": {
+        "operationId": "getAppConfig",
+        "summary": "获取公开应用配置",
+        "tags": [
+          "Public"
+        ],
+        "x-domain-owner": "Operations",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "x-auth-rule-id": "legacy-public-entrypoints",
+        "x-auth-level": "Public",
+        "security": []
+      }
+    },
+    "/api/v1/safety-resources": {
+      "get": {
+        "operationId": "getSafetyResources",
+        "summary": "获取公开安全资源",
+        "tags": [
+          "Public"
+        ],
+        "x-domain-owner": "Safety",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "x-auth-rule-id": "legacy-public-entrypoints",
+        "x-auth-level": "Public",
+        "security": []
+      }
+    },
+    "/api/v1/sessions": {
+      "post": {
+        "operationId": "createVisitorSession",
+        "summary": "创建匿名访客会话",
+        "tags": [
+          "Identity"
+        ],
+        "x-domain-owner": "Identity",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "x-auth-rule-id": "legacy-public-entrypoints",
+        "x-auth-level": "Public",
+        "security": []
+      }
+    },
+    "/api/v1/sessions/{sessionId}/consents": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/UlidSessionId"
+        }
+      ],
+      "post": {
+        "operationId": "recordConsent",
+        "summary": "追加成年与政策同意",
+        "tags": [
+          "Identity"
+        ],
+        "x-domain-owner": "Access",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/identity/wechat/bind": {
+      "post": {
+        "operationId": "bindWechatIdentity",
+        "summary": "绑定必要微信身份",
+        "tags": [
+          "Identity"
+        ],
+        "x-domain-owner": "Identity",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WechatBindRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-wechat-bind-visitor-only",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tokens/refresh": {
+      "post": {
+        "operationId": "refreshSessionToken",
+        "summary": "轮换访问和刷新令牌",
+        "tags": [
+          "Identity"
+        ],
+        "x-domain-owner": "Access",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-refresh-token",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "refreshToken": []
+          }
+        ]
+      }
+    },
+    "/api/v1/assessments/current": {
+      "get": {
+        "operationId": "getCurrentAssessment",
+        "summary": "获取当前已发布自测",
+        "tags": [
+          "Assessment"
+        ],
+        "x-domain-owner": "Assessment",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/assessment-runs": {
+      "post": {
+        "operationId": "createAssessmentRun",
+        "summary": "创建一次自测运行",
+        "tags": [
+          "Assessment"
+        ],
+        "x-domain-owner": "Assessment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssessmentRunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/assessment-runs/{runId}/answers/{itemId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/RunId"
+        },
+        {
+          "$ref": "#/components/parameters/ItemId"
+        }
+      ],
+      "put": {
+        "operationId": "putAssessmentAnswer",
+        "summary": "保存或覆盖临时答案",
+        "tags": [
+          "Assessment"
+        ],
+        "x-domain-owner": "Assessment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessmentAnswerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/assessment-runs/{runId}/complete": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/RunId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "completeAssessmentRun",
+        "summary": "完成确定性计分",
+        "tags": [
+          "Assessment"
+        ],
+        "x-domain-owner": "Assessment",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/assessment-runs/{runId}/map-to-task": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/RunId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "mapAssessmentToTask",
+        "summary": "确认并映射自测结果",
+        "tags": [
+          "Assessment"
+        ],
+        "x-domain-owner": "Assessment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpectedVersionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/assessment-runs/{runId}/share-card": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/RunId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "createAssessmentShareCard",
+        "summary": "生成脱敏分享预览",
+        "tags": [
+          "Assessment"
+        ],
+        "x-domain-owner": "Assessment",
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vent-sessions": {
+      "post": {
+        "operationId": "createVentSession",
+        "summary": "创建限时倾诉会话",
+        "tags": [
+          "Venting"
+        ],
+        "x-domain-owner": "Venting",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVentSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vent-sessions/{ventSessionId}/turns": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/VentSessionId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "createVentTurn",
+        "summary": "提交一轮倾诉文本",
+        "tags": [
+          "Venting"
+        ],
+        "x-domain-owner": "Venting",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VentTurnRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vent-sessions/{ventSessionId}/finish": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/VentSessionId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "finishVentSession",
+        "summary": "结束倾诉并生成总结",
+        "tags": [
+          "Venting"
+        ],
+        "x-domain-owner": "Venting",
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/vent-sessions/{ventSessionId}/summary": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/VentSessionId"
+        }
+      ],
+      "put": {
+        "operationId": "confirmVentSummary",
+        "summary": "编辑确认倾诉总结",
+        "tags": [
+          "Venting"
+        ],
+        "x-domain-owner": "Venting",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VentSummaryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tasks": {
+      "post": {
+        "operationId": "createClarityTask",
+        "summary": "创建关系清晰任务",
+        "tags": [
+          "Clarity"
+        ],
+        "x-domain-owner": "Clarity",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaskRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tasks/{taskId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/TaskId"
+        }
+      ],
+      "get": {
+        "operationId": "getClarityTask",
+        "summary": "获取任务状态和动作",
+        "tags": [
+          "Clarity"
+        ],
+        "x-domain-owner": "Clarity",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tasks/{taskId}/fields": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/TaskId"
+        }
+      ],
+      "put": {
+        "operationId": "putClarityFields",
+        "summary": "保存六字段加密版本",
+        "tags": [
+          "Clarity"
+        ],
+        "x-domain-owner": "Clarity",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClarityFieldsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tasks/{taskId}/mirror": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/TaskId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "createTaskMirror",
+        "summary": "启动镜像结构生成",
+        "tags": [
+          "Clarity"
+        ],
+        "x-domain-owner": "Generation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpectedVersionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tasks/{taskId}/mirror-confirmation": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/TaskId"
+        }
+      ],
+      "put": {
+        "operationId": "confirmTaskMirror",
+        "summary": "确认或纠正镜像字段",
+        "tags": [
+          "Clarity"
+        ],
+        "x-domain-owner": "Clarity",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MirrorConfirmationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tasks/{taskId}/reflections": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/TaskId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "createTaskReflection",
+        "summary": "提交一轮结构化反思",
+        "tags": [
+          "Clarity"
+        ],
+        "x-domain-owner": "Clarity",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReflectionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tasks/{taskId}/reports": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/TaskId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "createTaskReport",
+        "summary": "创建密封报告任务",
+        "tags": [
+          "Report"
+        ],
+        "x-domain-owner": "Generation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/reports/{reportId}/free-summary": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ReportId"
+        }
+      ],
+      "get": {
+        "operationId": "getFreeReportSummary",
+        "summary": "获取免费报告摘要",
+        "tags": [
+          "Report"
+        ],
+        "x-domain-owner": "Generation",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/reports/{reportId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ReportId"
+        }
+      ],
+      "get": {
+        "operationId": "getSealedReport",
+        "summary": "获取已解锁完整报告",
+        "tags": [
+          "Report"
+        ],
+        "x-domain-owner": "Generation",
+        "x-authorization-checks": [
+          "resource_owner",
+          "active_entitlement"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "private-principal-sealed-report",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/reports/{reportId}/copy-receipts": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ReportId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "createReportCopyReceipt",
+        "summary": "记录主动复制元数据",
+        "tags": [
+          "Report"
+        ],
+        "x-domain-owner": "Generation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CopyReceiptRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/tasks/{taskId}/action": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/TaskId"
+        }
+      ],
+      "put": {
+        "operationId": "putTaskAction",
+        "summary": "选择编辑或拒绝行动",
+        "tags": [
+          "Action"
+        ],
+        "x-domain-owner": "Action",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/actions/{actionId}/reminder-grants": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ActionId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "createReminderGrant",
+        "summary": "创建逐次提醒授权",
+        "tags": [
+          "Action"
+        ],
+        "x-domain-owner": "Notification",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReminderGrantRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "private-principal-reminder-grants",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/actions/{actionId}/checkins/{stage}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/ActionId"
+        },
+        {
+          "$ref": "#/components/parameters/CheckinStage"
+        }
+      ],
+      "put": {
+        "operationId": "putActionCheckin",
+        "summary": "保存七十二小时或七日复盘",
+        "tags": [
+          "Action"
+        ],
+        "x-domain-owner": "Action",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckinRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/products/{sku}/offer": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Sku"
+        }
+      ],
+      "get": {
+        "operationId": "getProductOffer",
+        "summary": "获取服务端权威报价",
+        "tags": [
+          "Catalog"
+        ],
+        "x-domain-owner": "Catalog",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/orders": {
+      "post": {
+        "operationId": "createOrder",
+        "summary": "创建一次性报告订单",
+        "tags": [
+          "Ordering"
+        ],
+        "x-domain-owner": "Ordering",
+        "x-authorization-checks": [
+          "resource_owner",
+          "report_sealed_ready"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          }
+        },
+        "x-auth-rule-id": "private-principal-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/orders/{orderId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrderId"
+        }
+      ],
+      "get": {
+        "operationId": "getOrder",
+        "summary": "获取本人订单聚合状态",
+        "tags": [
+          "Ordering"
+        ],
+        "x-domain-owner": "Ordering",
+        "x-authorization-checks": [
+          "resource_owner"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "private-principal-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/orders/{orderId}/wechat-prepay": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrderId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "createWechatPrepay",
+        "summary": "创建微信小程序预支付",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "x-authorization-checks": [
+          "resource_owner",
+          "order_payable"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "private-principal-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/webhooks/wechat-pay": {
+      "post": {
+        "operationId": "acceptWechatPayWebhook",
+        "summary": "接收微信支付签名通知",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "x-idempotency-source": "provider_event_id",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/WechatpayTimestamp"
+          },
+          {
+            "$ref": "#/components/parameters/WechatpayNonce"
+          },
+          {
+            "$ref": "#/components/parameters/WechatpaySerial"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WechatPayNotification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "通知已验证并幂等处理"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "internal-wechat-webhooks",
+        "x-auth-level": "Internal",
+        "security": [
+          {
+            "wechatPaySignature": []
+          }
+        ],
+        "x-raw-body-required": true
+      }
+    },
+    "/api/v1/orders/{orderId}/refund-requests": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrderId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "createRefundRequest",
+        "summary": "创建本人退款申请",
+        "tags": [
+          "Refund"
+        ],
+        "x-domain-owner": "Refund",
+        "x-authorization-checks": [
+          "resource_owner",
+          "order_refundable"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "private-principal-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/refunds/{refundId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/RefundId"
+        }
+      ],
+      "get": {
+        "operationId": "getRefund",
+        "summary": "获取本人退款状态",
+        "tags": [
+          "Refund"
+        ],
+        "x-domain-owner": "Refund",
+        "x-authorization-checks": [
+          "resource_owner"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "private-principal-refunds",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/tasks": {
+      "get": {
+        "operationId": "listMyTasks",
+        "summary": "获取本人的中性任务列表",
+        "tags": [
+          "Clarity"
+        ],
+        "x-domain-owner": "Clarity",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/data-map": {
+      "get": {
+        "operationId": "getMyDataMap",
+        "summary": "获取本人数据用途地图",
+        "tags": [
+          "Privacy"
+        ],
+        "x-domain-owner": "Privacy",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/privacy/exports": {
+      "post": {
+        "operationId": "createPrivacyExport",
+        "summary": "创建本人结构化导出",
+        "tags": [
+          "Privacy"
+        ],
+        "x-domain-owner": "Privacy",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacyScopeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/privacy/deletion-requests": {
+      "post": {
+        "operationId": "createDeletionRequest",
+        "summary": "创建本人分域删除请求",
+        "tags": [
+          "Privacy"
+        ],
+        "x-domain-owner": "Privacy",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacyScopeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/privacy/deletion-requests/{deletionRequestId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/DeletionRequestId"
+        }
+      ],
+      "get": {
+        "operationId": "getDeletionRequest",
+        "summary": "获取本人删除进度回执",
+        "tags": [
+          "Privacy"
+        ],
+        "x-domain-owner": "Privacy",
+        "x-authorization-checks": [
+          "resource_owner"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/support/tickets": {
+      "post": {
+        "operationId": "createSupportTicket",
+        "summary": "创建用户支持工单",
+        "tags": [
+          "Support"
+        ],
+        "x-domain-owner": "Support",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupportTicketRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/support/tickets/{ticketId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/TicketId"
+        }
+      ],
+      "get": {
+        "operationId": "getSupportTicket",
+        "summary": "获取本人支持工单",
+        "tags": [
+          "Support"
+        ],
+        "x-domain-owner": "Support",
+        "x-authorization-checks": [
+          "resource_owner"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/ops/v1/dashboard/summary": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getOpsDashboardSummary",
+        "summary": "获取脱敏运营总览",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Analytics",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-dashboard-analyst",
+        "x-required-roles": [
+          "analyst"
+        ]
+      }
+    },
+    "/ops/v1/catalog/price-versions": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listOpsPriceVersions",
+        "summary": "查询商品价格版本",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Catalog",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-catalog",
+        "x-required-roles": [
+          "product-admin"
+        ]
+      },
+      "post": {
+        "operationId": "createOpsPriceVersion",
+        "summary": "创建待审批价格版本",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Catalog",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePriceVersionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-catalog-price-change",
+        "x-required-roles": [
+          "product-admin"
+        ],
+        "x-approval-policy": {
+          "type": "maker-checker",
+          "approver_roles": [
+            "approver"
+          ],
+          "requester_must_differ": true,
+          "effect_before_approval": "none"
+        }
+      }
+    },
+    "/ops/v1/orders/{orderId}": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrderId"
+        }
+      ],
+      "get": {
+        "operationId": "getOpsOrder",
+        "summary": "获取脱敏订单聚合视图",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Ordering",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-order-support",
+        "x-required-roles": [
+          "support",
+          "finance"
+        ]
+      }
+    },
+    "/ops/v1/refunds/{refundId}/approve": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/RefundId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "approveOpsRefund",
+        "summary": "双人批准人工退款",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Refund",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpsCommandRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/Accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-refund-approval",
+        "x-required-roles": [
+          "second-approver"
+        ],
+        "x-approval-policy": {
+          "type": "maker-checker",
+          "maker_roles": [
+            "finance"
+          ],
+          "approver_roles": [
+            "second-approver"
+          ],
+          "requester_must_differ": true,
+          "effect_before_approval": "none"
+        }
+      }
+    },
+    "/ops/v1/reconciliations": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listOpsReconciliations",
+        "summary": "查询支付对账差异",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Ledger",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-reconciliation",
+        "x-required-roles": [
+          "finance"
+        ]
+      }
+    },
+    "/ops/v1/support/tickets/{ticketId}": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/TicketId"
+        }
+      ],
+      "get": {
+        "operationId": "getOpsSupportTicket",
+        "summary": "获取受控支持工单",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Support",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-support",
+        "x-required-roles": [
+          "support"
+        ]
+      },
+      "patch": {
+        "operationId": "patchOpsSupportTicket",
+        "summary": "更新支持工单状态",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Support",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpsCommandRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-support",
+        "x-required-roles": [
+          "support"
+        ]
+      }
+    },
+    "/ops/v1/safety-review-cases/{caseId}": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/CaseId"
+        }
+      ],
+      "get": {
+        "operationId": "getOpsSafetyReviewCase",
+        "summary": "获取受限安全复核案例",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Safety",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-safety",
+        "x-required-roles": [
+          "safety-reviewer"
+        ]
+      },
+      "patch": {
+        "operationId": "patchOpsSafetyReviewCase",
+        "summary": "提交安全复核结论",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Safety",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpsCommandRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-safety",
+        "x-required-roles": [
+          "safety-reviewer"
+        ]
+      }
+    },
+    "/ops/v1/privacy/deletion-requests/{deletionRequestId}": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/DeletionRequestId"
+        }
+      ],
+      "get": {
+        "operationId": "getOpsDeletionRequest",
+        "summary": "查询分域删除执行进度",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Privacy",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-privacy",
+        "x-required-roles": [
+          "privacy-admin"
+        ]
+      }
+    },
+    "/ops/v1/feature-flags": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listOpsFeatureFlags",
+        "summary": "查询版本化功能开关",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Operations",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-feature-flags",
+        "x-required-roles": [
+          "release-admin"
+        ]
+      },
+      "post": {
+        "operationId": "createOpsFeatureFlagRevision",
+        "summary": "创建功能开关修订",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Operations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureFlagRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-feature-flag-change",
+        "x-required-roles": [
+          "release-admin"
+        ],
+        "x-approval-policy": {
+          "type": "maker-checker",
+          "approver_roles": [
+            "approver"
+          ],
+          "requester_must_differ": true,
+          "effect_before_approval": "none"
+        }
+      }
+    },
+    "/ops/v1/artifact-versions": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listOpsArtifactVersions",
+        "summary": "查询不可变制品版本",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Operations",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-artifacts",
+        "x-required-roles": [
+          "release-admin"
+        ]
+      },
+      "post": {
+        "operationId": "createOpsArtifactVersion",
+        "summary": "登记不可变制品版本",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Operations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArtifactVersionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-artifacts",
+        "x-required-roles": [
+          "release-admin"
+        ]
+      }
+    },
+    "/ops/v1/releases": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listOpsReleases",
+        "summary": "查询发布证据包",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Operations",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-releases",
+        "x-required-roles": [
+          "release-admin",
+          "release-owner"
+        ]
+      },
+      "post": {
+        "operationId": "createOpsRelease",
+        "summary": "创建候选发布证据包",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Operations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReleaseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-release-create",
+        "x-required-roles": [
+          "release-admin"
+        ],
+        "x-approval-policy": {
+          "type": "maker-checker",
+          "approver_roles": [
+            "release-owner"
+          ],
+          "requester_must_differ": true,
+          "effect_before_approval": "none"
+        }
+      }
+    },
+    "/ops/v1/experiments": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listOpsExperiments",
+        "summary": "查询实验和样本状态",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Analytics",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-experiments",
+        "x-required-roles": [
+          "analyst",
+          "product-owner"
+        ]
+      },
+      "post": {
+        "operationId": "createOpsExperiment",
+        "summary": "创建待审批实验定义",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Analytics",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExperimentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-experiment-create",
+        "x-required-roles": [
+          "analyst"
+        ],
+        "x-approval-policy": {
+          "type": "maker-checker",
+          "approver_roles": [
+            "product-owner"
+          ],
+          "requester_must_differ": true,
+          "effect_before_approval": "none"
+        }
+      }
+    },
+    "/ops/v1/audit-logs": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listOpsAuditLogs",
+        "summary": "查询不可变运营审计",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Operations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "actor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-audit",
+        "x-required-roles": [
+          "auditor"
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "opaqueBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "opaque",
+        "description": "短期不透明访问令牌。服务端只保存令牌 hash，并在每次请求校验状态、\n到期、刷新族重放、最低鉴权等级和资源所有权。不是 JWT，不携带用户资料。\n"
+      },
+      "refreshToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Refresh-Token",
+        "description": "一次性轮换的高熵刷新令牌；服务端只保存 hash，重放撤销整个刷新族。"
+      },
+      "wechatPaySignature": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Wechatpay-Signature",
+        "description": "微信支付 API v3 通知签名。必须同时校验 Wechatpay-Timestamp、\nWechatpay-Nonce、Wechatpay-Serial 和原始 HTTP Body，并验证商户、appid、金额和事件幂等。\n"
+      },
+      "operatorBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "opaque",
+        "description": "企业 SSO 完成 MFA 后签发的短期运营令牌；必须继续执行 RBAC、审批和审计。"
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "同一业务意图的稳定幂等键；同键不同请求体必须返回 409。",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        }
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "maxLength": 512
+        }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      },
+      "SessionId": {
+        "$ref": "#/components/parameters/UlidSessionId"
+      },
+      "UlidSessionId": {
+        "name": "sessionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "RunId": {
+        "name": "runId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "ItemId": {
+        "name": "itemId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "VentSessionId": {
+        "name": "ventSessionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "TaskId": {
+        "name": "taskId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "ReportId": {
+        "name": "reportId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "ActionId": {
+        "name": "actionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "CheckinStage": {
+        "name": "stage",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "72h",
+            "d7"
+          ]
+        }
+      },
+      "Sku": {
+        "name": "sku",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Z0-9_]+$"
+        }
+      },
+      "OrderId": {
+        "name": "orderId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "RefundId": {
+        "name": "refundId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "DeletionRequestId": {
+        "name": "deletionRequestId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "TicketId": {
+        "name": "ticketId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "CaseId": {
+        "name": "caseId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/Ulid"
+        }
+      },
+      "WechatpayTimestamp": {
+        "name": "Wechatpay-Timestamp",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[0-9]{10,13}$"
+        }
+      },
+      "WechatpayNonce": {
+        "name": "Wechatpay-Nonce",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "WechatpaySerial": {
+        "name": "Wechatpay-Serial",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "headers": {
+      "XRequestId": {
+        "description": "服务端生成或接受的请求关联 ID。",
+        "schema": {
+          "type": "string",
+          "maxLength": 128
+        }
+      },
+      "RetryAfter": {
+        "description": "客户端再次尝试前应等待的秒数。",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "responses": {
+      "Success": {
+        "description": "请求成功",
+        "headers": {
+          "X-Request-ID": {
+            "$ref": "#/components/headers/XRequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SuccessEnvelope"
+            }
+          }
+        }
+      },
+      "Created": {
+        "description": "资源已创建",
+        "headers": {
+          "X-Request-ID": {
+            "$ref": "#/components/headers/XRequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SuccessEnvelope"
+            }
+          }
+        }
+      },
+      "Accepted": {
+        "description": "命令已接受并进入明确异步状态",
+        "headers": {
+          "X-Request-ID": {
+            "$ref": "#/components/headers/XRequestId"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SuccessEnvelope"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "请求结构或字段无效",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "凭证缺失、无效、过期、重放或签名验证失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "身份等级、角色、资源所有权、权益或安全状态不允许",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "资源不存在或为防止枚举而隐藏",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "幂等键、版本或状态转换冲突",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "UnprocessableEntity": {
+        "description": "请求结构正确但业务前置条件不满足",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "请求超过速率、成本或防滥用限制",
+        "headers": {
+          "Retry-After": {
+            "$ref": "#/components/headers/RetryAfter"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ServiceUnavailable": {
+        "description": "安全、模型、支付或关键配置不可用；服务安全失败",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Ulid": {
+        "type": "string",
+        "minLength": 26,
+        "maxLength": 26,
+        "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
+        "examples": [
+          "01J00000000000000000000000"
+        ]
+      },
+      "Meta": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "api_version"
+        ],
+        "properties": {
+          "api_version": {
+            "type": "string",
+            "const": "v1"
+          }
+        }
+      },
+      "SuccessEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "request_id",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "当前阶段的领域响应对象；Java 骨架阶段收紧为逐操作 Schema。"
+          },
+          "error": {
+            "type": "null"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        }
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "request_id",
+          "data",
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "data": {
+            "type": "null"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ApiError"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[A-Z0-9_]+$"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "只允许白名单非敏感字段，不得包含原文、令牌、SQL、堆栈或供应商响应。"
+          }
+        }
+      },
+      "ExpectedVersionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "CreateSessionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "client_instance_id"
+        ],
+        "properties": {
+          "client_instance_id": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128
+          },
+          "device_class": {
+            "type": "string",
+            "enum": [
+              "low",
+              "mainstream",
+              "unknown"
+            ]
+          }
+        }
+      },
+      "ConsentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policy_version",
+          "adult_confirmed",
+          "accepted"
+        ],
+        "properties": {
+          "policy_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "adult_confirmed": {
+            "type": "boolean",
+            "const": true
+          },
+          "accepted": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "WechatBindRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "login_code",
+          "purpose"
+        ],
+        "properties": {
+          "login_code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "writeOnly": true
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "payment",
+              "cross_device_recovery",
+              "reminder",
+              "refund"
+            ]
+          }
+        }
+      },
+      "CreateAssessmentRunRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "definition_version"
+        ],
+        "properties": {
+          "definition_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        }
+      },
+      "AssessmentAnswerRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version",
+          "option_code"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "option_code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        }
+      },
+      "CreateVentSessionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policy_version"
+        ],
+        "properties": {
+          "policy_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        }
+      },
+      "VentTurnRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version",
+          "text"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "writeOnly": true
+          }
+        }
+      },
+      "VentSummaryRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version",
+          "confirmed",
+          "summary"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "confirmed": {
+            "type": "boolean"
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000,
+            "writeOnly": true
+          }
+        }
+      },
+      "CreateTaskRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entry_type",
+          "context",
+          "clarity_pre"
+        ],
+        "properties": {
+          "entry_type": {
+            "type": "string",
+            "enum": [
+              "DIRECT",
+              "ASSESSMENT",
+              "VENT"
+            ]
+          },
+          "context": {
+            "type": "string",
+            "enum": [
+              "dating_or_partner",
+              "family",
+              "friendship",
+              "workplace",
+              "other_relationship"
+            ]
+          },
+          "clarity_pre": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10
+          }
+        }
+      },
+      "ClarityFieldsRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version",
+          "fields"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "context",
+              "observed_fact",
+              "interpretation",
+              "emotion",
+              "need_or_boundary",
+              "next_step_goal"
+            ],
+            "properties": {
+              "context": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "observed_fact": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000,
+                "writeOnly": true
+              },
+              "interpretation": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000,
+                "writeOnly": true
+              },
+              "emotion": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 5,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 40
+                }
+              },
+              "need_or_boundary": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 5,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 80
+                }
+              },
+              "next_step_goal": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500,
+                "writeOnly": true
+              }
+            }
+          }
+        }
+      },
+      "MirrorConfirmationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version",
+          "content_version",
+          "confirmed"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "content_version": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "confirmed": {
+            "type": "boolean"
+          },
+          "corrections": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "writeOnly": true
+          }
+        }
+      },
+      "ReflectionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version",
+          "round",
+          "answer"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "round": {
+            "type": "integer",
+            "enum": [
+              1,
+              2
+            ]
+          },
+          "answer": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "writeOnly": true
+          }
+        }
+      },
+      "CreateReportRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_task_version",
+          "confirmed_content_version",
+          "reflection_versions"
+        ],
+        "properties": {
+          "expected_task_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "confirmed_content_version": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "reflection_versions": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        }
+      },
+      "CopyReceiptRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "section_code"
+        ],
+        "properties": {
+          "section_code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        }
+      },
+      "ActionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version",
+          "decision"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "SELECT",
+              "EDIT",
+              "REJECT"
+            ]
+          },
+          "action_text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "writeOnly": true
+          }
+        }
+      },
+      "ReminderGrantRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "template_version",
+          "consent"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "72h",
+              "d7"
+            ]
+          },
+          "template_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "consent": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "CheckinRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version",
+          "result"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "done",
+              "partly_done",
+              "not_done",
+              "no_longer_needed"
+            ]
+          },
+          "clarity_post": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 1000,
+            "writeOnly": true
+          }
+        }
+      },
+      "CreateOrderRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "report_id",
+          "sku",
+          "purchase_disclosure_version",
+          "accepted"
+        ],
+        "properties": {
+          "report_id": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "sku": {
+            "type": "string",
+            "const": "RELATIONSHIP_CLARITY_CARD_V1"
+          },
+          "purchase_disclosure_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "accepted": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "WechatPayNotification": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "create_time",
+          "event_type",
+          "resource_type",
+          "resource"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "create_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "event_type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "resource_type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "resource": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "RefundRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reason_code",
+          "statement"
+        ],
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "delivery_failure",
+              "duplicate_payment",
+              "misleading",
+              "safety",
+              "privacy",
+              "other"
+            ]
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000,
+            "writeOnly": true
+          }
+        }
+      },
+      "PrivacyScopeRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "scope",
+          "confirmed"
+        ],
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "current_task",
+              "all_content",
+              "all_deletable_data"
+            ]
+          },
+          "confirmed": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "SupportTicketRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "category",
+          "statement"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "billing",
+              "refund",
+              "delivery",
+              "safety",
+              "privacy",
+              "misleading",
+              "correction"
+            ]
+          },
+          "resource_ref": {
+            "$ref": "#/components/schemas/Ulid"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000,
+            "writeOnly": true
+          }
+        }
+      },
+      "CreatePriceVersionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sku",
+          "amount_fen",
+          "currency",
+          "effective_from",
+          "reason",
+          "ticket"
+        ],
+        "properties": {
+          "sku": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "amount_fen": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "currency": {
+            "type": "string",
+            "const": "CNY"
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "effective_until": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "ticket": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      },
+      "OpsCommandRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version",
+          "reason",
+          "ticket"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "action": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          },
+          "ticket": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      },
+      "FeatureFlagRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "environment",
+          "value",
+          "expected_revision",
+          "reason",
+          "ticket"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "enum": [
+              "assessment",
+              "venting",
+              "generation",
+              "payment",
+              "reminder"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "test",
+              "staging",
+              "production"
+            ]
+          },
+          "value": {
+            "type": "boolean"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500
+          },
+          "ticket": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      },
+      "ArtifactVersionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_type",
+          "version",
+          "sha256",
+          "evidence_ref"
+        ],
+        "properties": {
+          "artifact_type": {
+            "type": "string",
+            "enum": [
+              "assessment",
+              "prompt",
+              "model",
+              "safety_rule",
+              "report_template",
+              "policy"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "evidence_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        }
+      },
+      "ReleaseRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "artifact_versions",
+          "evidence_refs",
+          "rollback_ref",
+          "reason",
+          "ticket"
+        ],
+        "properties": {
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "artifact_versions": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "maxLength": 128
+            }
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "maxLength": 512
+            }
+          },
+          "rollback_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          },
+          "ticket": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      },
+      "ExperimentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "hypothesis",
+          "variants",
+          "primary_metric",
+          "stop_conditions",
+          "reason",
+          "ticket"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "hypothesis": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          },
+          "variants": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "primary_metric": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "stop_conditions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          },
+          "ticket": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      }
+    }
+  },
+  "x-auth-levels": {
+    "Public": {
+      "rank": 0,
+      "credential": "none",
+      "description": "只允许无敏感数据的静态配置、安全资源和匿名会话创建。"
+    },
+    "Visitor": {
+      "rank": 10,
+      "credential": "opaqueBearer",
+      "description": "匿名访客短期不透明令牌；Principal 可以访问 Visitor 接口。"
+    },
+    "Principal": {
+      "rank": 20,
+      "credential": "opaqueBearer",
+      "description": "已完成必要微信身份绑定的主体；服务端仍需校验资源所有权。"
+    },
+    "Internal": {
+      "rank": 30,
+      "credential": "providerSignatureOrMutualTLS",
+      "description": "支付供应商回调或受控服务身份；不能由普通 Bearer Token 代替。"
+    },
+    "Operator": {
+      "rank": 40,
+      "credential": "operatorBearer",
+      "description": "经企业 SSO、MFA 和 RBAC 校验的运营身份；每次命令均需审计。"
+    }
+  },
+  "x-operator-rbac": {
+    "required_roles_semantics": "any_of",
+    "description": "x-required-roles 中任一角色可以进入该操作；多角色列表不表示同一人完成双人审批。",
+    "high_risk_approval": "maker-checker",
+    "separation_of_duties": "申请人与审批人 subject 必须不同，审批前不得产生生产效果。"
+  },
+  "x-auth-rule-source": "contracts/auth-rules.yaml",
+  "x-auth-rule-schema-version": 1
+}
