@@ -256,6 +256,12 @@
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
           "409": {
             "$ref": "#/components/responses/Conflict"
           }
@@ -657,6 +663,12 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
           "503": {
             "$ref": "#/components/responses/ServiceUnavailable"
           }
@@ -710,8 +722,17 @@
           "403": {
             "$ref": "#/components/responses/Forbidden"
           },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
           "429": {
             "$ref": "#/components/responses/TooManyRequests"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
           }
         },
         "x-auth-rule-id": "private-user-default",
@@ -743,6 +764,16 @@
           "Venting"
         ],
         "x-domain-owner": "Venting",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpectedVersionRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "202": {
             "$ref": "#/components/responses/Accepted"
@@ -750,8 +781,20 @@
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
           "409": {
             "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
           }
         },
         "x-auth-rule-id": "private-user-default",
@@ -805,8 +848,20 @@
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
           "409": {
             "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
           }
         },
         "x-auth-rule-id": "private-user-default",
@@ -1009,11 +1064,23 @@
           "202": {
             "$ref": "#/components/responses/Accepted"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
           "409": {
             "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
           },
           "503": {
             "$ref": "#/components/responses/ServiceUnavailable"
@@ -1070,8 +1137,17 @@
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
           "409": {
             "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
           }
         },
         "x-auth-rule-id": "private-user-default",
@@ -1123,8 +1199,17 @@
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
           "409": {
             "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
           }
         },
         "x-auth-rule-id": "private-user-default",
@@ -1170,11 +1255,20 @@
           "202": {
             "$ref": "#/components/responses/Accepted"
           },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
           },
           "422": {
             "$ref": "#/components/responses/UnprocessableEntity"
@@ -2571,6 +2665,85 @@
         ]
       }
     },
+    "/ops/v1/safety-review-cases": {
+      "servers": [
+        {
+          "url": "https://{opsHost}",
+          "variables": {
+            "opsHost": {
+              "default": "ops.aichat.invalid"
+            }
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listOpsSafetyReviewCases",
+        "summary": "查询安全复核队列",
+        "tags": [
+          "Operations"
+        ],
+        "x-domain-owner": "Safety",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "OPEN",
+                "RESOLVED"
+              ],
+              "default": "OPEN"
+            }
+          },
+          {
+            "name": "route",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CLARIFY",
+                "BLOCK"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        },
+        "x-auth-rule-id": "admin-operations",
+        "x-auth-level": "Operator",
+        "security": [
+          {
+            "operatorBearer": []
+          }
+        ],
+        "x-mfa-required": true,
+        "x-operator-policy-rule-id": "admin-safety",
+        "x-required-roles": [
+          "safety-reviewer"
+        ]
+      }
+    },
     "/ops/v1/safety-review-cases/{caseId}": {
       "servers": [
         {
@@ -2638,7 +2811,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OpsCommandRequest"
+                "$ref": "#/components/schemas/SafetyReviewDecisionRequest"
               }
             }
           }
@@ -3815,13 +3988,18 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "policy_version"
+          "policy_version",
+          "confirmed"
         ],
         "properties": {
           "policy_version": {
             "type": "string",
             "minLength": 1,
             "maxLength": 64
+          },
+          "confirmed": {
+            "type": "boolean",
+            "const": true
           }
         }
       },
@@ -3850,22 +4028,100 @@
         "additionalProperties": false,
         "required": [
           "expected_version",
+          "summary_version",
           "confirmed",
-          "summary"
+          "fields"
         ],
         "properties": {
           "expected_version": {
             "type": "integer",
             "minimum": 1
           },
-          "confirmed": {
-            "type": "boolean"
+          "summary_version": {
+            "$ref": "#/components/schemas/Ulid"
           },
-          "summary": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 3000,
-            "writeOnly": true
+          "confirmed": {
+            "type": "boolean",
+            "const": true
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "context",
+              "observed_fact",
+              "looping_thought",
+              "emotion",
+              "need_or_boundary",
+              "current_goal",
+              "clarity_pre"
+            ],
+            "properties": {
+              "context": {
+                "type": "string",
+                "enum": [
+                  "dating_or_partner",
+                  "family",
+                  "friendship",
+                  "workplace",
+                  "other_relationship"
+                ]
+              },
+              "observed_fact": {
+                "type": "string",
+                "minLength": 20,
+                "maxLength": 500,
+                "writeOnly": true
+              },
+              "looping_thought": {
+                "type": "string",
+                "maxLength": 500,
+                "writeOnly": true
+              },
+              "emotion": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 3,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "anxious",
+                    "hurt",
+                    "angry",
+                    "confused",
+                    "sad",
+                    "hopeful",
+                    "afraid",
+                    "disappointed",
+                    "calm",
+                    "other"
+                  ]
+                }
+              },
+              "need_or_boundary": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 3,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                }
+              },
+              "current_goal": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "writeOnly": true
+              },
+              "clarity_pre": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10
+              }
+            }
           }
         }
       },
@@ -3995,7 +4251,8 @@
         "required": [
           "expected_version",
           "content_version",
-          "confirmed"
+          "confirmed",
+          "evaluations"
         ],
         "properties": {
           "expected_version": {
@@ -4006,14 +4263,59 @@
             "$ref": "#/components/schemas/Ulid"
           },
           "confirmed": {
-            "type": "boolean"
+            "type": "boolean",
+            "const": true
           },
-          "corrections": {
+          "evaluations": {
             "type": "object",
-            "additionalProperties": {
-              "type": "string",
-              "maxLength": 2000
+            "additionalProperties": false,
+            "required": [
+              "confirmed_event",
+              "current_interpretation",
+              "feelings",
+              "need_or_boundary",
+              "question_to_solve"
+            ],
+            "properties": {
+              "confirmed_event": {
+                "$ref": "#/components/schemas/MirrorSectionEvaluation"
+              },
+              "current_interpretation": {
+                "$ref": "#/components/schemas/MirrorSectionEvaluation"
+              },
+              "feelings": {
+                "$ref": "#/components/schemas/MirrorSectionEvaluation"
+              },
+              "need_or_boundary": {
+                "$ref": "#/components/schemas/MirrorSectionEvaluation"
+              },
+              "question_to_solve": {
+                "$ref": "#/components/schemas/MirrorSectionEvaluation"
+              }
             },
+            "writeOnly": true
+          }
+        }
+      },
+      "MirrorSectionEvaluation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "accuracy"
+        ],
+        "properties": {
+          "accuracy": {
+            "type": "string",
+            "enum": [
+              "accurate",
+              "partially_accurate",
+              "inaccurate"
+            ]
+          },
+          "correction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
             "writeOnly": true
           }
         }
@@ -4023,8 +4325,7 @@
         "additionalProperties": false,
         "required": [
           "expected_version",
-          "round",
-          "answer"
+          "round"
         ],
         "properties": {
           "expected_version": {
@@ -4038,13 +4339,67 @@
               2
             ]
           },
-          "answer": {
+          "confirmed_facts": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "writeOnly": true
+          },
+          "unknowns_to_verify": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "writeOnly": true
+          },
+          "priority_need_or_boundary": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 2000,
+            "maxLength": 300,
+            "writeOnly": true
+          },
+          "self_executable_goal": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300,
             "writeOnly": true
           }
-        }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "confirmed_facts",
+              "unknowns_to_verify"
+            ],
+            "properties": {
+              "round": {
+                "const": 1
+              }
+            }
+          },
+          {
+            "required": [
+              "priority_need_or_boundary",
+              "self_executable_goal"
+            ],
+            "properties": {
+              "round": {
+                "const": 2
+              }
+            }
+          }
+        ]
       },
       "CreateReportRequest": {
         "type": "object",
@@ -4386,6 +4741,41 @@
           "action": {
             "type": "string",
             "maxLength": 64
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 1000
+          },
+          "ticket": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      },
+      "SafetyReviewDecisionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version",
+          "decision",
+          "reason",
+          "ticket"
+        ],
+        "properties": {
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "CONFIRMED_BLOCK",
+              "FALSE_POSITIVE",
+              "POLICY_GAP",
+              "ESCALATED"
+            ]
           },
           "reason": {
             "type": "string",

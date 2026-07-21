@@ -31,7 +31,8 @@ public interface VentingApiDelegate {
     default ApiEnvelope<Map<String, Object>> finishVentSession(
             ApiCallContext context,
             String ventSessionId,
-            String idempotencyKey
+            String idempotencyKey,
+            ContractRequests.ExpectedVersionRequest request
     ) {
         return SkeletonResponses.notImplemented("finishVentSession");
     }

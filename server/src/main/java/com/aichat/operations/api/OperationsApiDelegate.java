@@ -71,6 +71,16 @@ public interface OperationsApiDelegate {
         return SkeletonResponses.notImplemented("patchOpsSupportTicket");
     }
 
+    default ApiEnvelope<Map<String, Object>> listOpsSafetyReviewCases(
+            ApiCallContext context,
+            String cursor,
+            Integer limit,
+            String status,
+            String route
+    ) {
+        return SkeletonResponses.notImplemented("listOpsSafetyReviewCases");
+    }
+
     default ApiEnvelope<Map<String, Object>> getOpsSafetyReviewCase(
             ApiCallContext context,
             String caseId
@@ -82,7 +92,7 @@ public interface OperationsApiDelegate {
             ApiCallContext context,
             String caseId,
             String idempotencyKey,
-            ContractRequests.OpsCommandRequest request
+            ContractRequests.SafetyReviewDecisionRequest request
     ) {
         return SkeletonResponses.notImplemented("patchOpsSafetyReviewCase");
     }

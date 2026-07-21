@@ -125,6 +125,19 @@ public class OperationsApiController {
         return delegate.patchOpsSupportTicket(ApiCallContext.from(httpRequest), ticketId, idempotencyKey, request);
     }
 
+    @GetMapping("/ops/v1/safety-review-cases")
+    @ContractOperation(operationId = "listOpsSafetyReviewCases", domainOwner = "Safety")
+    @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-safety", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"safety-reviewer"}, mfaRequired = true, rawBodyRequired = false)
+    public ApiEnvelope<Map<String, Object>> listOpsSafetyReviewCases(
+            @RequestParam(name = "cursor", required = false) String cursor,
+            @RequestParam(name = "limit", required = false) Integer limit,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "route", required = false) String route,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.listOpsSafetyReviewCases(ApiCallContext.from(httpRequest), cursor, limit, status, route);
+    }
+
     @GetMapping("/ops/v1/safety-review-cases/{caseId}")
     @ContractOperation(operationId = "getOpsSafetyReviewCase", domainOwner = "Safety")
     @AuthPolicy(ruleId = "admin-operations", operatorPolicyRuleId = "admin-safety", level = AuthLevel.OPERATOR, accepted = {AuthLevel.OPERATOR}, roles = {"safety-reviewer"}, mfaRequired = true, rawBodyRequired = false)
@@ -141,7 +154,7 @@ public class OperationsApiController {
     public ApiEnvelope<Map<String, Object>> patchOpsSafetyReviewCase(
             @PathVariable("caseId") String caseId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
-            @Valid @RequestBody ContractRequests.OpsCommandRequest request,
+            @Valid @RequestBody ContractRequests.SafetyReviewDecisionRequest request,
             HttpServletRequest httpRequest
     ) {
         return delegate.patchOpsSafetyReviewCase(ApiCallContext.from(httpRequest), caseId, idempotencyKey, request);

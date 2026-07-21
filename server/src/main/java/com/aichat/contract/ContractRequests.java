@@ -70,7 +70,8 @@ public final class ContractRequests {
     }
 
     public record CreateVentSessionRequest(
-            @JsonProperty("policy_version") @NotBlank @Size(max = 64) String policyVersion
+            @JsonProperty("policy_version") @NotBlank @Size(max = 64) String policyVersion,
+            @AssertTrue boolean confirmed
     ) {
     }
 
@@ -82,8 +83,23 @@ public final class ContractRequests {
 
     public record VentSummaryRequest(
             @JsonProperty("expected_version") @Min(1) int expectedVersion,
-            @NotNull Boolean confirmed,
-            @NotBlank @Size(max = 3000) String summary
+            @JsonProperty("summary_version") @NotBlank @Ulid String summaryVersion,
+            @AssertTrue boolean confirmed,
+            @NotNull @Valid VentSummaryFields fields
+    ) {
+    }
+
+    public record VentSummaryFields(
+            @NotBlank
+            @Pattern(regexp = "dating_or_partner|family|friendship|workplace|other_relationship") String context,
+            @JsonProperty("observed_fact") @NotBlank @Size(min = 20, max = 500) String observedFact,
+            @JsonProperty("looping_thought") @NotNull @Size(max = 500) String loopingThought,
+            @NotEmpty @Size(max = 3) @UniqueElements
+            List<@Pattern(regexp = "anxious|hurt|angry|confused|sad|hopeful|afraid|disappointed|calm|other") String> emotion,
+            @JsonProperty("need_or_boundary")
+            @NotEmpty @Size(max = 3) @UniqueElements List<@NotBlank @Size(max = 80) String> needOrBoundary,
+            @JsonProperty("current_goal") @NotBlank @Size(max = 200) String currentGoal,
+            @JsonProperty("clarity_pre") @NotNull @Min(0) @Max(10) Integer clarityPre
     ) {
     }
 
@@ -117,15 +133,37 @@ public final class ContractRequests {
     public record MirrorConfirmationRequest(
             @JsonProperty("expected_version") @Min(1) int expectedVersion,
             @JsonProperty("content_version") @NotBlank @Ulid String contentVersion,
-            @NotNull Boolean confirmed,
-            Map<String, @Size(max = 2000) String> corrections
+            @AssertTrue boolean confirmed,
+            @NotNull @Valid MirrorEvaluations evaluations
+    ) {
+    }
+
+    public record MirrorEvaluations(
+            @JsonProperty("confirmed_event") @NotNull @Valid MirrorSectionEvaluation confirmedEvent,
+            @JsonProperty("current_interpretation") @NotNull @Valid MirrorSectionEvaluation currentInterpretation,
+            @NotNull @Valid MirrorSectionEvaluation feelings,
+            @JsonProperty("need_or_boundary") @NotNull @Valid MirrorSectionEvaluation needOrBoundary,
+            @JsonProperty("question_to_solve") @NotNull @Valid MirrorSectionEvaluation questionToSolve
+    ) {
+    }
+
+    public record MirrorSectionEvaluation(
+            @NotBlank @Pattern(regexp = "accurate|partially_accurate|inaccurate") String accuracy,
+            @Size(min = 1, max = 500) String correction
     ) {
     }
 
     public record ReflectionRequest(
             @JsonProperty("expected_version") @Min(1) int expectedVersion,
             @Min(1) @Max(2) int round,
-            @NotBlank @Size(max = 2000) String answer
+            @JsonProperty("confirmed_facts")
+            @Size(min = 1, max = 5) @UniqueElements
+            List<@NotBlank @Size(max = 500) String> confirmedFacts,
+            @JsonProperty("unknowns_to_verify")
+            @Size(min = 1, max = 5) @UniqueElements
+            List<@NotBlank @Size(max = 500) String> unknownsToVerify,
+            @JsonProperty("priority_need_or_boundary") @Size(min = 1, max = 300) String priorityNeedOrBoundary,
+            @JsonProperty("self_executable_goal") @Size(min = 1, max = 300) String selfExecutableGoal
     ) {
     }
 
@@ -219,6 +257,15 @@ public final class ContractRequests {
     public record OpsCommandRequest(
             @JsonProperty("expected_version") @Min(1) int expectedVersion,
             @Size(max = 64) String action,
+            @NotBlank @Size(min = 10, max = 1000) String reason,
+            @NotBlank @Size(max = 128) String ticket
+    ) {
+    }
+
+    public record SafetyReviewDecisionRequest(
+            @JsonProperty("expected_version") @Min(1) int expectedVersion,
+            @NotBlank @Pattern(regexp = "CONFIRMED_BLOCK|FALSE_POSITIVE|POLICY_GAP|ESCALATED")
+            String decision,
             @NotBlank @Size(min = 10, max = 1000) String reason,
             @NotBlank @Size(max = 128) String ticket
     ) {

@@ -41,7 +41,7 @@ class ContractCoverageTest {
         Map<String, ActualOperation> actual = scanControllerOperations();
         Map<String, ExpectedOperation> expected = readContractOperations();
 
-        assertThat(actual).hasSize(63);
+        assertThat(actual).hasSize(expected.size());
         assertThat(actual.keySet()).containsExactlyInAnyOrderElementsOf(expected.keySet());
         expected.forEach((operationId, expectedOperation) -> {
             ActualOperation actualOperation = actual.get(operationId);

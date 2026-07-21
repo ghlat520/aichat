@@ -176,7 +176,7 @@
     {
       "id": "admin-safety",
       "priority": 100,
-      "match": {"path_prefix": "/ops/v1/safety-review-cases/"},
+      "match": {"path_prefix": "/ops/v1/safety-review-cases"},
       "roles": ["safety-reviewer"]
     },
     {

@@ -122,6 +122,29 @@ class SessionConsentWebMvcTest {
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.error.code").value("FEATURE_DISABLED"));
+
+        mockMvc.perform(post("/api/v1/tasks/01J00000000000000000000000/mirror")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .header("Idempotency-Key", "generation-disabled-" + UUID.randomUUID())
+                        .contentType("application/json")
+                        .content("""
+                                {"expected_version": 1}
+                                """))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.error.code").value("FEATURE_DISABLED"));
+
+        mockMvc.perform(post("/api/v1/vent-sessions")
+                        .header("Authorization", "Bearer " + accessToken)
+                        .header("Idempotency-Key", "venting-disabled-" + UUID.randomUUID())
+                        .contentType("application/json")
+                        .content("""
+                                {
+                                  "policy_version": "p0-alpha-2026-07-19",
+                                  "confirmed": true
+                                }
+                                """))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.error.code").value("FEATURE_DISABLED"));
     }
 
     @Test

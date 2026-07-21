@@ -6,6 +6,7 @@ import com.aichat.kernel.feature.FeatureAvailability;
 import com.aichat.publicapi.api.PublicApiDelegate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,17 +26,23 @@ public final class PublicApplicationService implements PublicApiDelegate {
                 "policy_version", "p0-alpha-2026-07-19",
                 "adult_confirmation_required", true,
                 "ai_disclosure", "由 AI 辅助整理，不是真人，不提供诊断、治疗、预测或重大决定",
-                "entry_paths", features.assessmentEnabled()
-                        ? List.of("DIRECT", "ASSESSMENT")
-                        : List.of("DIRECT"),
+                "entry_paths", entryPaths(),
                 "feature_flags", Map.of(
                         "assessment", features.assessmentEnabled(),
-                        "venting", false,
-                        "generation", false,
+                        "venting", features.ventingEnabled(),
+                        "generation", features.generationEnabled(),
                         "payment", false,
                         "reminder", false
                 )
         ));
+    }
+
+    private List<String> entryPaths() {
+        List<String> paths = new ArrayList<>();
+        paths.add("DIRECT");
+        if (features.assessmentEnabled()) paths.add("ASSESSMENT");
+        if (features.ventingEnabled()) paths.add("VENT");
+        return List.copyOf(paths);
     }
 
     @Override

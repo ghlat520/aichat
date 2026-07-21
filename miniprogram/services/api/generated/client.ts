@@ -137,9 +137,9 @@ export class AiChatApiClient {
     return this.invoke("POST", path, request, undefined, "access", ["Visitor","Principal"], true, options);
   }
 
-  finishVentSession(ventSessionId: string, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
+  finishVentSession(ventSessionId: string, request: Types.ExpectedVersionRequest, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
     const path = "/api/v1/vent-sessions/{ventSessionId}/finish".replace("{ventSessionId}", encodeURIComponent(String(ventSessionId)));
-    return this.invoke("POST", path, undefined, undefined, "access", ["Visitor","Principal"], true, options);
+    return this.invoke("POST", path, request, undefined, "access", ["Visitor","Principal"], true, options);
   }
 
   confirmVentSummary(ventSessionId: string, request: Types.VentSummaryRequest, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {

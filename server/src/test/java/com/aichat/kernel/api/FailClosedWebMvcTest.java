@@ -26,6 +26,7 @@ class FailClosedWebMvcTest {
                 .andExpect(jsonPath("$.data.product_code").value("RELATIONSHIP_CLARITY_CARD_V1"))
                 .andExpect(jsonPath("$.data.feature_flags.assessment").value(false))
                 .andExpect(jsonPath("$.data.feature_flags.venting").value(false))
+                .andExpect(jsonPath("$.data.feature_flags.generation").value(false))
                 .andExpect(jsonPath("$.data.feature_flags.payment").value(false))
                 .andExpect(jsonPath("$.data.entry_paths.length()").value(1))
                 .andExpect(jsonPath("$.data.entry_paths[0]").value("DIRECT"))
@@ -37,6 +38,10 @@ class FailClosedWebMvcTest {
     void protectedEndpointIsDeniedUntilARealOpaqueTokenResolverIsInstalled() throws Exception {
         mockMvc.perform(get("/api/v1/assessments/current")
                         .header("Authorization", "Bearer not-a-real-session"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error.code").value("AUTHENTICATION_REQUIRED"));
+        mockMvc.perform(get("/ops/v1/safety-review-cases")
+                        .header("Authorization", "Bearer not-a-real-operator"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error.code").value("AUTHENTICATION_REQUIRED"));
     }

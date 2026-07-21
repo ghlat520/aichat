@@ -68,9 +68,10 @@ public class VentingApiController {
     public ApiEnvelope<Map<String, Object>> finishVentSession(
             @PathVariable("ventSessionId") String ventSessionId,
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            @Valid @RequestBody ContractRequests.ExpectedVersionRequest request,
             HttpServletRequest httpRequest
     ) {
-        return delegate.finishVentSession(ApiCallContext.from(httpRequest), ventSessionId, idempotencyKey);
+        return delegate.finishVentSession(ApiCallContext.from(httpRequest), ventSessionId, idempotencyKey, request);
     }
 
     @PutMapping("/api/v1/vent-sessions/{ventSessionId}/summary")

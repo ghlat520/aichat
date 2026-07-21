@@ -57,6 +57,7 @@ export type AssessmentTaskMappingRequest = {
 
 export type CreateVentSessionRequest = {
   policy_version: string;
+  confirmed: true;
 };
 
 export type VentTurnRequest = {
@@ -66,8 +67,17 @@ export type VentTurnRequest = {
 
 export type VentSummaryRequest = {
   expected_version: number;
-  confirmed: boolean;
-  summary: string;
+  summary_version: string;
+  confirmed: true;
+  fields: {
+  context: "dating_or_partner" | "family" | "friendship" | "workplace" | "other_relationship";
+  observed_fact: string;
+  looping_thought: string;
+  emotion: Array<"anxious" | "hurt" | "angry" | "confused" | "sad" | "hopeful" | "afraid" | "disappointed" | "calm" | "other">;
+  need_or_boundary: Array<string>;
+  current_goal: string;
+  clarity_pre: number;
+};
 };
 
 export type CreateTaskRequest = {
@@ -91,14 +101,38 @@ export type ClarityFieldsRequest = {
 export type MirrorConfirmationRequest = {
   expected_version: number;
   content_version: string;
-  confirmed: boolean;
-  corrections?: Record<string, string>;
+  confirmed: true;
+  evaluations: {
+  confirmed_event: {
+  accuracy: "accurate" | "partially_accurate" | "inaccurate";
+  correction?: string;
+};
+  current_interpretation: {
+  accuracy: "accurate" | "partially_accurate" | "inaccurate";
+  correction?: string;
+};
+  feelings: {
+  accuracy: "accurate" | "partially_accurate" | "inaccurate";
+  correction?: string;
+};
+  need_or_boundary: {
+  accuracy: "accurate" | "partially_accurate" | "inaccurate";
+  correction?: string;
+};
+  question_to_solve: {
+  accuracy: "accurate" | "partially_accurate" | "inaccurate";
+  correction?: string;
+};
+};
 };
 
 export type ReflectionRequest = {
   expected_version: number;
   round: 1 | 2;
-  answer: string;
+  confirmed_facts?: Array<string>;
+  unknowns_to_verify?: Array<string>;
+  priority_need_or_boundary?: string;
+  self_executable_goal?: string;
 };
 
 export type CreateReportRequest = {
