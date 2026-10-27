@@ -1,0 +1,5 @@
+<view class="app-tabbar">
+  <button wx:for="{{tabs}}" wx:key="path" class="app-tab {{selected === index ? 'app-tab--active' : ''}} {{index === 2 ? 'app-tab--talk' : ''}}" data-index="{{index}}" bindtap="switchTab">
+    <view class="app-tab-icon {{index === 2 ? 'app-talk-orb' : ''}}"><view class="ui-icon ui-icon--{{item.icon}}"></view></view><text class="app-tab-label">{{item.label}}</text>
+  </button>
+</view>

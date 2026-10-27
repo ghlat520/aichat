@@ -1,0 +1,13 @@
+.result-cover { border-radius: 42rpx; position: relative; background: linear-gradient(140deg, #eee8fb, #e9efff); padding: 48rpx 46rpx; margin: 4rpx 0 36rpx; overflow: hidden; min-height: 364rpx; box-sizing: border-box; }
+.result-type-code { font-size: 88rpx; font-weight: 600; letter-spacing: 6rpx; color: #7e70b6; margin: 56rpx 0 6rpx; }
+.result-cover-heading { font-size: 38rpx; font-weight: 550; letter-spacing: -.8rpx; }
+.result-cover-heading-lg { font-size: 50rpx; font-weight: 550; letter-spacing: -1rpx; line-height: 1.6; margin-top: 40rpx; }
+.result-cover-sub { font-size: 20rpx; color: #8b83a3; margin-top: 20rpx; }
+.result-petals { position: absolute; right: 28rpx; top: 74rpx; transform: rotate(-8deg) scale(1.1); opacity: .65; }
+.result-petals-art { transform: scale(1.4); }
+.result-statement { font-size: 28rpx; line-height: 1.9; padding: 0 6rpx; margin-bottom: 40rpx; }
+.result-source-icon { width: 24rpx; height: 24rpx; }
+.result-source-text { line-height: 1.8; }
+.result-tip-copy { margin-top: 18rpx; }
+.result-tip-note { margin-top: 22rpx; }
+.result-free-banner { background: var(--ui-aqua); color: var(--gk-teal); padding: 22rpx 26rpx; font-size: 22rpx; line-height: 1.8; border-radius: 22rpx; margin: 36rpx 0; }

@@ -1,0 +1,10 @@
+.app-tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; align-items: center; padding: 10rpx 15rpx calc(17rpx + env(safe-area-inset-bottom)); background: #ffffff; border-top: 1rpx solid #edf0f6; }
+.app-tabbar .app-tab { display: flex; flex: 1; flex-direction: column; align-items: center; width: auto; min-width: 0; margin: 0; padding: 8rpx 0 0; background: transparent; color: #929bb0; font-size: 18rpx; font-weight: 400; line-height: 1.5; }
+.app-tab::after { border: 0; }
+.app-tab-icon { display: flex; justify-content: center; align-items: center; height: 39rpx; margin-bottom: 9rpx; }
+.app-tab-icon .ui-icon { width: 39rpx; height: 39rpx; filter: grayscale(1); opacity: .6; }
+.app-tabbar .app-tab--active { color: #6577dc; font-weight: 600; }
+.app-tab--active .ui-icon { filter: none; opacity: 1; }
+.app-tabbar .app-tab--talk { margin-top: -29rpx; padding-top: 0; }
+.app-tab--talk .app-talk-orb { box-sizing: border-box; height: 91rpx; width: 91rpx; border: 8rpx solid #ffffff; margin-bottom: 1rpx; border-radius: 34rpx; background: linear-gradient(145deg,#91a1f6,#6577dc); box-shadow: 0 6rpx 22rpx #6577dc30; }
+.app-talk-orb .ui-icon { width: 43rpx; height: 43rpx; filter: none; opacity: 1; }

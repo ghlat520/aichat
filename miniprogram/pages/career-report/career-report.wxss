@@ -1,0 +1,19 @@
+.career-book { padding: 54rpx 48rpx 50rpx; position: relative; background: linear-gradient(135deg, #dff2ee, #ebf2ff); border-radius: 18rpx 40rpx 40rpx 18rpx; border-left: 12rpx solid #b1d6cb; overflow: hidden; margin: 6rpx 0 38rpx; min-height: 400rpx; box-sizing: border-box; }
+.career-book-title { font-size: 52rpx; line-height: 1.55; font-weight: 550; letter-spacing: -1.6rpx; margin: 30rpx 0 20rpx; position: relative; z-index: 1; }
+.career-book-owner { font-size: 20rpx; color: #7f96a5; position: relative; z-index: 1; }
+.career-book-decoration { position: absolute; right: -38rpx; top: 70rpx; height: 308rpx; width: 308rpx; opacity: .54; border: 1rpx solid #b8b5dc; border-radius: 50%; }
+.career-book-decoration::before, .career-book-decoration::after { content: ""; position: absolute; height: 308rpx; width: 308rpx; border: 1rpx solid #b8b5dc; border-radius: 50%; left: -80rpx; top: 0; }
+.career-book-decoration::after { left: -40rpx; top: 72rpx; }
+.career-start-copy { margin-top: 18rpx; }
+.career-start-note { margin-top: 18rpx; }
+.career-start-tags { margin-top: 22rpx; }
+.career-dir-title { margin: 22rpx 0 16rpx; }
+.career-comparison { border-radius: 24rpx; overflow: hidden; background: #ffffff; border: 1rpx solid var(--ui-line); }
+.career-comparison-row { display: flex; border-bottom: 1rpx solid var(--ui-line); font-size: 20rpx; line-height: 1.8; }
+.career-comparison-row:last-child { border-bottom: 0; }
+.career-comparison-row text { flex: 1; padding: 20rpx 16rpx; }
+.career-comparison-head text { color: #6f83a2; background: #edf5f5; }
+.career-comparison-key { color: var(--ui-muted); }
+.career-plan-copy { padding-top: 4rpx; }
+.career-price-row { margin-bottom: 10rpx; }
+.career-price { margin-top: 14rpx; }

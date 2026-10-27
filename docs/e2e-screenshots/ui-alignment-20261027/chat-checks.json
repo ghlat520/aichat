@@ -1,0 +1,48 @@
+{
+  "refreshedWithoutConfig": {
+    "error": "",
+    "loading": false,
+    "chatCreated": true,
+    "configReady": true
+  },
+  "longConversation": {
+    "error": "",
+    "messageCount": 4,
+    "aiTurns": 2,
+    "geometry": [
+      {
+        "id": "",
+        "dataset": {},
+        "scrollLeft": 0,
+        "scrollTop": 498,
+        "scrollWidth": 390,
+        "scrollHeight": 1251
+      },
+      {
+        "id": "",
+        "dataset": {},
+        "left": 20,
+        "right": 370,
+        "top": 466,
+        "bottom": 535,
+        "width": 350,
+        "height": 69
+      },
+      {
+        "id": "venting-bottom",
+        "dataset": {},
+        "left": 20,
+        "right": 370,
+        "top": 626,
+        "bottom": 626,
+        "width": 350,
+        "height": 0
+      }
+    ]
+  },
+  "validCachedWithoutConfig": {
+    "loading": false,
+    "error": "",
+    "chatCreated": true
+  }
+}

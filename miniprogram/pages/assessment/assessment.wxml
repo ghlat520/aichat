@@ -1,0 +1,170 @@
+<import src="../../templates/preview.wxml" />
+<view id="assessment-page" class="container ui-tab-page gk-screen">
+  <!-- ===== 自测首页（V1.2 原型 discover 屏）===== -->
+  <block wx:if="{{mode === 'catalog'}}">
+    <view class="gk-head">
+      <button class="ui-back" bindtap="goHomeTab" aria-label="回到首页"><view class="ui-icon ui-icon--back"></view></button>
+      <view class="gk-head-title">认识自己</view>
+      <text class="gk-head-tag">自我探索</text>
+    </view>
+    <view class="growth-catalog-hero">
+      <view class="gk-eyebrow">慢慢来，你值得被好好理解</view>
+      <view class="growth-hero-title">遇见，</view>
+      <view class="growth-hero-title">更好的你自己。</view>
+      <view class="growth-hero-copy">更懂自己的节奏，接住此刻的情绪，<text class="growth-hero-copy-br"></text>把日子慢慢过成喜欢的样子。</view>
+      <view class="ui-companion growth-hero-mascot"></view>
+    </view>
+
+    <view class="growth-warm-start">
+      <button class="growth-warm-start-btn" bindtap="focusExplore"><view class="ui-icon ui-icon--leaf"></view><text>想更懂自己</text></button>
+      <button class="growth-warm-start-btn" bindtap="openGentleVoices"><view class="ui-icon ui-icon--heart"></view><text>最近有点难</text></button>
+      <button class="growth-warm-start-btn" bindtap="openDecisionVoices"><view class="ui-icon ui-icon--sun"></view><text>有个选择想想</text></button>
+    </view>
+
+    <view wx:if="{{continueTool}}" class="growth-continue-card" bindtap="resumeTool" id="growth-continue-card">
+      <view class="gk-between">
+        <view>
+          <view class="gk-title-sm">继续上次的 {{continueTool.short}}</view>
+          <view class="gk-tiny">已经完成 {{continueTool.answered}} / {{continueTool.total}} 道演示题</view>
+        </view>
+        <text class="gk-tag">已保存</text>
+      </view>
+      <view class="gk-progress"><view class="gk-progress-fill" style="width: {{continueTool.answered / continueTool.total * 100}}%;"></view></view>
+      <view class="gk-between">
+        <text class="gk-tiny">按自己的节奏，不用一次做完</text>
+        <button class="growth-continue-btn" catchtap="resumeTool">继续作答 →</button>
+      </view>
+    </view>
+
+    <button class="growth-warm-companion" bindtap="openGentleVoices" id="growth-voices-teaser">
+      <view class="growth-warm-companion-icon"><view class="ui-icon ui-icon--heart"></view></view>
+      <view class="gk-grow">
+        <view class="growth-warm-companion-title">如果今天有点难，借一点力量。</view>
+        <view class="growth-warm-companion-copy">看看他们走过的路，也给自己留一小步。</view>
+      </view>
+      <view class="gk-chevron"></view>
+    </button>
+
+    <view class="gk-section-title">
+      <view class="gk-section-title-title">和自己更近一点</view>
+      <text class="gk-section-title-note">基础结果免费</text>
+    </view>
+    <view id="self-tools">
+      <button wx:for="{{tools}}" wx:key="id" class="growth-test-card" data-id="{{item.id}}" data-status="{{item.status}}" bindtap="tapTool">
+        <view class="gk-test-art {{item.id === 'mbti' ? 'gk-test-art--mbti' : item.id === 'traits' ? 'gk-test-art--traits' : 'gk-test-art--strengths'}}">
+          <block wx:if="{{item.id === 'mbti'}}">
+            <view class="gk-petal"></view><view class="gk-petal gk-petal-2"></view><view class="gk-petal gk-petal-3"></view><view class="gk-petal gk-petal-4"></view>
+            <text class="gk-test-art--mbti-text">我</text>
+          </block>
+          <block wx:if="{{item.id === 'traits'}}">
+            <view class="gk-test-art--traits-bar" style="height: 44rpx;"></view>
+            <view class="gk-test-art--traits-bar" style="height: 74rpx;"></view>
+            <view class="gk-test-art--traits-bar" style="height: 58rpx;"></view>
+            <view class="gk-test-art--traits-bar" style="height: 84rpx;"></view>
+            <view class="gk-test-art--traits-bar" style="height: 52rpx;"></view>
+          </block>
+        </view>
+        <view class="gk-grow">
+          <view class="growth-test-card-name">{{item.name}}</view>
+          <view class="growth-test-card-desc">{{item.desc}}</view>
+          <view class="gk-tags">
+            <text class="gk-tag {{item.color ? 'gk-tag--' + item.color : ''}}">{{item.status === 'done' ? '已完成 · 查看结果' : item.status === 'doing' ? '进行中' : '免费开始'}}</text>
+            <text class="gk-tag gk-tag--gray">演示 6 题</text>
+          </view>
+        </view>
+        <view class="gk-chevron"></view>
+      </button>
+    </view>
+
+    <button class="growth-topic-teaser" bindtap="goCelebrity" id="growth-celebrity-teaser">
+      <view class="growth-topic-copy">
+        <text class="gk-tag gk-tag--white">名人观察 · 先凭直觉猜一猜</text>
+        <view class="growth-topic-title">马斯克更像</view>
+        <view class="growth-topic-title">INFP，还是 INTJ？</view>
+        <view class="growth-topic-note">看公开言行线索，也认识自己的偏好 →</view>
+      </view>
+      <view class="gk-rocket growth-topic-rocket"></view>
+    </button>
+
+    <view class="gk-section-title"><view class="gk-section-title-title">也照顾好我的关系</view></view>
+    <button id="growth-relationship-entry" class="growth-relationship-link" bindtap="startRelationship">
+      <view class="ui-icon ui-icon--heart"></view>
+      <view class="gk-grow">
+        <view class="gk-title-sm">关系里，你习惯怎样表达？</view>
+        <view class="gk-tiny">原有 8 题轻自测 · 认识沟通习惯</view>
+      </view>
+      <view class="gk-chevron"></view>
+    </button>
+
+    <view class="gk-section-title">
+      <view class="gk-section-title-title">留给自己的发现</view>
+      <button class="gk-section-title-extra" bindtap="goReports">慢慢回看</button>
+    </view>
+    <block wx:if="{{recentTools.length}}">
+      <button wx:for="{{recentTools}}" wx:key="id" class="growth-recent-row" data-id="{{item.id}}" bindtap="tapTool">
+        <view class="gk-feature-icon gk-feature-icon--sm {{item.color ? 'gk-feature-icon--' + item.color : ''}}"><view class="ui-icon ui-icon--test"></view></view>
+        <view class="gk-grow">
+          <view class="growth-recent-name">{{item.short}} · 基础结果</view>
+          <view class="gk-tiny">{{item.date}} · 免费查看</view>
+        </view>
+        <view class="gk-chevron"></view>
+      </button>
+    </block>
+    <view wx:else class="gk-small">完成一项自测，你的发现会留在这里。</view>
+    <button wx:if="{{hasPaid}}" class="growth-recent-row" bindtap="openPaidReport">
+      <view class="gk-feature-icon gk-feature-icon--sm"><view class="ui-icon ui-icon--cards"></view></view>
+      <view class="gk-grow">
+        <view class="growth-recent-name">个人优势说明书</view>
+        <view class="gk-tiny">已购报告 · v{{version}}</view>
+      </view>
+      <view class="gk-chevron"></view>
+    </button>
+    <view class="gk-footer-note">每次结果是观察起点，允许自己慢慢变化。</view>
+  </block>
+
+  <!-- ===== 原有关系应对轻自测（逻辑不变）===== -->
+  <block wx:else>
+    <button class="assessment-back-catalog" bindtap="backToCatalog">← 回到自测首页</button>
+    <view id="assessment-loading" wx:if="{{loading}}" class="aichat-card aichat-muted">正在准备你的轻自测…</view>
+    <view id="assessment-disabled" wx:if="{{!loading && !enabled}}" class="aichat-warning">{{error}}</view>
+    <view id="assessment-error" wx:if="{{error && enabled}}" class="aichat-warning">{{error}}</view>
+
+    <view id="assessment-intro" wx:if="{{!loading && !mappedTaskId && !started && currentItem}}">
+      <view class="ui-intro-illustration"><template is="companion" /></view>
+      <view class="ui-intro-title"><view>关系里，</view><view>你习惯怎样表达？</view></view>
+      <view class="ui-intro-copy"><view>每个人都有自己的沟通节奏。</view><view>从几个日常片段，发现你的表达习惯。</view></view>
+      <view class="assessment-intro-features"><view><view class="assessment-feature-value">{{itemCount}} 题</view><text>日常场景</text></view><view><view class="assessment-feature-value">3 分钟</view><text>留给自己</text></view><view><view class="assessment-feature-value">可调整</view><text>沟通起点</text></view></view>
+      <button id="assessment-start" class="aichat-btn" bindtap="begin">开始认识自己 <text>→</text></button>
+      <view class="ui-quiet-note"><view>按最近的真实感受选择，没有标准答案。</view><view>这是自我探索，不是心理诊断。</view></view>
+    </view>
+
+    <view id="assessment-ready" wx:if="{{!loading && !mappedTaskId && started && currentItem}}">
+      <view class="assessment-progress"><view class="assessment-progress-fill" style="width: {{currentIndex / items.length * 100}}%;"></view></view>
+      <view class="assessment-question-meta">{{currentIndex + 1}} / {{items.length}} · 选最接近你的一个</view>
+      <view id="assessment-question" class="aichat-question-text">{{currentItem.text}}</view>
+      <view id="assessment-options" class="assessment-options">
+        <button id="assessment-option-{{index}}" class="assessment-answer" wx:for="{{currentItem.options}}" wx:key="value" data-value="{{item.value}}" bindtap="chooseAnswer" disabled="{{submitting}}" loading="{{submitting && currentAnswer === item.value}}"><view class="assessment-answer-key">{{index === 0 ? 'A' : index === 1 ? 'B' : index === 2 ? 'C' : 'D'}}</view><text>{{item.label}}</text></button>
+      </view>
+      <button id="assessment-previous" wx:if="{{currentIndex > 0}}" class="assessment-previous" disabled="{{submitting}}" bindtap="previous">上一题</button>
+      <view class="ui-quiet-note">不必纠结，选择更接近此刻自己的答案。</view>
+    </view>
+
+    <view id="assessment-complete" wx:if="{{mappedTaskId}}" class="assessment-result">
+      <view class="assessment-result-art"><view class="ui-icon ui-icon--heart"></view></view>
+      <view class="ui-intro-title"><view>更了解自己，</view><view>是好好表达的开始。</view></view>
+      <view class="ui-intro-copy">你完成了 {{itemCount || 8}} 道日常场景自测。试着把一个小发现，带回一段真实的关系。</view>
+      <view class="aichat-card">
+        <view class="assessment-result-kicker">我的沟通起点</view>
+        <view id="assessment-result-tendency" class="assessment-result-title">{{result.current_tendency}}</view>
+        <view id="assessment-result-strength" wx:if="{{result.usable_strength}}" class="assessment-result-field"><view class="aichat-label">可用优势</view><view class="aichat-body">{{result.usable_strength}}</view></view>
+        <view id="assessment-result-blind-spot" wx:if="{{result.possible_blind_spot}}" class="assessment-result-field"><view class="aichat-label">可能忽略的部分</view><view class="aichat-body">{{result.possible_blind_spot}}</view></view>
+        <view id="assessment-result-reminder" wx:if="{{result.one_real_world_reminder}}" class="assessment-result-field"><view class="aichat-label">现实中的一个提醒</view><view class="aichat-body">{{result.one_real_world_reminder}}</view></view>
+      </view>
+      <button id="assessment-continue" class="aichat-btn" bindtap="goToClarity">带着这个发现，理一理关系</button>
+      <button id="assessment-share" class="aichat-btn aichat-btn--ghost" bindtap="goToShare">查看分享预览</button>
+      <button class="assessment-previous" bindtap="backToCatalog">回到自测首页</button>
+      <button class="assessment-previous" bindtap="restart">再认识自己一次</button>
+      <view wx:if="{{result.boundary_copy}}" class="ui-quiet-note">{{result.boundary_copy}}</view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,79 @@
+{
+  "pages": [
+    "pages/entry/entry",
+    "pages/assessment/assessment",
+    "pages/share-card/share-card",
+    "pages/clarity-edit/clarity-edit",
+    "pages/mirror/mirror",
+    "pages/reflection/reflection",
+    "pages/report/report",
+    "pages/venting/venting",
+    "pages/safety/safety",
+    "pages/order/order",
+    "pages/action/action",
+    "pages/data-control/data-control",
+    "pages/support/support",
+    "pages/profile/profile",
+    "pages/voices/voices",
+    "pages/voice/voice",
+    "pages/celebrity/celebrity",
+    "pages/celebrity-insight/celebrity-insight",
+    "pages/invite/invite",
+    "pages/growth-intro/growth-intro",
+    "pages/growth-question/growth-question",
+    "pages/growth-result/growth-result",
+    "pages/growth-import/growth-import",
+    "pages/experiences/experiences",
+    "pages/experiences-confirm/experiences-confirm",
+    "pages/portrait/portrait",
+    "pages/report-preview/report-preview",
+    "pages/checkout/checkout",
+    "pages/payment/payment",
+    "pages/growth-report/growth-report",
+    "pages/calibrate/calibrate",
+    "pages/growth-reflection/growth-reflection",
+    "pages/career/career",
+    "pages/career-report/career-report",
+    "pages/reports/reports",
+    "pages/growth-share/growth-share"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "backgroundColor": "#f7f9fd",
+    "backgroundColorTop": "#eaf3ff",
+    "backgroundColorBottom": "#f7f9fd",
+    "navigationBarBackgroundColor": "#eaf3ff",
+    "navigationBarTitleText": "关系清晰卡",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "tabBar": {
+    "custom": true,
+    "color": "#929bb0",
+    "selectedColor": "#6577dc",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/entry/entry",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/assessment/assessment",
+        "text": "自测"
+      },
+      {
+        "pagePath": "pages/venting/venting",
+        "text": "说一说"
+      },
+      {
+        "pagePath": "pages/report/report",
+        "text": "清晰卡"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  }
+}

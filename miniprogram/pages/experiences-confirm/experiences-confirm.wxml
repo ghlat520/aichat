@@ -1,0 +1,36 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">确认这两段经历</view>
+    <text class="gk-head-tag">自我探索</text>
+  </view>
+
+  <view class="gk-eyebrow">个人经历 · 第 2 步 / 共 2 步</view>
+  <view class="gk-page-title">这样理解你，</view>
+  <view class="gk-page-title">准确吗？</view>
+  <view class="gk-lead">这是根据你填写的内容做的整理。确认前可以修改，不符合的地方直接改就好。</view>
+
+  <view wx:for="{{experiences}}" wx:for-index="i" wx:key="i" class="gk-card">
+    <view class="gk-between">
+      <view class="gk-title-sm">经历 {{i + 1}}</view>
+      <button class="gk-text-link" bindtap="backToEdit">编辑</button>
+    </view>
+    <view class="confirm-copy">
+      <view class="confirm-label">当时的情境</view>
+      <view>{{item.event}}</view>
+      <view class="confirm-label">你做出的行动</view>
+      <view>{{item.action}}</view>
+      <view class="confirm-label">发生的结果</view>
+      <view>{{item.result}}</view>
+      <block wx:if="{{item.energy}}">
+        <view class="confirm-label">你的能量感受</view>
+        <view>{{item.energy}}</view>
+      </block>
+    </view>
+  </view>
+
+  <view class="gk-soft-note">以上内容将标记为"本人确认的经历"。这表示转述与你的陈述一致。</view>
+
+  <button class="gk-primary" bindtap="confirmExperiences">以上转述准确，查看我的画像</button>
+  <button class="gk-secondary" bindtap="backToEdit">还有需要修改的地方</button>
+</view>

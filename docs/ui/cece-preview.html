@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <title>关系清晰卡 · aichat 页面预览</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='20' fill='%236978e8'/%3E%3Cpath d='M18 34c0-16 28-16 28 0v10H30l-9 6v-10' fill='white'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --ink:#28334b; --muted:#778298; --brand:#6577dc; --blue:#e7efff;
+      --aqua:#dff6f4; --teal:#258c89; --lilac:#eee9ff; --violet:#8b70c9;
+      --pink:#fce9ec; --rose:#ca6c88; --paper:#fff; --canvas:#f7f9fd;
+      --line:#edf0f6; --yellow:#fff3d9; --ease:cubic-bezier(.2,.75,.25,1);
+      font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      color:var(--ink); font-synthesis:none; -webkit-font-smoothing:antialiased;
+    }
+    * {box-sizing:border-box}
+    [hidden] {display:none!important}
+    body {margin:0;background:#edf1f8}
+    button,input,textarea {font:inherit}
+    button,a,input,textarea {-webkit-tap-highlight-color:transparent}
+    button {border:0;cursor:pointer;color:inherit;background:none;padding:0}
+    a {color:inherit;text-decoration:none}
+    button:focus-visible,a:focus-visible {outline:3px solid var(--brand);outline-offset:4px}
+    button:disabled {cursor:default;opacity:.4}
+    svg {display:block;flex-shrink:0}
+    .icon {width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+    .symbols {position:absolute;width:0;height:0;overflow:hidden}
+    .preview {min-height:100dvh;display:grid;grid-template-columns:290px 394px 190px;gap:65px;align-items:center;justify-content:center;padding:32px 28px 80px}
+    .review-head {align-self:stretch;display:flex;flex-direction:column;padding-top:28px}
+    .project {display:flex;gap:10px;align-items:center;font-size:17px;font-weight:650;letter-spacing:-.4px}
+    .project-mark {width:30px;height:30px;border-radius:10px;background:var(--brand);color:white;display:grid;place-items:center}
+    .project small {margin-left:6px;font-size:11px;letter-spacing:0;color:var(--muted);font-weight:400}
+    .review-title {font-size:38px;line-height:1.5;font-weight:600;letter-spacing:-1.8px;margin:76px 0 18px}
+    .review-copy {font-size:13px;line-height:1.9;color:#67748c;margin:0 0 30px;max-width:265px}
+    .screen-links {display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 32px}
+    .screen-links button {border:1px solid #d9e0ec;border-radius:9px;font-size:12px;padding:10px 13px}
+    .screen-links button.active {background:var(--ink);border-color:var(--ink);color:var(--paper)}
+    .small-label {font-size:11px;color:var(--muted);margin:0 0 10px;letter-spacing:.3px}
+    .reference {margin-top:auto;padding-top:40px;font-size:11px;line-height:1.9;color:var(--muted)}
+    .reference a {text-decoration:underline;text-underline-offset:3px}
+    .reset {display:block;margin-top:13px;text-decoration:underline;text-underline-offset:4px;font-size:11px}
+    .phone {height:min(844px,calc(100dvh - 112px));min-height:640px;width:394px;background:var(--canvas);border-radius:44px;border:7px solid var(--paper);box-shadow:0 26px 65px #52658219,0 0 0 1px #dce2ee;overflow:hidden;position:relative;display:flex;flex-direction:column;isolation:isolate}
+    .status {height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 23px;font-size:12px;font-weight:650;background:#eaf3ff}
+    .status-right {display:flex;gap:5px;align-items:center}
+    .status-right svg {width:15px;height:12px}
+    .mini-nav {height:40px;padding:0 17px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#eaf3ff;font-size:13px;font-weight:550}
+    .mini-name {display:flex;gap:7px;align-items:center}
+    .mini-mark {width:19px;height:19px;background:var(--brand);border-radius:7px;color:var(--paper);font-size:11px;display:grid;place-items:center}
+    .wechat {border:1px solid #cdd8e8;background:#ffffff65;border-radius:20px;display:flex;align-items:center;gap:10px;padding:6px 10px;height:28px;font-size:15px}
+    .wechat span+span {border-left:1px solid #d2daea;padding-left:10px;line-height:13px}
+    .viewport {flex:1;overflow:auto;scrollbar-width:none;position:relative;overscroll-behavior:contain}
+    .viewport::-webkit-scrollbar {display:none}
+    .screen {padding:0 20px 28px;min-height:100%}
+    .home-top {margin:0 -20px;padding:20px 20px 26px;background:linear-gradient(165deg,#eaf3ff 20%,#edf0ff 67%,var(--canvas) 100%)}
+    .greeting-row,.section-head,.between {display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .greeting {font-size:21px;letter-spacing:-.6px;font-weight:600;margin:0 0 5px}
+    .muted {font-size:11px;color:var(--muted);line-height:1.7}
+    .avatar {width:43px;height:43px;border-radius:50%;background:#fff8ed;display:grid;place-items:center;box-shadow:0 2px 0 #fff inset;position:relative;color:#d0a46b}
+    .avatar:after {content:"";width:8px;height:8px;border:2px solid #edf1ff;border-radius:50%;background:#81bcac;position:absolute;bottom:1px;right:0}
+    .search {width:100%;display:flex;align-items:center;gap:9px;background:#ffffffba;border:1px solid #ffffff;border-radius:12px;color:#8793a9;padding:12px 13px;font-size:12px;margin-top:19px;text-align:left}
+    .search .icon {width:17px;height:17px}
+    .mood {background:var(--paper);border-radius:20px;padding:16px 16px 14px;margin-top:-9px;box-shadow:0 5px 22px #7a8dba08;position:relative}
+    .mood-title {font-size:13px;font-weight:600}
+    .date {font-size:10px;color:var(--muted)}
+    .mood-list {display:flex;justify-content:space-between;margin-top:14px;gap:4px}
+    .mood-choice {display:flex;align-items:center;flex-direction:column;gap:6px;flex:1;font-size:10px;color:var(--muted);border-radius:10px;padding:4px 2px;transition:background .15s}
+    .mood-choice[aria-pressed=true] {background:var(--blue);color:#475ba9}
+    .face {height:31px;width:31px;border-radius:50%;display:grid;place-items:center;background:var(--face-color,var(--yellow));color:var(--face-ink,#bc8e43);box-shadow:inset 0 -3px 0 #00000004}
+    .face svg {width:24px;height:24px;stroke-width:1.4}
+    .mood-feedback {font-size:10px;line-height:1.5;color:var(--brand);min-height:0;margin-top:0}
+    .mood-feedback:not(:empty) {margin-top:10px}
+    .tools {display:grid;grid-template-columns:repeat(3,1fr);padding:20px 0 22px;gap:10px}
+    .tool {display:flex;align-items:center;flex-direction:column;gap:7px;font-size:12px;font-weight:550}
+    .tool small {font-size:9px;color:var(--muted);font-weight:400;margin-top:-2px}
+    .tool-icon {width:47px;height:47px;border-radius:16px;display:grid;place-items:center;background:var(--blue);color:var(--brand)}
+    .tool-icon .icon {height:25px;width:25px}
+    .tool-icon.aqua {background:var(--aqua);color:var(--teal)}
+    .tool-icon.pink {background:var(--pink);color:var(--rose)}
+    .hero {width:100%;text-align:left;min-height:183px;position:relative;border-radius:20px;padding:20px;background:linear-gradient(120deg,#e6eaff 0%,#e7edff 55%,#dbf1ff 100%);overflow:hidden}
+    .hero .chip {display:inline-block;border:1px solid #ffffffb3;background:#ffffff80;font-size:9px;border-radius:6px;padding:4px 7px;color:#6775b1}
+    .hero h2 {font-size:23px;line-height:1.45;font-weight:600;letter-spacing:-.8px;margin:10px 0 7px;position:relative;z-index:1}
+    .hero p {font-size:10px;color:#6d7f9b;line-height:1.7;margin:0}
+    .hero .hero-action {font-size:11px;color:#586cb3;display:inline-flex;align-items:center;gap:5px;margin-top:15px}
+    .hero-action .icon {height:13px;width:13px}
+    .hero-art {position:absolute;width:152px;height:170px;right:-6px;bottom:-2px}
+    .section-head {margin:24px 0 13px}
+    .section-head h2 {font-size:16px;margin:0;font-weight:600;letter-spacing:-.3px}
+    .section-head>span,.section-head>button {font-size:10px;color:var(--muted)}
+    .mini-test {width:100%;display:flex;text-align:left;gap:13px;align-items:center;border-radius:16px;background:var(--paper);padding:14px;border:1px solid #f0f2f8}
+    .test-art {width:66px;height:67px;border-radius:13px;background:var(--pink);display:grid;place-items:center;color:var(--rose);flex-shrink:0}
+    .test-art svg {width:47px;height:47px}
+    .mini-test h3 {font-size:13px;font-weight:550;margin:0 0 7px}
+    .mini-test p {font-size:10px;color:var(--muted);margin:0 0 8px}
+    .meta-tag {font-size:9px;color:#917883;background:#faf2f4;padding:3px 6px;border-radius:4px;display:inline-block}
+    .mini-test>.icon {margin-left:auto;width:16px;height:16px;color:#bbc4d4}
+    .recent {border-top:1px solid var(--line);padding:15px 0 4px;display:flex;gap:12px;align-items:center;text-align:left;width:100%}
+    .recent-icon {width:37px;height:43px;border-radius:9px;background:var(--aqua);color:var(--teal);display:grid;place-items:center}
+    .recent strong {display:block;font-size:12px;font-weight:550;margin-bottom:5px}
+    .recent .icon:last-child {margin-left:auto;color:var(--muted);width:16px}
+    .bottom-nav {height:72px;padding:5px 8px 13px;display:flex;align-items:center;background:var(--paper);border-top:1px solid var(--line);position:relative;flex-shrink:0}
+    .nav-item {flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:9px;color:#929bb0;padding-top:5px}
+    .nav-item.active {color:var(--brand);font-weight:600}
+    .nav-item .icon {width:20px;height:20px}
+    .nav-item.talk {padding-top:0;gap:3px;transform:translateY(-8px)}
+    .talk-orb {width:48px;height:48px;border-radius:18px;background:linear-gradient(145deg,#91a1f6,#6577dc);display:grid;place-items:center;color:var(--paper);box-shadow:0 4px 12px #6577dc3b;border:4px solid var(--paper)}
+    .talk-orb .icon {height:23px;width:23px}
+    .phone:after {content:"";position:absolute;width:112px;height:4px;border-radius:5px;background:#28334b;bottom:4px;left:50%;transform:translateX(-50%);pointer-events:none}
+    .review-aside {align-self:center;padding-bottom:120px}
+    .concept-number {font-size:11px;color:var(--brand);border:1px solid #d3dbf2;border-radius:7px;display:inline-block;padding:6px 9px;margin-bottom:14px}
+    .review-aside h2 {font-size:20px;font-weight:550;line-height:1.5;margin:0 0 12px;letter-spacing:-.5px}
+    .review-aside p {font-size:12px;color:#778298;line-height:1.9;margin:0}
+    .swatches {display:flex;gap:7px;margin-top:23px}
+    .swatches span {width:21px;height:21px;border-radius:50%;background:var(--swatch);border:1px solid #00000005}
+    .prototype-switcher {position:fixed;z-index:50;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:20px;padding:9px 11px;border-radius:16px;background:var(--ink);color:var(--paper);box-shadow:0 7px 25px #28334b28;white-space:nowrap}
+    .prototype-switcher button {display:grid;place-items:center;height:30px;width:32px;border-radius:8px;background:#ffffff12}
+    .prototype-switcher button:hover {background:#ffffff25}
+    .prototype-switcher .icon {height:17px;width:17px}
+    .variant-label {font-size:12px;text-align:center;min-width:143px}
+    .variant-label small {display:block;font-size:9px;color:#c2cce6;margin-top:4px}
+    .page-head {display:flex;align-items:center;gap:12px;padding:21px 0 20px}
+    .back {width:29px;height:29px;display:grid;place-items:center;border-radius:50%;background:var(--paper)}
+    .back .icon {width:18px;height:18px}
+    .page-head h1 {font-size:17px;margin:0;font-weight:600;letter-spacing:-.4px}
+    .page-head .subtle-tag {margin-left:auto;font-size:9px;color:#7c88a9;border:1px solid #dfe5f0;border-radius:5px;padding:4px 6px}
+    .primary {display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--brand);color:white;min-height:46px;border-radius:13px;font-size:13px;font-weight:500;transition:filter .15s}
+    .primary:hover {filter:brightness(.96)}
+    .primary .icon {width:17px;height:17px}
+    .secondary {display:block;width:100%;font-size:12px;color:var(--brand);margin-top:17px;padding:4px}
+    .intro-illustration {height:160px;display:grid;place-items:center;position:relative;margin:7px 0 18px;border-radius:24px;background:radial-gradient(ellipse,#e6e8ff 0,transparent 70%)}
+    .intro-illustration svg {width:160px;height:160px}
+    .intro-title {font-size:25px;font-weight:600;line-height:1.6;text-align:center;letter-spacing:-.8px;margin:0 0 9px}
+    .intro-desc {font-size:12px;text-align:center;line-height:1.9;color:var(--muted);margin:0 12px 22px}
+    .intro-features {display:flex;justify-content:space-around;padding:17px 4px;background:var(--paper);border-radius:15px;margin-bottom:25px;font-size:11px;color:#7d88a5}
+    .intro-features strong {display:block;font-size:17px;color:var(--ink);font-weight:550;margin-bottom:6px}
+    .quiet-note {font-size:10px;text-align:center;color:var(--muted);line-height:1.8;margin:15px 6px}
+    .progress-track {height:4px;border-radius:6px;background:#e6eaf4;overflow:hidden;margin:5px 0 34px}
+    .progress-fill {height:100%;background:var(--brand);border-radius:6px;transition:width .2s}
+    .question-meta {font-size:11px;color:var(--brand);margin:0 0 14px}
+    .question {font-size:24px;line-height:1.65;font-weight:550;letter-spacing:-.6px;margin:0 0 30px}
+    .answer {width:100%;border:1px solid #e7eaf4;border-radius:14px;display:flex;align-items:center;gap:12px;text-align:left;background:var(--paper);padding:17px 14px;margin-bottom:12px;font-size:12px;line-height:1.6}
+    .answer:hover {border-color:var(--brand);background:#f0f3ff}
+    .answer-key {width:25px;height:25px;border-radius:8px;display:grid;place-items:center;background:var(--blue);color:var(--brand);font-size:11px;flex-shrink:0}
+    .chat-screen {display:flex;flex-direction:column;padding-bottom:12px}
+    .chat-intro {display:flex;align-items:center;gap:12px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:13px 14px;margin-bottom:19px}
+    .chat-intro .companion-mini {width:39px;height:39px;background:var(--blue);border-radius:13px;display:grid;place-items:center;color:var(--brand)}
+    .chat-intro h2 {font-size:13px;font-weight:550;margin:0 0 4px}
+    .messages {display:flex;flex-direction:column;gap:16px;flex:1;padding-bottom:20px}
+    .message {max-width:90%;font-size:12px;line-height:1.9;background:var(--paper);padding:14px 15px;border-radius:4px 16px 16px 16px;white-space:pre-wrap;overflow-wrap:anywhere;border:1px solid var(--line)}
+    .message.user {align-self:flex-end;background:#e8eaff;border-color:#e8eaff;border-radius:16px 4px 16px 16px}
+    .chat-time {font-size:9px;color:var(--muted);text-align:center;margin-bottom:-3px}
+    .suggestions {display:flex;align-items:flex-start;flex-direction:column;gap:9px;margin:4px 0 18px}
+    .suggestions button {border:1px solid #e1e6f3;background:#ffffff90;border-radius:20px;padding:10px 12px;font-size:11px;color:#6879b7}
+    .composer {display:flex;align-items:flex-end;gap:9px;background:var(--paper);border:1px solid #e4e9f4;border-radius:15px;padding:8px 9px 8px 13px;margin-top:auto}
+    .composer textarea {resize:none;border:0;outline:0;background:none;flex:1;min-width:0;height:32px;max-height:90px;padding:7px 0;font-size:12px;line-height:1.6;color:var(--ink)}
+    .composer:focus-within {border-color:var(--brand)}
+    .send {width:32px;height:32px;border-radius:10px;background:var(--brand);color:white;display:grid;place-items:center;flex-shrink:0}
+    .send .icon {height:17px;width:17px}
+    .chat-footnote {font-size:9px;color:var(--muted);text-align:center;margin:9px 0 0;line-height:1.7}
+    .letter {position:relative;border-radius:18px;background:var(--paper);padding:25px 21px;box-shadow:0 8px 22px #737da90a;border:1px solid #edf0f6;margin-bottom:22px}
+    .letter:before {content:"";position:absolute;left:21px;right:21px;top:0;height:4px;border-radius:0 0 5px 5px;background:linear-gradient(90deg,#a4afee,#afdeda,#f1c5d5)}
+    .letter-label {font-size:10px;letter-spacing:1px;color:#8a94ad;display:flex;align-items:center;gap:7px}
+    .letter-label .icon {width:15px;height:15px;color:var(--brand)}
+    .letter h2 {font-size:22px;font-weight:550;line-height:1.5;letter-spacing:-.5px;margin:15px 0 8px}
+    .letter-sub {font-size:10px;color:var(--muted);line-height:1.7;padding-bottom:18px;border-bottom:1px dashed #e3e8f2;margin:0}
+    .letter-section {margin-top:21px}
+    .letter-section h3 {font-size:12px;font-weight:550;margin:0 0 9px;display:flex;align-items:center;gap:8px}
+    .letter-section h3:before {content:"";width:4px;height:12px;border-radius:4px;background:var(--bar,var(--brand))}
+    .letter-section p {font-size:12px;color:#778197;line-height:1.85;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+    .practice-box {border-radius:12px;background:#f2f7f8;padding:15px;margin-top:22px}
+    .practice-box strong {font-size:12px;font-weight:550;display:block;margin-bottom:7px;color:var(--teal)}
+    .practice-box p {font-size:11px;line-height:1.9;color:#71888f;margin:0}
+    .fields-intro {font-size:12px;line-height:1.9;color:var(--muted);margin:0 0 20px}
+    .field {display:block;margin-bottom:17px}
+    .field>span {display:flex;align-items:center;gap:8px;font-size:12px;font-weight:550;margin-bottom:9px}
+    .field b {font-size:9px;width:19px;height:19px;border-radius:6px;background:var(--blue);color:var(--brand);display:grid;place-items:center;font-weight:500}
+    .field textarea {resize:vertical;width:100%;min-height:73px;border:1px solid #e4e9f3;border-radius:12px;padding:12px;background:var(--paper);font-size:12px;line-height:1.7;color:var(--ink);outline:0}
+    .field textarea:focus {border-color:var(--brand)}
+    ::placeholder {color:#a1aabd;opacity:1}
+    .companion-home {padding:27px 0 0;min-height:600px;display:flex;flex-direction:column}
+    .companion-day {font-size:11px;color:#929ab0;display:flex;justify-content:space-between}
+    .companion-art {width:190px;height:190px;margin:20px auto 5px}
+    .companion-home h1 {font-size:28px;text-align:center;font-weight:550;line-height:1.6;letter-spacing:-1px;margin:0 0 13px}
+    .companion-home>p {text-align:center;font-size:12px;line-height:1.9;color:var(--muted);margin:0 6px 27px}
+    .conversation-start {text-align:left;width:100%;display:flex;justify-content:space-between;align-items:center;border:1px solid #dce2f1;background:var(--paper);border-radius:15px;padding:17px 15px;font-size:12px;color:#8b96ab;box-shadow:0 7px 20px #7884a908}
+    .conversation-start .icon {height:18px;width:18px;color:var(--brand)}
+    .suggested-line {margin:14px 0;display:flex;gap:8px;justify-content:center}
+    .suggested-line button {font-size:10px;padding:8px 10px;border:1px solid #e0e5f1;border-radius:20px;color:#8892a7}
+    .companion-bottom {margin-top:auto;border-top:1px solid #e8ecf5;display:flex;gap:20px;padding:24px 0 13px}
+    .companion-bottom button {text-align:left;flex:1}
+    .companion-bottom h2 {font-size:13px;font-weight:550;margin:11px 0 7px}
+    .companion-bottom p {font-size:10px;color:var(--muted);line-height:1.7;margin:0}
+    .companion-bottom .icon {color:var(--brand)}
+    .archive-welcome {padding:26px 0 25px;display:flex;align-items:center;gap:13px}
+    .archive-welcome .avatar {height:52px;width:52px;background:var(--lilac);color:var(--violet)}
+    .archive-welcome h1 {font-size:22px;font-weight:550;margin:0 0 6px;letter-spacing:-.6px}
+    .archive-feature {background:#e9edf9;border-radius:22px;padding:23px 20px;position:relative;overflow:hidden}
+    .archive-feature h2 {font-size:23px;font-weight:550;line-height:1.6;margin:11px 0 18px;position:relative;z-index:1;letter-spacing:-.7px}
+    .archive-feature .hero-art {height:139px;width:128px;right:-5px;bottom:7px;opacity:.9}
+    .small-action {font-size:11px;background:var(--paper);padding:9px 14px;border-radius:9px;position:relative;z-index:1;color:var(--brand)}
+    .journey {margin:26px 0 22px;padding:0 0 0 12px;border-left:1px solid #dce3f2}
+    .journey-step {position:relative;padding:0 0 25px 12px}
+    .journey-step:last-child {padding-bottom:0}
+    .journey-step:before {content:"";height:7px;width:7px;position:absolute;top:5px;left:-16px;background:#abb8de;border:3px solid var(--canvas);border-radius:50%}
+    .journey-step h3 {font-size:13px;font-weight:550;margin:0 0 8px}
+    .journey-step p {font-size:11px;line-height:1.8;color:var(--muted);margin:0}
+    .journey-step button {font-size:11px;color:var(--brand);display:inline-flex;align-items:center;gap:5px;margin-top:9px}
+    .journey-step .icon {height:12px;width:12px}
+    .menu-row {padding:18px 2px;display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--line);width:100%;font-size:13px;text-align:left}
+    .menu-row>.icon {color:#8998ba;width:19px;height:19px}
+    .menu-row>.icon:last-child {margin-left:auto;width:14px}
+    .profile-card {padding:20px;border-radius:18px;background:var(--paper);margin:5px 0 13px}
+    .profile-card h2 {font-size:15px;font-weight:550;margin:0 0 10px}
+    .profile-card p {font-size:11px;color:var(--muted);line-height:1.9;margin:0 0 16px}
+    .overlay {position:absolute;inset:0;background:#28334b55;backdrop-filter:blur(3px);display:flex;align-items:flex-end;z-index:30}
+    .overlay[hidden] {display:none}
+    .sheet {background:var(--paper);width:100%;border-radius:25px 25px 0 0;padding:23px 23px 33px;box-shadow:0 -10px 35px #28334b0b}
+    .sheet-grip {width:31px;height:4px;border-radius:3px;background:#dfe4ef;margin:-10px auto 24px}
+    .sheet-symbol {height:42px;width:42px;background:var(--blue);border-radius:14px;display:grid;place-items:center;color:var(--brand);margin-bottom:18px}
+    .sheet h2 {font-size:21px;font-weight:550;margin:0 0 13px;letter-spacing:-.6px}
+    .sheet p {font-size:12px;line-height:1.9;color:var(--muted);margin:0 0 18px}
+    .consent-label {display:flex;align-items:flex-start;gap:9px;font-size:11px;line-height:1.8;margin:20px 0 23px;cursor:pointer}
+    .consent-label input {margin:3px 0 0;accent-color:var(--brand);width:15px;height:15px;flex-shrink:0}
+    .toast {position:absolute;z-index:40;bottom:90px;left:24px;right:24px;padding:12px;background:#28334bea;color:white;border-radius:12px;font-size:11px;text-align:center;line-height:1.7;pointer-events:none}
+    .toast[hidden] {display:none}
+    @media (max-width:1100px) {
+      .preview {grid-template-columns:240px 394px;gap:50px}.review-aside{display:none}.review-title{font-size:33px}
+    }
+    @media (max-width:750px) {
+      body{background:var(--canvas)}.preview{display:block;padding:0;min-height:0}.review-head,.review-aside{display:none}
+      .phone{width:100%;height:100dvh;min-height:580px;border:0;border-radius:0;box-shadow:none}
+      .phone:after{bottom:6px}.prototype-switcher{bottom:auto;top:7px;left:50%;gap:8px;padding:4px 5px;border-radius:10px}
+      .prototype-switcher button{width:23px;height:23px;border-radius:6px}.variant-label{min-width:115px;font-size:10px}
+      .variant-label small{display:none}.prototype-switcher .icon{width:13px;height:13px}.status{padding:0 16px}
+      .bottom-nav{height:76px;padding-bottom:16px}.viewport{min-height:0}
+    }
+    @media (prefers-reduced-motion:reduce) {*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <!-- Question: Which home structure best fits 关系清晰卡? Three local-only UI prototypes, ?variant=A/B/C. No backend or persistence. -->
+  <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m14 6-6 6 6 6"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></symbol>
+    <symbol id="i-test" viewBox="0 0 24 24"><path d="M8 4H5v17h14V4h-3M9 2h6v5H9zM8 11h8M8 15h5"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 16a3 3 0 0 1-3 3H9l-5 3V6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3Z"/><path d="M8 10h.01M12 10h.01M16 10h.01" stroke-width="2.8"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.8a5.7 5.7 0 0 0-8 0l-.8.8-.8-.8a5.7 5.7 0 0 0-8 8L12 22l8.8-9.2a5.7 5.7 0 0 0 0-8Z"/></symbol>
+    <symbol id="i-cards" viewBox="0 0 24 24"><rect x="7" y="3" width="13" height="17" rx="3"/><path d="M4 6H3v16h13v-1M10 8h7M10 12h7M10 16h4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 5 5"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 3c-12-2-19 5-14 12s16 4 14-12Z"/><path d="M4 21 16 8"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 9 4v6c0 5-9 10-9 10S3 17 3 12V6Z"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 14A9 9 0 0 1 10 3a9 9 0 1 0 11 11Z"/><path d="M18 3v4m-2-2h4"/></symbol>
+    <symbol id="i-smile" viewBox="0 0 24 24"><path d="M7 9h.01M17 9h.01" stroke-width="2.6"/><path d="M7 14q5 6 10 0"/></symbol>
+    <symbol id="i-calm" viewBox="0 0 24 24"><path d="M6 10q2-2 4 0m4 0q2-2 4 0M9 16q3 2 6 0"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 9h.01M17 9h.01" stroke-width="2.6"/><path d="M9 16h6"/></symbol>
+    <symbol id="i-sad" viewBox="0 0 24 24"><path d="m6 8 3 1m6 0 3-1M8 17q4-4 8 0"/></symbol>
+    <symbol id="i-rain" viewBox="0 0 24 24"><path d="m6 8 3 1m6 0 3-1M9 17q3-3 6 0M17 12v3"/></symbol>
+    <symbol id="art-companion" viewBox="0 0 200 200">
+      <defs><linearGradient id="orb" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c1d3ff"/><stop offset="1" stop-color="#839cec"/></linearGradient><linearGradient id="bubble" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#e7edff"/></linearGradient><radialGradient id="shadow"><stop stop-color="#9baed7" stop-opacity=".24"/><stop offset="1" stop-color="#9baed7" stop-opacity="0"/></radialGradient></defs>
+      <ellipse cx="103" cy="174" rx="65" ry="13" fill="url(#shadow)"/>
+      <path d="M29 106c-4-29 24-57 55-48 26-29 70-14 74 14 28 5 37 37 20 57-10 16-34 18-50 14-18 20-50 17-60-3-22 4-40-10-39-34Z" fill="url(#bubble)" stroke="#fff" stroke-width="2"/>
+      <path d="M54 142c-17-24-6-57 21-67 37-15 74 8 75 40 1 22-13 39-36 44l-19 15 2-14c-16 0-32-5-43-18Z" fill="url(#orb)"/>
+      <ellipse cx="79" cy="116" rx="3.4" ry="4.7" fill="#5066a0"/><ellipse cx="119" cy="116" rx="3.4" ry="4.7" fill="#5066a0"/>
+      <path d="M92 129q7 7 14 0" fill="none" stroke="#5066a0" stroke-width="2.8" stroke-linecap="round"/>
+      <ellipse cx="69" cy="127" rx="8" ry="4.5" fill="#e5c5ec" opacity=".8"/><ellipse cx="130" cy="127" rx="8" ry="4.5" fill="#e5c5ec" opacity=".8"/>
+      <path d="M67 91q12-11 25-9" fill="none" stroke="white" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>
+      <path d="M147 29c-7-8-18 1-11 9l11 11 11-11c7-8-4-17-11-9" fill="#edb7cf"/>
+      <path d="m39 40 3 8 8 3-8 3-3 8-3-8-8-3 8-3Zm126 100 2 6 6 2-6 2-2 6-2-6-6-2 6-2Z" fill="#b0bedf"/>
+      <circle cx="172" cy="75" r="4" fill="#b4dedb"/><circle cx="23" cy="138" r="3" fill="#d6caef"/>
+    </symbol>
+    <symbol id="art-heart" viewBox="0 0 100 100"><path d="M20 24c-12 14-5 32 30 55 35-23 42-41 30-55-8-10-23-7-30 3-7-10-22-13-30-3Z" fill="#e7a2ba"/><path d="M31 29q8-7 14 0" fill="none" stroke="#fff0f5" stroke-width="5" stroke-linecap="round"/><path d="M23 57q27-18 55-1" fill="none" stroke="#faf1f7" stroke-width="7"/><path d="M77 50v14M70 57h14" stroke="#a37dad" stroke-width="3" stroke-linecap="round"/></symbol>
+  </defs></svg>
+
+  <main class="preview">
+    <aside class="review-head">
+      <div class="project"><span class="project-mark"><svg class="icon"><use href="#i-chat"/></svg></span>aichat <small>视觉预览</small></div>
+      <h1 class="review-title">把心事，<br>慢慢说清楚。</h1>
+      <p class="review-copy">参考测测的轻盈与陪伴感，为「关系清晰卡」保留一条更简单的路：认识自己、整理关系、看见下一步。</p>
+      <p class="small-label">点进页面，试试手感</p>
+      <nav class="screen-links" aria-label="预览页面"><button data-screen="home">首页</button><button data-screen="tests">自测</button><button data-screen="chat">倾诉</button><button data-screen="report">清晰卡</button></nav>
+      <div class="reference"><a href="index.html">返回全部原型</a><br>本地视觉原型 · 全部为演示内容<br>参考 <a href="https://www.cece.com/product/" target="_blank" rel="noreferrer">测测官方产品展示</a>，不是测测界面复刻。<br>输入仅留在本页内存，刷新即清空。<button class="reset" data-action="reset">重置预览</button></div>
+    </aside>
+    <section class="phone" aria-label="关系清晰卡小程序视觉预览">
+      <div class="status"><span>9:41</span><div class="status-right"><svg viewBox="0 0 17 12" fill="currentColor" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx=".7"/><rect x="4" y="5" width="3" height="7" rx=".7"/><rect x="8" y="2" width="3" height="10" rx=".7"/><rect x="12" width="3" height="12" rx=".7"/></svg><svg class="icon" viewBox="0 0 20 14" aria-hidden="true"><path d="M2 4q8-7 16 0M5 7q5-5 10 0m-7 3q2-2 4 0"/><circle cx="10" cy="12" r=".7" fill="currentColor"/></svg><svg viewBox="0 0 25 12" fill="currentColor" aria-hidden="true"><rect x=".5" y=".5" width="21" height="11" rx="2.5" stroke="currentColor" fill="none"/><rect x="2.5" y="2.5" width="17" height="7" rx="1"/><rect x="23" y="4" width="2" height="4" rx="1"/></svg></div></div>
+      <div class="mini-nav"><span class="mini-name"><span class="mini-mark">清</span>关系清晰卡</span><div class="wechat" aria-label="小程序导航装饰"><span>•••</span><span>◉</span></div></div>
+      <div class="viewport" id="viewport"><div class="screen" id="screen"></div></div>
+      <nav class="bottom-nav" aria-label="主导航" id="bottom-nav"></nav>
+      <div class="overlay" id="consent-modal" hidden role="dialog" aria-modal="true" aria-labelledby="consent-title">
+        <div class="sheet"><div class="sheet-grip"></div><div class="sheet-symbol"><svg class="icon"><use href="#i-shield"/></svg></div><h2 id="consent-title">先给自己一个安心的边界</h2><p>这里由 AI 辅助整理事实与感受，不能替你诊断、预测或做重大决定。你的节奏，由你决定。</p><label class="consent-label"><input type="checkbox" id="adult-consent"><span>我已年满 18 岁，并理解以上 AI 使用边界。</span></label><button class="primary" id="confirm-consent" disabled data-action="confirm-consent">确认，继续体验</button><button class="secondary" data-action="close-consent">再看看首页</button></div>
+      </div>
+      <div class="toast" id="toast" role="status" hidden></div>
+    </section>
+    <aside class="review-aside"><span class="concept-number" id="concept-number"></span><h2 id="concept-title"></h2><p id="concept-copy"></p><div class="swatches" aria-label="配色"><span style="--swatch:#6577dc"></span><span style="--swatch:#c9dcff"></span><span style="--swatch:#dff6f4"></span><span style="--swatch:#eee9ff"></span><span style="--swatch:#fce9ec"></span></div></aside>
+  </main>
+  <div class="prototype-switcher" aria-label="切换首页方案" id="prototype-switcher"><button data-variant-delta="-1" aria-label="上一个方案"><svg class="icon"><use href="#i-back"/></svg></button><span class="variant-label" id="variant-label"></span><button data-variant-delta="1" aria-label="下一个方案"><svg class="icon"><use href="#i-next"/></svg></button></div>
+
+  <script>
+    const icon = (name, cls='') => `<svg class="icon ${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+    const art = (name='companion', cls='') => `<svg class="${cls}" viewBox="0 0 ${name==='heart'?'100 100':'200 200'}" aria-hidden="true"><use href="#art-${name}"/></svg>`;
+    const escapeHTML = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const variants = {
+      A:{name:'清爽探索',title:'从一个轻入口，\n走近自己的心事。',copy:'心情、轻自测、关系梳理。借鉴测测的分区节奏，用三个明确入口代替繁杂的功能广场。'},
+      B:{name:'陪伴对话',title:'先有人听，\n再慢慢说清楚。',copy:'让陪伴成为第一眼。一个安静的对话邀请，将自测和关系工具留在自然的下一步。'},
+      C:{name:'个人空间',title:'每次整理，\n都留下一个起点。',copy:'以沟通画像与清晰卡为中心。用一条可继续的路径，串起认识自己、整理关系和小小行动。'}
+    };
+    const params = new URLSearchParams(location.search);
+    let variant = Object.hasOwn(variants,params.get('variant')) ? params.get('variant') : 'A';
+    let page = ['home','tests','chat','report','profile','clarity'].includes(params.get('screen')) ? params.get('screen') : 'home';
+    let consented = false, pendingAction = null, previousFocus = null, mood = null, answers = [], fields = {}, messages = [], toastTimer;
+    const questions = [
+      ['意见不同时，\n你通常会先怎么做？',['先把自己的想法想清楚','先听听对方为什么这样想','把感受直接表达出来','先停一会儿，等情绪缓和']],
+      ['一件事让你在意，\n你会怎样开口？',['找一个具体的例子','先说说当时的感受','问问对方是怎么想的','想好了再找合适的时机']],
+      ['对方没有及时回复，\n你更需要什么？',['确认对方看到了消息','知道大概什么时候方便','先把注意力放回自己','找机会直接说说我的需要']],
+      ['一段沟通之后，\n你更容易记住什么？',['具体说过的话','当时双方的情绪','最后达成的共识','还有哪些没有说清楚']],
+      ['想表达不同意见时，\n什么能帮到你？',['先写下自己的想法','一个不会被打断的时刻','对方愿意听的信号','一次简短、具体的交流']],
+      ['关系有些紧绷时，\n你想先做哪件事？',['弄清具体发生了什么','给彼此一点空间','说清自己在意的部分','商量一个都能接受的小行动']],
+      ['你希望对方更了解\n你的哪一面？',['我的真实需要','我还没说出口的感受','我的边界与节奏','我表达关心的方式']],
+      ['下一次沟通，\n你愿意试着改变什么？',['少一点推测，多问一句','把需要说得更具体','给彼此足够的表达时间','先做一个小小的约定']]
+    ];
+    const fieldDefs = [['fact','发生了什么','只写能确认的动作、时间或原话'],['feeling','此刻的感受','比如难过、着急、失落，或还说不清'],['need','我在意的是什么','我希望被理解、被回应，还是被尊重？'],['unknown','还不能确定的部分','哪些只是我的推测？'],['boundary','我想保留的边界','哪些事，我现在还不想勉强自己？'],['step','愿意尝试的一小步','选一个由自己掌握的小行动']];
+    const $ = selector => document.querySelector(selector);
+    const heading = title => `<header class="page-head"><button class="back" data-screen="home" aria-label="返回首页">${icon('back')}</button><h1>${title}</h1><span class="subtle-tag">AI 辅助</span></header>`;
+    const tool = (screen,name,note,symbol,color='') => `<button class="tool" data-screen="${screen}"><span class="tool-icon ${color}">${icon(symbol)}</span>${name}<small>${note}</small></button>`;
+    const recent = () => `<button class="recent" data-screen="report"><span class="recent-icon">${icon('cards')}</span><span><strong>让关心，被好好听见</strong><span class="muted">清晰卡示例 · 看见一小步</span></span>${icon('next')}</button>`;
+    function moodPanel() {
+      const options = [['sunny','smile','晴朗','#fff3d9','#bb8a35'],['calm','calm','平静','#e1f3ec','#54917c'],['cloudy','cloud','有点乱','#e8e6fc','#8e85bc'],['low','sad','低落','#e0ecfa','#7c9ac1'],['rainy','rain','想倾诉','#f9e6ec','#bd8199']];
+      return `<section class="mood"><div class="between"><span class="mood-title">今天，你的心情是什么颜色？</span><span class="date">此刻心情</span></div><div class="mood-list">${options.map(([key,symbol,label,color,ink])=>`<button class="mood-choice" data-mood="${key}" aria-label="心情：${label}" aria-pressed="${mood===key}"><span class="face" style="--face-color:${color};--face-ink:${ink}">${icon(symbol)}</span>${label}</button>`).join('')}</div><div class="mood-feedback" id="mood-feedback" role="status">${mood?'心情没有标准答案，先照顾此刻的自己。':''}</div></section>`;
+    }
+    function variantExplore() {
+      return `<div class="home-top"><div class="greeting-row"><div><h1 class="greeting">嗨，今天也照顾好自己</h1><div class="muted">给心事一点空间，给自己一点时间。</div></div><button class="avatar" data-screen="profile" aria-label="我的空间">${icon('user')}</button></div><button class="search" data-screen="clarity">${icon('search')}有一段关系，想慢慢说清楚…</button></div>${moodPanel()}<div class="tools">${tool('tests','认识自己','8 道轻自测','test')}${tool('clarity','整理关系','看清事实与感受','heart','pink')}${tool('chat','先说一说','给心事一个出口','chat','aqua')}</div><button class="hero" data-screen="clarity"><span class="chip">今天的清晰练习</span><h2>不急着想通，<br>先说清一件小事。</h2><p>把事实、感受和下一步分开。</p><span class="hero-action">试着理一理 ${icon('next')}</span>${art('companion','hero-art')}</button><div class="section-head"><h2>多认识自己一点</h2><span>从一个小发现开始</span></div><button class="mini-test" data-screen="tests"><span class="test-art">${art('heart')}</span><span><h3>关系里，你习惯怎样表达？</h3><p>找到自己的沟通起点</p><span class="meta-tag">原创轻自测 · 约 3 分钟</span></span>${icon('next')}</button><div class="section-head"><h2>我的清晰卡</h2><button data-screen="report">看看示例</button></div>${recent()}`;
+    }
+    function variantCompanion() {
+      return `<section class="companion-home"><div class="companion-day"><span>留一点时间给自己</span>${icon('sun')}</div>${art('companion','companion-art')}<h1>有些话，<br>可以从这里慢慢说。</h1><p>不用组织好语言，也不用急着找到答案。<br>从此刻最在意的那件事开始。</p><button class="conversation-start" data-screen="chat"><span>我想先说一说…</span>${icon('chat')}</button><div class="suggested-line"><button data-action="prompt" data-prompt="最近，我们好像总是聊不到一起。">最近总是聊不到一起</button><button data-action="prompt" data-prompt="有些感受，我不知道怎么开口。">不知道怎样开口</button></div><div class="companion-bottom"><button data-screen="tests">${icon('test')}<h2>先认识一下自己</h2><p>用 8 道题，发现沟通习惯。</p></button><button data-screen="clarity">${icon('leaf')}<h2>把一件事理清楚</h2><p>写下事实，留意真实感受。</p></button></div></section>`;
+    }
+    function variantArchive() {
+      return `<div class="archive-welcome"><button class="avatar" data-screen="profile" aria-label="我的空间">${icon('user')}</button><div><h1>你的清晰空间</h1><span class="muted">认识自己，也练习好好相处。</span></div></div><section class="archive-feature"><span class="muted">从一段真实的关系开始</span><h2>把纠结写下来，<br>把下一步留给自己。</h2><button class="small-action" data-screen="clarity">整理一段关系</button>${art('companion','hero-art')}</section><div class="section-head"><h2>一条慢慢清晰的路</h2><span>按自己的节奏来</span></div><div class="journey"><section class="journey-step"><h3>认识我的沟通习惯</h3><p>没有好坏之分，只有更适合你的表达方式。</p><button data-screen="tests">开始轻自测 ${icon('next')}</button></section><section class="journey-step"><h3>整理一段真实的关系</h3><p>分清事实、感受，以及尚未确认的部分。</p><button data-screen="clarity">进入关系梳理 ${icon('next')}</button></section><section class="journey-step"><h3>留下一张清晰卡</h3><p>下次再纠结时，记得自己真正想要什么。</p><button data-screen="report">看一张示例 ${icon('next')}</button></section></div>${moodPanel()}`;
+    }
+    function testsPage() {
+      return `${heading('认识自己')}<div class="intro-illustration">${art('companion')}</div><h2 class="intro-title">关系里，<br>你习惯怎样表达？</h2><p class="intro-desc">每个人都有自己的沟通节奏。<br>从几个日常片段，发现你的表达习惯。</p><div class="intro-features"><span><strong>8 题</strong>日常场景</span><span><strong>3 分钟</strong>留给自己</span><span><strong>可调整</strong>沟通起点</span></div><button class="primary" data-action="start-test">开始认识自己 ${icon('arrow')}</button><p class="quiet-note">按最近的真实感受选择，没有标准答案。<br>这是自我探索，不是心理诊断。</p>`;
+    }
+    function questionPage() {
+      const i = answers.length, [title,options] = questions[i];
+      return `${heading('沟通习惯轻自测')}<div class="progress-track"><div class="progress-fill" style="width:${i/8*100}%"></div></div><p class="question-meta">${i+1} / 8 · 选最接近你的一个</p><h2 class="question">${escapeHTML(title).replace(/\n/g,'<br>')}</h2>${options.map((text,index)=>`<button class="answer" data-answer="${index}"><span class="answer-key">${String.fromCharCode(65+index)}</span><span>${text}</span></button>`).join('')}<p class="quiet-note">不必纠结，选择更接近此刻自己的答案。</p>`;
+    }
+    function resultPage() {
+      return `${heading('沟通起点')}<div class="intro-illustration">${art('heart')}</div><h2 class="intro-title">更了解自己，<br>是好好表达的开始。</h2><p class="intro-desc">你完成了 8 道日常场景自测。<br>试着把一个小发现，带回一段真实的关系。</p><section class="profile-card"><h2>你想尝试的小改变</h2><p>${escapeHTML(questions[7][1][answers[7]??0])}</p><span class="meta-tag">来自你的第 8 题选择</span></section><button class="primary" data-screen="clarity">带着这个发现，理一理关系 ${icon('arrow')}</button><button class="secondary" data-screen="home">先回到我的空间</button>`;
+    }
+    function chatPage() {
+      return `${heading('先说一说')}<div class="chat-intro"><span class="companion-mini">${icon('chat')}</span><span><h2>一个慢慢说话的地方</h2><span class="muted">AI 倾听练习 · 最多 8 次回复</span></span></div><div class="messages" id="messages"><div class="chat-time">给此刻的你</div><div class="message">嗨，我在这里。\n不必把话想好再说，我们可以从一个具体的小片段开始。\n\n今天，有什么事让你放不下？</div>${messages.map(m=>`<div class="message ${m.role==='user'?'user':''}">${escapeHTML(m.text)}</div>`).join('')}${messages.length===0?'<div class="suggestions"><button data-action="prompt" data-prompt="最近，我们好像总是聊不到一起。">最近，我们好像总是聊不到一起</button><button data-action="prompt" data-prompt="我想说清自己的感受，却总是说不出口。">我想说清自己的感受</button></div>':''}</div><form class="composer" id="chat-form"><textarea id="chat-input" aria-label="想说的心事" placeholder="从你愿意说的地方开始…" maxlength="500" ${messages.length>=16?'disabled':''}></textarea><button class="send" type="submit" aria-label="发送心事" ${messages.length>=16?'disabled':''}>${icon('arrow')}</button></form><p class="chat-footnote">${messages.length>=16?'这一轮先到这里，给自己一点整理的空间。':'AI 辅助，无法替代专业支持。'}<button data-action="safety">需要安全支持？</button></p>`;
+    }
+    function clarityPage() {
+      return `${heading('整理一段关系')}<p class="fields-intro">不用一次写完。先留下一件具体的小事，<br>再慢慢分清，哪些是事实，哪些是感受。</p><form id="clarity-form">${fieldDefs.map(([key,label,placeholder],index)=>`<label class="field"><span><b>${index+1}</b>${label}</span><textarea name="${key}" placeholder="${placeholder}" maxlength="500">${escapeHTML(fields[key]||'')}</textarea></label>`).join('')}<button class="primary" type="submit">预览我的清晰卡 ${icon('arrow')}</button></form><p class="quiet-note">只写你愿意分享的部分，暂时没有答案也没关系。</p>`;
+    }
+    function reportPage() {
+      const personal = Object.values(fields).some(value=>value.trim());
+      const fact=fields.fact||(personal?'你还没有写下可以确认的事实，准备好时再慢慢补上。':'那天我分享了一件在意的事，对方的回复很简短。我还不知道，对方当时是否方便认真聊。');
+      const feeling=fields.feeling||(personal?'暂时没有写下感受，说不清也没有关系。':'我有一点失落，也很在意这份关心有没有被好好接住。');
+      const need=fields.need||(personal?'可以再想一想：在这件事里，我真正在意什么？':'我希望在表达感受时，可以被认真听见，而不必靠猜测寻找答案。');
+      return `${heading('我的清晰卡')}<article class="letter"><div class="letter-label">${icon('leaf')}关系清晰卡 · ${personal?'本次整理':'示例'}</div><h2>${personal?'把心事慢慢说清楚':'让关心，<br>被好好听见。'}</h2><p class="letter-sub">给愿意认真面对关系的你。<br>这张卡留住此刻的理解，也允许以后调整。</p><section class="letter-section"><h3>我能确认的事实</h3><p>${escapeHTML(fact)}</p></section><section class="letter-section" style="--bar:var(--rose)"><h3>我的真实感受</h3><p>${escapeHTML(feeling)}</p></section><section class="letter-section" style="--bar:var(--teal)"><h3>我真正想要的</h3><p>${escapeHTML(need)}</p></section>${personal&&fields.unknown?`<section class="letter-section"><h3>尚未确定的部分</h3><p>${escapeHTML(fields.unknown)}</p></section>`:''}${personal&&fields.boundary?`<section class="letter-section"><h3>我想保留的边界</h3><p>${escapeHTML(fields.boundary)}</p></section>`:''}<div class="practice-box"><strong>给自己一个小小的行动</strong><p>${escapeHTML(fields.step||(personal?'先照顾好此刻的自己，准备好时，再选一个能由自己掌握的小行动。':'找一个彼此都方便的时刻，说一句：“那件事对我挺重要的，你现在愿意听我说一会儿吗？”'))}</p></div></article><button class="primary" data-screen="clarity">${personal?'继续调整这张卡':'试着整理我的关系'} ${icon('arrow')}</button><p class="quiet-note">这不是对他人的判断，也不是替你做出的决定。</p>`;
+    }
+    function profilePage() {
+      return `${heading('我的空间')}<div class="archive-welcome"><span class="avatar">${icon('user')}</span><div><h1>你好，探索中的你</h1><span class="muted">每一次认真面对，都算数。</span></div></div><section class="profile-card"><h2>我的沟通起点</h2><p>${answers.length===8?'你已经完成这次自测。带着一个真实片段，继续认识自己。':'用几个日常片段，更了解自己的表达习惯。'}</p><button class="primary" data-screen="tests">${answers.length===8?'再看看我的沟通起点':'开始轻自测'}</button></section>${[['report','cards','我的清晰卡'],['clarity','heart','我的关系梳理']].map(([screen,symbol,label])=>`<button class="menu-row" data-screen="${screen}">${icon(symbol)}${label}${icon('next')}</button>`).join('')}<button class="menu-row" data-action="privacy">${icon('shield')}隐私与数据${icon('next')}</button><button class="menu-row" data-action="boundary">${icon('leaf')}AI 使用边界${icon('next')}</button><p class="quiet-note" style="margin-top:29px">认识自己，按自己的节奏来。</p>`;
+    }
+    function render() {
+      const screens = {home:()=>({A:variantExplore,B:variantCompanion,C:variantArchive}[variant]()),tests:testsPage,question:questionPage,result:resultPage,chat:chatPage,clarity:clarityPage,report:reportPage,profile:profilePage};
+      $('#screen').className = `screen ${page==='chat'?'chat-screen':''}`;
+      $('#screen').innerHTML = screens[page]();
+      const nav = [['home','home','首页'],['tests','test','自测'],['chat','chat','说一说'],['report','cards','清晰卡'],['profile','user','我的']];
+      $('#bottom-nav').innerHTML = nav.map(([screen,symbol,label])=>`<button class="nav-item ${screen===page||(screen==='tests'&&['question','result'].includes(page))?'active':''} ${screen==='chat'?'talk':''}" data-screen="${screen}" ${screen===page?'aria-current="page"':''}>${screen==='chat'?`<span class="talk-orb">${icon(symbol)}</span>`:icon(symbol)}<span>${label}</span></button>`).join('');
+      document.querySelectorAll('.screen-links button').forEach(button=>button.classList.toggle('active',button.dataset.screen===page));
+      $('#concept-number').textContent=`方案 ${variant} / 03`;
+      $('#concept-title').innerText=variants[variant].title;
+      $('#concept-copy').textContent=variants[variant].copy;
+      $('#variant-label').innerHTML=`${variant} · ${variants[variant].name}<small>首页结构预览 · ← → 切换</small>`;
+      const url=new URL(location.href);url.searchParams.set('variant',variant);url.searchParams.set('screen',['question','result'].includes(page)?'tests':page);history.replaceState(null,'',url);
+      $('#viewport').scrollTop=0;
+      if(page==='chat'&&messages.length) $('#viewport').scrollTop=$('#viewport').scrollHeight;
+    }
+    function go(screen) {page=screen;if(screen==='tests'&&answers.length===8)page='result';render()}
+    function requireConsent(action) {
+      if(consented){action();return}
+      previousFocus=document.activeElement;pendingAction=action;$('#consent-modal').hidden=false;$('#adult-consent').focus();
+    }
+    function closeConsent() {$('#consent-modal').hidden=true;pendingAction=null;$('#adult-consent').checked=false;$('#confirm-consent').disabled=true;if(previousFocus?.isConnected)previousFocus.focus()}
+    function switchVariant(delta) {const keys=Object.keys(variants);variant=keys[(keys.indexOf(variant)+delta+keys.length)%keys.length];go('home')}
+    function toast(text) {clearTimeout(toastTimer);$('#toast').textContent=text;$('#toast').hidden=false;toastTimer=setTimeout(()=>$('#toast').hidden=true,4000)}
+    function sendMessage(text) {
+      text=text.trim();if(!text||messages.length>=16)return;
+      requireConsent(()=>{
+        const replies=['可以从最近一次的具体片段开始。那一次，发生了什么？','你刚才说的片段里，哪些是可以确认的事实？哪些是你还不能确定的部分？','试着留意一下此刻的感受。如果只选一两个词，你会怎样形容？','在这件事里，你最希望被理解的需要是什么？','哪些事是你愿意尝试的？哪些暂时需要留一点边界？','如果把下一步缩小一点，有没有一个由你自己掌握的小行动？','你可以先把这个小行动记下来，给自己一点时间，不必今天就有答案。','这一轮先到这里。你愿意的话，可以到“整理关系”里，把事实、感受和下一步分别写下来。'];
+        messages.push({role:'user',text},{role:'assistant',text:replies[messages.length/2]});go('chat');
+      });
+    }
+    document.addEventListener('click',event=>{
+      const button=event.target.closest('button');if(!button)return;
+      if(button.dataset.screen){go(button.dataset.screen);return}
+      if(button.dataset.variantDelta){switchVariant(Number(button.dataset.variantDelta));return}
+      if(button.dataset.mood){mood=button.dataset.mood;const scroll=$('#viewport').scrollTop;render();$('#viewport').scrollTop=scroll;return}
+      if(button.dataset.answer!==undefined){answers.push(Number(button.dataset.answer));go(answers.length===8?'result':'question');return}
+      const action=button.dataset.action;
+      if(action==='start-test')requireConsent(()=>{answers=[];go('question')});
+      if(action==='close-consent')closeConsent();
+      if(action==='confirm-consent'&&$('#adult-consent').checked){consented=true;const next=pendingAction;closeConsent();next?.()}
+      if(action==='prompt')sendMessage(button.dataset.prompt);
+      if(action==='privacy')toast('预览内容只在当前页面内存中，刷新或重置后即清空。');
+      if(action==='boundary')toast('AI 仅帮助整理信息，不用于诊断、预测或替你做重大决定。');
+      if(action==='safety')toast('如有立即危险，请联系 110 / 120；心理支持热线：12356。');
+      if(action==='reset'){consented=false;mood=null;answers=[];fields={};messages=[];closeConsent();go('home');toast('已重置本次预览。')}
+    });
+    $('#adult-consent').addEventListener('change',event=>$('#confirm-consent').disabled=!event.target.checked);
+    document.addEventListener('submit',event=>{
+      if(event.target.id==='chat-form'){event.preventDefault();sendMessage($('#chat-input').value)}
+      if(event.target.id==='clarity-form'){event.preventDefault();const values=Object.fromEntries(new FormData(event.target));requireConsent(()=>{fields=values;go('report')})}
+    });
+    document.addEventListener('keydown',event=>{
+      const modalOpen=!$('#consent-modal').hidden;
+      if(modalOpen){
+        if(event.key==='Escape'){event.preventDefault();closeConsent()}
+        if(event.key==='Tab'){const focusable=[...$('#consent-modal').querySelectorAll('input,button:not(:disabled)')];const first=focusable[0],last=focusable.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}}
+        return;
+      }
+      if(event.target.matches('input,textarea,[contenteditable]'))return;
+      if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();switchVariant(event.key==='ArrowLeft'?-1:1)}
+    });
+    $('#prototype-switcher').hidden=!['localhost','127.0.0.1','[::1]',''].includes(location.hostname);
+    render();
+  </script>
+</body>
+</html>

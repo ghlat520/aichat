@@ -1,0 +1,74 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">{{toolShort}}</view>
+    <text class="gk-head-tag">{{isClassic ? '经典条目' : '演示题'}}</text>
+  </view>
+
+  <view class="gk-between question-meta-row">
+    <text class="gk-tiny">{{isClassic ? 'IPIP-50 条目体验' : '按最近一段时间的自己来选'}}</text>
+    <text class="gk-tag gk-tag--gray">{{index + 1}} / {{total}}</text>
+  </view>
+  <view class="gk-progress question-progress"><view class="gk-progress-fill" style="width: {{index / total * 100}}%;"></view></view>
+
+  <view class="question-hint">不必选更理想的自己，选更接近真实的那个。</view>
+  <view class="question-title">{{question}}</view>
+
+  <view class="question-options" role="group" aria-label="{{isClassic ? '与自己的符合程度' : '认同程度'}}">
+    <button
+      wx:for="{{options}}"
+      wx:key="value"
+      class="gk-tap-answer {{selected === item.value ? 'gk-tap-answer--selected' : ''}}"
+      data-value="{{item.value}}"
+      aria-label="{{item.value}}分，{{item.label}}"
+      aria-pressed="{{selected === item.value}}"
+      bindtap="choose"
+    >
+      <view class="gk-tap-answer-key">{{item.value}}</view>
+      <text class="question-option-label">{{item.label}}</text>
+      <text class="gk-tap-answer-check">{{selected === item.value ? '✓' : ''}}</text>
+    </button>
+  </view>
+
+  <block wx:if="{{!autoNext}}">
+    <button class="gk-primary question-manual-save" bindtap="save" disabled="{{!selected}}">{{index === total - 1 ? '保存并查看结果' : '保存并继续'}}</button>
+  </block>
+  <view wx:else class="question-auto-hint">点选后自动保存，进入下一题</view>
+
+  <view class="question-toolbar">
+    <button class="question-tool-btn" bindtap="previous" disabled="{{index === 0}}">上一题，修改答案</button>
+    <button class="question-tool-btn" bindtap="pause">先暂停，稍后继续</button>
+  </view>
+
+  <checkbox-group bindchange="toggleAutoNext">
+    <label class="gk-check-row question-auto-control">
+      <checkbox value="auto" checked="{{autoNext}}" color="#6577dc" />
+      <text>选择后自动下一题</text>
+    </label>
+  </checkbox-group>
+
+  <button wx:if="{{isClassic}}" class="question-source" bindtap="classicSource">
+    <view class="ui-icon ui-icon--test question-source-icon"></view>
+    <text>经典题目从哪里来？</text>
+    <view class="gk-chevron"></view>
+  </button>
+  <view class="gk-footer-note">{{isClassic ? '本轮选取 6 道经典条目做中文交互演示。' : '这是 6 道交互演示题。'}}<text class="question-note-br"></text>{{isClassic ? '完整版与中文适配需按正式测评版本确认。' : '正式题目采用确认后的测评工具版本。'}}</view>
+  <view wx:if="{{sheet}}" class="question-overlay" catchtouchmove="preventScroll" bindtap="closeSheet">
+    <view class="question-sheet" catchtap="preventScroll">
+      <view class="question-sheet-grip"></view>
+      <block wx:if="{{sheet === 'pause'}}">
+        <view class="question-sheet-title">先停在这里，也可以。</view>
+        <view class="question-sheet-copy">已保存 {{savedCount}} / {{total}} 道演示题。下次从自测首页继续，已保存的选择都还在。</view>
+        <button class="gk-primary" bindtap="keepProgress">保留进度，回到自测</button>
+        <button class="gk-quiet" bindtap="closeSheet">继续这道题</button>
+      </block>
+      <block wx:else>
+        <view class="question-sheet-title">经典题目，从哪里来？</view>
+        <view class="question-sheet-copy">这组性格特质交互题选自 IPIP-50 大五人格条目，原始条目公开可查。本轮采用 6 道中文适配条目演示答题，不据此输出正式 50 题分数。</view>
+        <view class="question-sheet-copy">正式接入时固定完整题目版本、中文表述和计分规则。AI 用于解释，题目与计分由测评规则提供。</view>
+        <button class="question-source" bindtap="copyClassicSource">复制 IPIP 原始条目与说明链接<view class="gk-chevron"></view></button>
+        <button class="gk-primary" bindtap="closeSheet">继续体验</button>
+      </block>
+    </view>
+  </view>
+</view>

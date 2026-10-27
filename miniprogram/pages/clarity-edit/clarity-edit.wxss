@@ -1,0 +1,10 @@
+.clarity-context-row { display: flex; align-items: center; justify-content: space-between; padding: 0 0 29rpx; margin-bottom: 29rpx; border-bottom: 1rpx solid #e5eaf3; color: #778298; font-size: 23rpx; }
+.clarity-context-value { padding: 8rpx 15rpx; background: #eaf0ff; color: #6577dc; border-radius: 11rpx; font-size: 22rpx; }
+.clarity-field-heading { display: flex; align-items: center; gap: 13rpx; font-size: 24rpx; font-weight: 600; }
+.clarity-field-number { display: flex; align-items: center; justify-content: center; width: 35rpx; height: 35rpx; border-radius: 11rpx; background: #e7efff; color: #6577dc; font-size: 18rpx; font-weight: 400; }
+.clarity-emotion-hint { margin-left: auto; color: #778298; font-size: 20rpx; font-weight: 400; }
+.clarity-emotions { display: flex; flex-wrap: wrap; gap: 13rpx; margin-top: 21rpx; }
+.clarity-emotion-chip { display: flex; align-items: center; gap: 6rpx; padding: 9rpx 17rpx 9rpx 10rpx; border: 1rpx solid #e4e9f3; border-radius: 20rpx; background: #ffffff; color: #778298; font-size: 23rpx; }
+.clarity-emotion-chip--active { color: #6577dc; border-color: #aebbee; background: #edf1ff; }
+.clarity-checkbox { transform: scale(.7); margin: -7rpx; }
+.clarity-saved { margin-top: 29rpx; }

@@ -1,0 +1,67 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">把这个发现，分享出去</view>
+    <text class="gk-head-tag">自愿分享</text>
+  </view>
+
+  <view class="poster-tabs">
+    <button wx:for="{{tabs}}" wx:key="id" class="poster-tab {{posterKind === item.id ? 'poster-tab--selected' : ''}}" data-kind="{{item.id}}" bindtap="setPosterKind">{{item.label}}</button>
+  </view>
+
+  <view class="growth-poster {{posterKind === 'comfort' ? 'growth-poster--comfort' : posterKind === 'strength' ? 'growth-poster--strength' : ''}}">
+    <view class="poster-topline"><text>关系清晰卡</text><text class="poster-topline-note">给自己一点探索的空间</text></view>
+    <view class="poster-eyebrow">{{poster.eyebrow}}</view>
+    <view class="poster-title"><view wx:for="{{titleLines}}" wx:key="*this">{{item}}</view></view>
+    <view wx:if="{{posterKind === 'challenge'}}" class="gk-rocket poster-art"></view>
+    <view wx:else class="ui-companion poster-art-mascot"></view>
+    <view class="poster-description">{{poster.description}}</view>
+    <view class="gk-tags">
+      <text wx:for="{{poster.tags}}" wx:for-item="tag" wx:key="*this" class="gk-tag gk-tag--white">{{tag}}</text>
+    </view>
+    <view wx:if="{{experienceSnippet}}" class="poster-private-snippet">
+      <view class="poster-private-label">我主动选择分享的经历</view>
+      <text>{{experienceSnippet}}</text>
+    </view>
+    <view class="poster-sender">{{posterName || '探索中的我'}} · 想听听你的看法</view>
+    <view class="poster-code-row">
+      <button class="poster-code-target" bindtap="simulateRecipient">
+        <view class="poster-code-box"><view class="poster-code-mark">清</view></view>
+        <text>小程序码预留位</text>
+      </button>
+      <view class="poster-code-copy">
+        <view class="poster-code-cta">{{poster.cta}}</view>
+        <view class="poster-code-note">正式接入后，扫码直达对应功能</view>
+        <button class="poster-code-link" bindtap="simulateRecipient">先体验朋友点开后的页面 →</button>
+      </view>
+    </view>
+    <view class="poster-truth">{{poster.footer}} · 交互原型 · 码位为示意，暂不可真实扫码</view>
+  </view>
+
+  <view class="gk-field">
+    <view class="gk-field-label">这张卡，想署个什么名？ <text class="gk-field-label-note">选填</text></view>
+    <input class="gk-input" value="{{posterName}}" placeholder="探索中的我" maxlength="16" bindinput="onNameInput" />
+  </view>
+
+  <view class="gk-field-label">朋友点开后，从哪里开始？</view>
+  <view class="gk-chips">
+    <button wx:for="{{entryOptions}}" wx:key="*this" class="gk-chip {{shareEntry === item[0] ? 'gk-chip--selected' : ''}}" data-entry="{{item[0]}}" bindtap="setShareEntry">{{item[1]}}</button>
+  </view>
+
+  <block wx:if="{{showShareFlags}}">
+    <view class="share-flag-group">
+      <button class="share-flag" data-flag="type" bindtap="toggleShareFlag"><text class="share-flag-check">{{shareFlags.type ? '☑' : '☐'}}</text>展示人格偏好</button>
+      <button class="share-flag" data-flag="strength" bindtap="toggleShareFlag"><text class="share-flag-check">{{shareFlags.strength ? '☑' : '☐'}}</text>展示优势主题</button>
+      <button class="share-flag" data-flag="experience" bindtap="toggleShareFlag"><text class="share-flag-check">{{shareFlags.experience ? '☑' : '☐'}}</text>加入我选择的经历摘要</button>
+    </view>
+  </block>
+
+  <view class="gk-button-pair">
+    <button class="gk-primary" bindtap="savePoster">保存海报 PNG</button>
+    <button class="gk-secondary" open-type="share">转发给朋友</button>
+  </view>
+
+  <view class="gk-footer-note">保存和分享由你选择，免费结果始终可看。<text class="share-br"></text>当前可保存真实 PNG；微信转发进入接收方直达页。</view>
+
+  <canvas type="2d" id="poster-canvas" class="poster-canvas"></canvas>
+</view>

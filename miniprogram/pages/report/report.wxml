@@ -1,0 +1,20 @@
+<import src="../../templates/preview.wxml" />
+<view id="report-page" class="container ui-tab-page">
+  <template is="page-head" data="{{title:'我的清晰卡'}}" />
+  <view id="report-loading" wx:if="{{loading}}" class="aichat-card aichat-muted">正在整理你的清晰卡…</view>
+  <view id="report-error" wx:if="{{error}}" class="aichat-warning">{{error}}</view>
+  <view wx:if="{{!loading && (demo || summary)}}" id="report-summary" class="ui-letter">
+    <view class="ui-letter-label"><view class="ui-icon ui-icon--leaf"></view><text>关系清晰卡 · {{demo ? '示例' : '本次整理'}}</text></view>
+    <view class="ui-letter-title"><block wx:if="{{demo}}"><view>让关心，</view><view>被好好听见。</view></block><block wx:else>把心事慢慢说清楚</block></view>
+    <view class="ui-letter-sub"><view>给愿意认真面对关系的你。</view><view>这张卡留住此刻的理解，也允许以后调整。</view></view>
+    <view id="report-confirmed-facts" class="ui-letter-section"><view class="ui-letter-heading"><view class="ui-letter-bar"></view><text>我能确认的事实</text></view><view wx:if="{{demo}}" class="ui-letter-text">那天我分享了一件在意的事，对方的回复很简短。我还不知道，对方当时是否方便认真聊。</view><block wx:else><view class="ui-letter-text" wx:for="{{summary.confirmed_facts}}" wx:key="index">{{item}}</view></block></view>
+    <view id="report-emotions" class="ui-letter-section"><view class="ui-letter-heading"><view class="ui-letter-bar ui-letter-bar--pink"></view><text>我的真实感受</text></view><view class="ui-letter-text">{{demo ? '我有一点失落，也很在意这份关心有没有被好好接住。' : emotionText}}</view></view>
+    <view id="report-needs" class="ui-letter-section"><view class="ui-letter-heading"><view class="ui-letter-bar ui-letter-bar--aqua"></view><text>我真正想要的</text></view><view class="ui-letter-text">{{demo ? '我希望在表达感受时，可以被认真听见，而不必靠猜测寻找答案。' : needText}}</view></view>
+    <view id="report-unknowns" wx:if="{{!demo}}" class="ui-letter-section"><view class="ui-letter-heading"><view class="ui-letter-bar"></view><text>还不能确定的部分</text></view><view class="ui-letter-text" wx:for="{{summary.unknowns_to_verify}}" wx:key="index">{{item}}</view></view>
+    <view id="report-limits" wx:if="{{!demo}}" class="ui-letter-section"><view class="ui-letter-heading"><view class="ui-letter-bar"></view><text>关于这次整理</text></view><view class="ui-letter-text" wx:for="{{summary.uncertainty_and_limits}}" wx:key="index">{{item}}</view></view>
+    <view id="report-goal" class="ui-practice-box"><view class="ui-practice-title">给自己一个小小的行动</view><view class="ui-practice-copy">{{demo ? '找一个彼此都方便的时刻，说一句：“那件事对我挺重要的，你现在愿意听我说一会儿吗？”' : summary.self_executable_goal}}</view></view>
+  </view>
+  <button wx:if="{{!loading}}" class="aichat-btn" bindtap="goToClarity">{{demo ? '试着整理我的关系' : '继续调整这张卡'}}</button>
+  <button id="report-action" wx:if="{{!demo && summary}}" class="aichat-btn aichat-btn--ghost" bindtap="goToAction">看看后续的小行动</button>
+  <view id="report-boundary" class="ui-quiet-note">{{summary.boundary_reminder || '这不是对他人的判断，也不是替你做出的决定。'}}</view>
+</view>

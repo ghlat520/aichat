@@ -1,0 +1,27 @@
+.question-meta-row { margin-top: 0; }
+.question-progress { margin-top: 24rpx; }
+.question-hint { font-size: 22rpx; color: var(--ui-muted); margin: 40rpx 0 34rpx; }
+.question-title { font-size: 46rpx; line-height: 1.65; letter-spacing: -1.6rpx; font-weight: 550; margin: 40rpx 0; min-height: 142rpx; }
+.question-options { display: grid; gap: 18rpx; }
+.question-options .gk-tap-answer { margin: 0; }
+.question-option-label { flex: 1; }
+.question-auto-hint { font-size: 20rpx; color: #8999b8; text-align: center; margin: 32rpx 0 16rpx; }
+.question-manual-save { margin-top: 32rpx; }
+.question-toolbar { display: flex; justify-content: space-between; gap: 16rpx; margin: 34rpx 0 0; }
+.question-tool-btn[disabled] { background: transparent; opacity: .45; }
+.question-tool-btn { font-size: 22rpx; color: var(--ui-muted); background: transparent; padding: 0; line-height: 1.6; }
+.question-tool-btn::after { border: 0; }
+.question-auto-control { margin: 38rpx 0 32rpx; font-size: 20rpx; color: #96a2b8; align-items: center; }
+.question-auto-control checkbox { transform: scale(.6); transform-origin: left center; width: 26rpx; margin: 0; }
+.question-source { display: flex; gap: 14rpx; align-items: center; padding: 22rpx 0; font-size: 20rpx; color: #8594b1; line-height: 1.8; text-align: left; width: 100%; background: transparent; margin-top: 0; }
+.question-source::after { border: 0; }
+.question-source-icon { width: 28rpx; height: 28rpx; }
+.question-note-br { display: block; height: 0; }
+
+.question-source .gk-chevron { margin-left: auto; }
+
+.question-overlay { position: fixed; inset: 0; background: #26344b48; z-index: 70; display: flex; align-items: flex-end; }
+.question-sheet { background: #ffffff; border-radius: 48rpx 48rpx 0 0; padding: 28rpx 44rpx calc(64rpx + env(safe-area-inset-bottom)); width: 100%; max-height: 88vh; overflow-y: auto; }
+.question-sheet-grip { width: 70rpx; height: 8rpx; border-radius: 8rpx; background: #dce2ec; margin: 0 auto 46rpx; }
+.question-sheet-title { font-size: 42rpx; font-weight: 550; letter-spacing: -1rpx; line-height: 1.6; margin: 14rpx 0 24rpx; }
+.question-sheet-copy { font-size: 24rpx; line-height: 1.9; color: var(--ui-muted); margin-bottom: 34rpx; }

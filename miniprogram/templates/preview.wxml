@@ -1,0 +1,4 @@
+<template name="page-head">
+  <view class="ui-page-head"><button class="ui-back" bindtap="goHome" aria-label="返回首页"><view class="ui-icon ui-icon--back"></view></button><view class="ui-page-head-title">{{title}}</view></view>
+</template>
+<template name="companion"><view class="ui-companion {{className}}" aria-hidden="true"></view></template>

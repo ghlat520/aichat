@@ -1,0 +1,88 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">个人优势说明书</view>
+    <text class="gk-head-tag">报告预览</text>
+  </view>
+
+  <!-- 准备中 / 失败 -->
+  <block wx:if="{{state !== 'ready'}}">
+    <view class="gk-payment-state">
+      <view wx:if="{{state === 'preparing'}}" class="gk-loading-orbit"></view>
+      <view wx:else class="gk-state-icon gk-state-icon--failure">!</view>
+      <view class="gk-payment-state-title">{{state === 'preparing' ? '正在整理你的说明书' : '这次还没有准备好'}}</view>
+      <block wx:if="{{state === 'preparing'}}">
+        <view class="gk-payment-state-desc">把测评、经历与目标放在一起。</view>
+        <view class="gk-payment-state-desc">准备好后，才会出现购买入口。</view>
+      </block>
+      <block wx:else>
+        <view class="gk-payment-state-desc">你的测评和经历都还在。</view>
+        <view class="gk-payment-state-desc">可以重新准备，或先继续查看免费结果。</view>
+      </block>
+    </view>
+    <view class="gk-card">
+      <view class="gk-path-step"><view class="gk-step-check">✓</view><text class="gk-small">整理测评与经历</text></view>
+      <view class="gk-path-step"><view class="gk-step-check {{state === 'preparing' ? '' : 'gk-step-check--missing'}}">{{state === 'preparing' ? '…' : '○'}}</view><text class="gk-small">完成场景建议与交付检查</text></view>
+      <view class="gk-tiny preview-step-note">尚未创建购买订单，不会扣款。</view>
+    </view>
+    <button wx:if="{{state === 'failed'}}" class="gk-primary" bindtap="retryPrepare">重新准备报告</button>
+    <button wx:else class="gk-primary" bindtap="finishPreview">刷新准备状态</button>
+    <button class="gk-secondary" bindtap="backToPortrait">先回到免费画像</button>
+  </block>
+
+  <!-- 就绪 -->
+  <block wx:else>
+    <view class="report-book">
+      <text class="gk-tag gk-tag--white">为你整理 · 预览样例</text>
+      <view class="report-book-title">一份懂你的说明书，</view>
+      <view class="report-book-title">陪你把发现用回生活。</view>
+      <view class="report-book-owner">结合你的测评、两段经历与{{goalsText}}目标</view>
+      <view class="report-book-decoration"></view>
+    </view>
+
+    <view class="gk-card">
+      <view class="gk-between">
+        <view class="gk-title-sm">先看一段，与你有关的分析</view>
+        <text class="gk-tag gk-tag--aqua">个人化片段</text>
+      </view>
+      <view class="gk-small preview-fragment-copy">"梳理信息"可能是你值得发展的优势。它不只来自一项测评，也体现在你如何把模糊的事变得可以行动。</view>
+      <view class="gk-evidence">
+        <view class="gk-evidence-label">{{confirmed ? '本人确认的经历 1' : '示例经历 1'}}</view>
+        <text>"{{experienceAction}}"</text>
+      </view>
+      <view class="gk-small">这项优势更适合有思考空间、目标可以澄清的协作场景；如果频繁替所有人整理，你也可能承担过多。</view>
+    </view>
+
+    <view class="gk-section-title"><view class="gk-section-title-title">完整说明书，你会得到</view></view>
+    <view class="gk-card preview-chapter-card">
+      <view wx:for="{{chapters}}" wx:key="*this" class="preview-chapter">
+        <text class="preview-chapter-num">{{index < 9 ? '0' : ''}}{{index + 1}}</text>
+        <text class="preview-chapter-name">{{item}}</text>
+        <text wx:if="{{index < 2}}" class="gk-tiny preview-chapter-note">含依据</text>
+      </view>
+    </view>
+
+    <view class="preview-benefits">
+      <view class="preview-benefit"><view class="preview-benefit-strong">8 章完整内容</view>结合真实经历</view>
+      <view class="preview-benefit"><view class="preview-benefit-strong">1 次集中校准</view>修正不符合的解读</view>
+      <view class="preview-benefit"><view class="preview-benefit-strong">7 天内 1 次复盘</view>把发现用回生活</view>
+    </view>
+
+    <view class="gk-purchase-box">
+      <view class="gk-between preview-price-row">
+        <view>
+          <view class="gk-tiny">一次购买，可重复查看</view>
+          <view class="gk-price preview-price"><text class="gk-price-currency">¥</text>29.90</view>
+        </view>
+        <text class="gk-tag gk-tag--aqua">报告已就绪</text>
+      </view>
+      <button class="gk-primary" bindtap="{{canReadBase ? 'openReport' : 'buyBase'}}">{{canReadBase ? '打开已购报告' : '购买个人优势说明书'}}</button>
+      <button class="gk-quiet" bindtap="backToPortrait">继续免费使用</button>
+      <view class="gk-between preview-box-links">
+        <button class="gk-text-link" bindtap="sampleReport">查看完整样例</button>
+        <button class="gk-text-link" bindtap="purchaseInfo">购买与售后说明</button>
+      </view>
+    </view>
+    <view class="gk-footer-note">免费基础结果不会因未购买而减少。<text class="preview-br"></text>本页为原型演示价格，非实际收费。</view>
+  </block>
+</view>

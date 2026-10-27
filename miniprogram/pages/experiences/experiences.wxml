@@ -1,0 +1,108 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">把优势放回真实经历</view>
+    <text class="gk-head-tag">自我探索</text>
+  </view>
+
+  <view class="gk-page-title">从一件小事说起，</view>
+  <view class="gk-page-title">就已经很好。</view>
+  <view class="gk-lead">不是简历，也不需要漂亮的成就。<text class="exp-br"></text>回想一次你帮到了人、学会了什么或把事情理清的片段。</view>
+
+  <view class="exp-tabs">
+    <button class="exp-tab {{mode === 'guided' ? 'exp-tab--selected' : ''}}" data-mode="guided" bindtap="setMode">一次写一段</button>
+    <button class="exp-tab {{mode !== 'guided' ? 'exp-tab--selected' : ''}}" data-mode="all" bindtap="setMode">一起编辑</button>
+  </view>
+
+  <block wx:if="{{mode === 'guided'}}">
+    <view class="exp-stepper">
+      <button class="exp-step {{index === 0 ? 'exp-step--selected' : ''}}" data-step="0" bindtap="setStep"><view class="exp-step-dot">1</view>第 1 段经历</button>
+      <button class="exp-step {{index === 1 ? 'exp-step--selected' : ''}}" data-step="1" bindtap="setStep"><view class="exp-step-dot">2</view>第 2 段经历</button>
+    </view>
+    <view class="gk-chips exp-prompt-chips">
+      <button wx:for="{{prompts}}" wx:key="key" class="gk-chip {{prompt === item.key ? 'gk-chip--selected' : ''}}" data-prompt="{{item.key}}" bindtap="setPrompt">{{item.key}}</button>
+    </view>
+    <view wx:for="{{prompts}}" wx:if="{{prompt === item.key}}" wx:key="key" class="gk-tiny exp-prompt-hint">{{item.hint}}</view>
+
+    <view class="exp-card">
+      <view class="gk-between">
+        <view class="gk-row"><view class="exp-index">{{index + 1}}</view><view class="gk-title-sm">{{index === 0 ? '一件你做得不错的事' : '另一个不同的片段'}}</view></view>
+        <text class="gk-tag gk-tag--gray">本人陈述</text>
+      </view>
+      <view class="gk-tiny exp-card-hint">先写三句短话，不用写成长文章。</view>
+      <view class="gk-field">
+        <view class="gk-field-label">当时发生了什么？</view>
+        <textarea class="gk-textarea" value="{{experiences[index].event}}" data-i="{{index}}" data-f="event" placeholder="例如：大家对同一项任务理解不一致。" maxlength="800" bindinput="onExpInput" />
+      </view>
+      <view class="gk-field">
+        <view class="gk-field-label">你具体做了什么？</view>
+        <textarea class="gk-textarea" value="{{experiences[index].action}}" data-i="{{index}}" data-f="action" placeholder="一句话写自己的行动就可以。" maxlength="800" bindinput="onExpInput" />
+      </view>
+      <view class="gk-field">
+        <view class="gk-field-label">后来怎么样了？</view>
+        <textarea class="gk-textarea" value="{{experiences[index].result}}" data-i="{{index}}" data-f="result" placeholder="写下一个看得到的变化或结果。" maxlength="800" bindinput="onExpInput" />
+      </view>
+      <button class="exp-energy-toggle" data-i="{{index}}" bindtap="toggleEnergyOpen">
+        <text>再记一点能量感受 · 选填 {{energyOpen[index] ? '▴' : '▾'}}</text>
+      </button>
+      <view wx:if="{{energyOpen[index]}}">
+        <view class="gk-chips">
+          <button wx:for="{{energyWords}}" wx:for-item="word" wx:key="*this" class="gk-chip {{experiences[index].energyList.indexOf(word) >= 0 ? 'gk-chip--selected' : ''}}" data-i="{{index}}" data-word="{{word}}" bindtap="toggleEnergy">{{word}}</button>
+        </view>
+        <view class="gk-field">
+          <view class="gk-field-label">哪些部分让你有能量，哪些比较费力？</view>
+          <textarea class="gk-textarea" value="{{experiences[index].energy}}" data-i="{{index}}" data-f="energy" placeholder="也可以点上面的词，再补充一句。" maxlength="800" bindinput="onExpInput" />
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view wx:for="{{experiences}}" wx:for-item="exp" wx:for-index="i" wx:key="i" class="exp-card">
+      <view class="gk-between">
+        <view class="gk-row"><view class="exp-index">{{i + 1}}</view><view class="gk-title-sm">{{i === 0 ? '一件你做得不错的事' : '另一个不同的片段'}}</view></view>
+        <text class="gk-tag gk-tag--gray">本人陈述</text>
+      </view>
+      <view class="gk-tiny exp-card-hint">先写三句短话，不用写成长文章。</view>
+      <view class="gk-field">
+        <view class="gk-field-label">当时发生了什么？</view>
+        <textarea class="gk-textarea" value="{{exp.event}}" data-i="{{i}}" data-f="event" placeholder="例如：大家对同一项任务理解不一致。" maxlength="800" bindinput="onExpInput" />
+      </view>
+      <view class="gk-field">
+        <view class="gk-field-label">你具体做了什么？</view>
+        <textarea class="gk-textarea" value="{{exp.action}}" data-i="{{i}}" data-f="action" placeholder="一句话写自己的行动就可以。" maxlength="800" bindinput="onExpInput" />
+      </view>
+      <view class="gk-field">
+        <view class="gk-field-label">后来怎么样了？</view>
+        <textarea class="gk-textarea" value="{{exp.result}}" data-i="{{i}}" data-f="result" placeholder="写下一个看得到的变化或结果。" maxlength="800" bindinput="onExpInput" />
+      </view>
+      <button class="exp-energy-toggle" data-i="{{i}}" bindtap="toggleEnergyOpen">
+        <text>再记一点能量感受 · 选填 {{energyOpen[i] ? '▴' : '▾'}}</text>
+      </button>
+      <view wx:if="{{energyOpen[i]}}">
+        <view class="gk-chips">
+          <button wx:for="{{energyWords}}" wx:for-item="word" wx:key="*this" class="gk-chip {{exp.energyList.indexOf(word) >= 0 ? 'gk-chip--selected' : ''}}" data-i="{{i}}" data-word="{{word}}" bindtap="toggleEnergy">{{word}}</button>
+        </view>
+        <view class="gk-field">
+          <view class="gk-field-label">哪些部分让你有能量，哪些比较费力？</view>
+          <textarea class="gk-textarea" value="{{exp.energy}}" data-i="{{i}}" data-f="energy" placeholder="也可以点上面的词，再补充一句。" maxlength="800" bindinput="onExpInput" />
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:if="{{mode !== 'guided' || index === 1}}">
+    <view class="gk-field-label exp-goal-label">现在，你最想用在哪些地方？</view>
+    <view class="gk-chips">
+      <button wx:for="{{goals}}" wx:key="*this" class="gk-chip {{selectedGoals.indexOf(item) >= 0 ? 'gk-chip--selected' : ''}}" data-goal="{{item}}" bindtap="toggleGoal">{{item}}</button>
+    </view>
+  </block>
+
+  <view wx:if="{{formError}}" class="gk-notice gk-notice--error">{{formError}}</view>
+
+  <button wx:if="{{mode === 'guided' && index === 0}}" class="gk-primary" bindtap="nextExperience">这段先写到这里，下一段</button>
+  <button wx:else class="gk-primary" bindtap="prepareExperiences">整理经历，下一步确认</button>
+
+  <button wx:if="{{mode === 'guided' && index === 1}}" class="gk-quiet" data-step="0" bindtap="setStep">返回看看第一段</button>
+  <button class="gk-quiet" bindtap="fillExamples">先用示例经历体验一下</button>
+</view>

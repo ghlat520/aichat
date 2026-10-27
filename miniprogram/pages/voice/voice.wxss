@@ -1,0 +1,19 @@
+.voice-quote-sheet { padding: 56rpx 44rpx 50rpx; border-radius: 38rpx; background: linear-gradient(130deg, #f5eaf1, #eeeefb); position: relative; overflow: hidden; }
+.voice-quote-mark { font-size: 240rpx; position: absolute; right: 18rpx; top: -18rpx; line-height: 1; color: #e4d9ec; font-family: Georgia, serif; }
+.voice-person { display: flex; align-items: center; gap: 16rpx; font-size: 22rpx; color: #9b91ac; position: relative; }
+.voice-person-avatar { font-size: 24rpx; width: 54rpx; height: 54rpx; border-radius: 50%; background: #f1edf8; display: flex; align-items: center; justify-content: center; color: #af9bbd; }
+.voice-quote-text { font-size: 52rpx; font-weight: 500; line-height: 1.85; letter-spacing: -1.4rpx; position: relative; margin: 40rpx 0 32rpx; color: var(--ui-ink); }
+.voice-quote-source { font-size: 18rpx; line-height: 1.8; color: #a69bb6; position: relative; }
+.voice-story { padding: 16rpx 6rpx; }
+.voice-story-title { font-size: 30rpx; font-weight: 550; line-height: 1.8; margin: 50rpx 0 24rpx; color: var(--ui-ink); }
+.voice-story-text { font-size: 26rpx; line-height: 2.1; color: #65738b; }
+.voice-gentle-step { display: flex; gap: 18rpx; align-items: flex-start; margin: 26rpx 0; }
+.voice-gentle-step text { font-size: 24rpx; line-height: 2; color: #65738b; }
+.voice-gentle-icon { width: 30rpx; height: 30rpx; color: #acb7ce; margin-top: 10rpx; }
+.voice-takeaway { background: #edf6f4; border: 1rpx solid #e4efec; border-radius: 28rpx; padding: 34rpx; margin: 40rpx 0; }
+.voice-takeaway-title { font-size: 24rpx; font-weight: 550; line-height: 1.9; color: #87a19e; margin-bottom: 18rpx; }
+.voice-takeaway-text { font-size: 24rpx; line-height: 2; color: #5f7976; }
+.voice-decision-label { margin-top: 44rpx; }
+.voice-source-btn { display: flex; gap: 14rpx; align-items: center; padding: 22rpx 0; font-size: 20rpx; color: #8594b1; line-height: 1.8; text-align: left; width: 100%; background: transparent; }
+.voice-source-btn::after { border: 0; }
+.voice-source-icon { width: 28rpx; height: 28rpx; }

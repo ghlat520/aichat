@@ -1,0 +1,55 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">他们走过的路</view>
+    <text class="gk-head-tag">给此刻的你</text>
+  </view>
+
+  <view class="voice-quote-sheet">
+    <view class="voice-quote-mark">"</view>
+    <view class="voice-person"><view class="voice-person-avatar">{{voice.initial}}</view><text>{{voice.name}}</text></view>
+    <view class="voice-quote-text">{{voice.quote}}</view>
+    <view class="voice-quote-source">{{voice.sourceLabel}} · {{voice.quoteLabel}}</view>
+  </view>
+
+  <view class="voice-story">
+    <view class="voice-story-title">他也经历过这样的时刻</view>
+    <view class="voice-story-text">{{voice.story}}</view>
+    <view class="voice-story-title">他是怎样继续往前的</view>
+    <view wx:for="{{voice.steps}}" wx:key="*this" class="voice-gentle-step">
+      <view class="ui-icon ui-icon--leaf voice-gentle-icon"></view>
+      <text>{{item}}</text>
+    </view>
+  </view>
+
+  <view class="voice-takeaway">
+    <view class="voice-takeaway-title">给此刻的你，一个可以借用的思路</view>
+    <view class="voice-takeaway-text">{{voice.takeaway}}</view>
+  </view>
+
+  <block wx:if="{{voice.id === 'bezos'}}">
+    <view class="gk-field-label voice-decision-label">眼前这个选择，之后可以调整吗？</view>
+    <view class="gk-chips">
+      <button class="gk-chip {{decision === 'yes' ? 'gk-chip--selected' : ''}}" data-decision="yes" bindtap="setDecision">可以慢慢调整</button>
+      <button class="gk-chip {{decision === 'unsure' ? 'gk-chip--selected' : ''}}" data-decision="unsure" bindtap="setDecision">我还不太确定</button>
+    </view>
+    <view wx:if="{{decisionNote}}" class="gk-soft-note">{{decisionNote}}</view>
+  </block>
+
+  <view class="gk-field">
+    <view class="gk-field-label">{{voice.prompt}} <text class="gk-field-label-note">选填</text></view>
+    <textarea class="gk-textarea" value="{{note}}" placeholder="留下一句话就可以，也可以先静静读一读。" maxlength="500" bindinput="onNoteInput" />
+  </view>
+
+  <view class="gk-button-pair">
+    <button class="gk-primary" bindtap="saveVoice">{{saved ? '这句力量，已经留好了' : '把这句力量留给自己'}}</button>
+    <button class="gk-secondary" bindtap="voiceShare">送给也在努力的朋友</button>
+  </view>
+
+  <button class="voice-source-btn" bindtap="voiceSource">
+    <view class="ui-icon ui-icon--cards voice-source-icon"></view>
+    <text>看看原话与出处</text>
+    <view class="gk-chevron"></view>
+  </button>
+  <button class="gk-quiet" bindtap="goDiscover">也想和自己更近一点</button>
+</view>

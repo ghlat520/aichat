@@ -1,0 +1,49 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回名人观察"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">把猜想放回线索里</view>
+    <text class="gk-head-tag">名人观察</text>
+  </view>
+
+  <text class="gk-tag gk-tag--aqua">{{voteLabel}}</text>
+  <view class="insight-title">愿景、计划与行动，</view>
+  <view class="insight-title">你看到了哪一面？</view>
+  <view class="gk-small insight-lead">我们从一篇马斯克署名的公开文章出发，讨论他的工作表达方式。</view>
+
+  <view class="gk-card insight-card">
+    <view class="gk-between">
+      <view class="gk-title-sm">一条可以核对的线索</view>
+      <text class="gk-tag gk-tag--gray">{{insight.tag}}</text>
+    </view>
+    <view class="gk-small insight-fact">{{insight.fact}}</view>
+    <button class="insight-source" bindtap="muskSource">
+      <view class="ui-icon ui-icon--cards insight-source-icon"></view>
+      <text>{{insight.factSource}}</text>
+      <view class="gk-chevron"></view>
+    </button>
+  </view>
+
+  <view class="gk-card">
+    <view class="gk-title-sm">这条线索，可以怎么理解？</view>
+    <view class="insight-observation">
+      <text class="gk-tag">一种解读</text>
+      <view class="insight-observation-text">{{insight.read1.text}}</view>
+    </view>
+    <view class="insight-observation">
+      <text class="gk-tag gk-tag--pink">仍有其他解释</text>
+      <view class="insight-observation-text">{{insight.read2.text}}</view>
+    </view>
+    <view class="gk-tiny insight-observation-note">公开表达呈现了一个工作场景，也给不同解释留出空间。</view>
+  </view>
+
+  <view class="insight-bridge">
+    <view class="gk-feature-icon gk-feature-icon--aqua"><view class="ui-icon ui-icon--leaf"></view></view>
+    <view class="insight-bridge-title">把这个问题，带回自己。</view>
+    <view class="insight-bridge-copy">你做决定时，更在意什么？<text class="insight-br"></text>从自己的真实选择里找线索。</view>
+    <button class="gk-primary" bindtap="startOwnPreferences">免费看看我的性格偏好</button>
+    <button class="gk-quiet" bindtap="startClassicTraits">也可以先体验经典性格题</button>
+  </view>
+
+  <button class="gk-secondary" bindtap="topicShare">生成一张"你会怎么选"海报</button>
+  <view class="gk-footer-note">朋友点开后先看到这个话题，也能直接开始自测。<text class="insight-br"></text>基础结果直接免费查看，分享由你决定。</view>
+</view>

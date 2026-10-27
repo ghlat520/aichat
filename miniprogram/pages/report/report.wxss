@@ -1,0 +1,1 @@
+.ui-letter-text + .ui-letter-text { margin-top: 10rpx; }

@@ -1,0 +1,21 @@
+<import src="../../templates/preview.wxml" />
+<view id="safety-page" class="container">
+  <template is="page-head" data="{{title:'支持与帮助'}}" />
+  <view class="ui-page-lede">当你需要更多支持时，可以从这里开始。</view>
+
+  <view id="safety-loading" wx:if="{{loading}}" class="aichat-card aichat-muted">加载中…</view>
+  <view id="safety-notice" wx:if="{{!loading && notice}}" class="aichat-warning">{{notice}}</view>
+  <view id="safety-resources" wx:if="{{!loading && resources.length}}" class="aichat-card">
+    <view id="safety-resource-{{item.code}}" class="aichat-field" wx:for="{{resources}}" wx:key="code">
+      <view class="aichat-row">
+        <view>
+          <view class="aichat-title">{{item.code}} · {{item.name}}</view>
+          <view class="aichat-muted">{{item.route}}</view>
+        </view>
+        <text wx:if="{{item.highlighted}}" class="aichat-chip">建议优先</text>
+      </view>
+      <button id="safety-call-{{item.code}}" class="aichat-btn" data-code="{{item.code}}" bindtap="callResource">拨打 {{item.code}}</button>
+    </view>
+  </view>
+  <view id="safety-error" wx:if="{{error}}" class="aichat-warning">{{error}}</view>
+</view>

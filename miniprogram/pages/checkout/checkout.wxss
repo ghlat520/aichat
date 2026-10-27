@@ -1,0 +1,11 @@
+.checkout-mini-book { height: 124rpx; width: 94rpx; background: var(--gk-lilac); border-left: 8rpx solid #c4b5e3; border-radius: 6rpx 18rpx 18rpx 6rpx; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.checkout-mini-book--aqua { background: var(--ui-aqua); border-left-color: #acd1c5; }
+.checkout-include-tags { margin-top: 24rpx; }
+.checkout-include-note { margin-top: 20rpx; }
+.checkout-upgrade-note { margin-top: 22rpx; }
+.checkout-total { font-size: 44rpx; font-weight: 600; }
+.checkout-bind { display: flex; align-items: center; gap: 22rpx; padding: 33rpx 3rpx; border-bottom: 1rpx solid var(--ui-line); background: transparent; text-align: left; font-size: 25rpx; line-height: 1.6; width: 100%; }
+.checkout-bind::after { border: 0; }
+.checkout-bind-meta { font-size: 20rpx; color: var(--ui-muted); }
+.checkout-br { display: block; height: 0; }
+.checkout-terms { display: inline; }

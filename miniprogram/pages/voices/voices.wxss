@@ -1,0 +1,16 @@
+.voices-welcome { position: relative; overflow: hidden; background: linear-gradient(135deg, #f6edf8, #eaf2fb); border-radius: 40rpx; padding: 46rpx 40rpx; min-height: 452rpx; box-sizing: border-box; }
+.voices-welcome-title { font-size: 50rpx; font-weight: 550; line-height: 1.6; letter-spacing: -1.4rpx; position: relative; margin-top: 14rpx; }
+.voices-welcome-copy { font-size: 22rpx; color: #9e95ae; line-height: 1.9; position: relative; margin-top: 10rpx; }
+.voices-welcome-mascot { position: absolute; right: -18rpx; bottom: 0; width: 270rpx; height: 270rpx; opacity: .75; }
+.voices-moods { margin: 40rpx 0 36rpx; }
+.voices-copy-br { display: block; height: 0; }
+.voice-card { width: 100%; box-sizing: border-box; text-align: left; background: #ffffff; border: 1rpx solid #e9e9f3; border-radius: 34rpx; padding: 36rpx; margin: 0 0 24rpx; line-height: 1.6; }
+.voice-card::after { border: 0; }
+.voice-person { display: flex; align-items: center; gap: 16rpx; font-size: 22rpx; color: #9b91ac; }
+.voice-person-avatar { font-size: 24rpx; font-weight: 400; width: 54rpx; height: 54rpx; border-radius: 50%; background: #f1edf8; display: flex; align-items: center; justify-content: center; color: #af9bbd; }
+.voice-card-title { font-size: 34rpx; font-weight: 550; line-height: 1.7; letter-spacing: -.8rpx; margin: 30rpx 0 18rpx; color: var(--ui-ink); }
+.voice-card-quote { font-size: 24rpx; color: #a7a0b3; line-height: 1.95; margin-bottom: 34rpx; }
+.voice-card-source { max-width: 420rpx; }
+.voice-read { display: flex; align-items: center; gap: 6rpx; font-size: 18rpx; color: #a69ac2; white-space: nowrap; }
+.voice-empty-icon { width: 68rpx; height: 68rpx; margin: 0 auto 36rpx; }
+.voice-empty-icon .ui-icon { width: 68rpx; height: 68rpx; }

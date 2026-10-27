@@ -1,0 +1,89 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">职业探索报告</view>
+    <text class="gk-head-tag">{{paid ? '已购报告' : '第二期预览'}}</text>
+  </view>
+
+  <view class="career-book">
+    <view class="career-book-decoration"></view>
+    <text class="gk-tag gk-tag--white">从你的条件出发</text>
+    <view class="career-book-title">找到方向，</view>
+    <view class="career-book-title">也找到验证的方法。</view>
+    <view class="career-book-owner">{{paid ? '完整报告' : '报告预览'}} · 三个探索方向与 30 天自主计划</view>
+  </view>
+
+  <view class="gk-card">
+    <view class="gk-title-sm">你的当前起点</view>
+    <view class="gk-small career-start-copy">{{goal}}。可投入时间：{{time}}。</view>
+    <view class="gk-tiny career-start-note">{{constraints}}</view>
+    <view class="gk-tags career-start-tags">
+      <text wx:for="{{values}}" wx:key="*this" class="gk-tag gk-tag--aqua">{{item}}</text>
+    </view>
+  </view>
+
+  <view class="gk-section-title">
+    <view class="gk-section-title-title">三个值得验证的方向</view>
+    <text class="gk-section-title-note">示例分析 · 非唯一答案</text>
+  </view>
+  <view wx:for="{{directions}}" wx:key="index" class="gk-card">
+    <text class="gk-tag gk-tag--aqua">探索方向 {{item.index}}</text>
+    <view class="gk-title-sm career-dir-title">{{item.name}}</view>
+    <view class="gk-small">支持线索：{{item.basis}}。</view>
+    <view class="gk-evidence">
+      <view class="gk-evidence-label">可能的冲突与待补部分</view>
+      <text>{{item.conflict}}。</text>
+    </view>
+    <view class="gk-small">先做一件事：{{item.action}}。</view>
+  </view>
+
+  <block wx:if="{{paid}}">
+    <view class="gk-section-title"><view class="gk-section-title-title">放在一起比较</view></view>
+    <view class="career-comparison">
+      <view class="career-comparison-row career-comparison-head">
+        <text>观察点</text><text>用户研究</text><text>内容策划</text><text>项目协作</text>
+      </view>
+      <view class="career-comparison-row"><text class="career-comparison-key">核心任务</text><text>理解问题</text><text>整理表达</text><text>澄清推进</text></view>
+      <view class="career-comparison-row"><text class="career-comparison-key">现有线索</text><text>理解与共情</text><text>结构与学习</text><text>沟通与整理</text></view>
+      <view class="career-comparison-row"><text class="career-comparison-key">需要验证</text><text>提问与分析</text><text>持续产出</text><text>协调的消耗</text></view>
+    </view>
+
+    <view class="gk-section-title"><view class="gk-section-title-title">30 天自主探索计划</view></view>
+    <view class="gk-card">
+      <view wx:for="{{plan}}" wx:key="*this" class="gk-path-step">
+        <text class="gk-tag gk-tag--aqua">{{item[0]}}</text>
+        <text class="gk-small career-plan-copy">{{item[1]}}</text>
+      </view>
+    </view>
+    <view class="gk-soft-note">30 天为自主实践计划长度。本次包含一次校准和 7 天内一次复盘，不代表 30 天连续陪伴。</view>
+
+    <button class="gk-secondary" bindtap="openBaseReport">查看包含的个人优势内容</button>
+    <button class="gk-secondary" bindtap="goCalibrate">校准或复盘这份报告</button>
+  </block>
+
+  <block wx:else>
+    <view class="gk-card">
+      <view class="gk-title-sm">完整职业报告还包含</view>
+      <view class="gk-delivery-list">
+        <view class="gk-delivery-item">其余 2 个探索方向与支持、冲突条件</view>
+        <view class="gk-delivery-item">三个方向的比较和能力差距</view>
+        <view class="gk-delivery-item">30 天自主探索计划</view>
+        <view class="gk-delivery-item">个人优势内容、一次校准和 7 天复盘</view>
+      </view>
+    </view>
+
+    <view class="gk-purchase-box">
+      <view class="gk-price-line"><text>职业探索报告</text><text>¥49.90</text></view>
+      <view wx:if="{{basePaid}}" class="gk-price-line gk-price-line--credit"><text>已购基础报告实付抵扣</text><text>− ¥{{credit}}</text></view>
+      <view class="gk-between career-price-row">
+        <view>
+          <view class="gk-tiny">{{basePaid ? '本次补差' : '一次购买'}}</view>
+          <view class="gk-price career-price"><text class="gk-price-currency">¥</text>{{price}}</view>
+        </view>
+        <text class="gk-tag gk-tag--aqua">预览已就绪</text>
+      </view>
+      <button class="gk-primary" bindtap="buyCareer">{{basePaid ? '确认补差与升级内容' : '查看购买内容'}}</button>
+      <button class="gk-quiet" bindtap="backToInput">先继续免费整理</button>
+    </view>
+  </block>
+</view>

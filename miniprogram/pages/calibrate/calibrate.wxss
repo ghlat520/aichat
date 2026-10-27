@@ -1,0 +1,3 @@
+.calibrate-done-title { margin-top: 28rpx; }
+.calibrate-done-note { margin-top: 24rpx; }
+.calibrate-picker { display: flex; align-items: center; min-height: 84rpx; }

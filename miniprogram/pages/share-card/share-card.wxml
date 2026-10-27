@@ -1,0 +1,21 @@
+<import src="../../templates/preview.wxml" />
+<view id="share-card-page" class="container">
+  <template is="page-head" data="{{title:'分享预览'}}" />
+  <view class="ui-page-lede">留住一个小发现，分享前再看一眼。</view>
+  <view id="share-card-loading" wx:if="{{loading}}" class="aichat-card aichat-muted">加载中…</view>
+  <view id="share-card-error" wx:if="{{error}}" class="aichat-warning">{{error}}</view>
+  <view id="share-card-preview" wx:if="{{preview}}" class="aichat-card">
+    <view class="aichat-title">{{preview.title}}</view>
+    <view wx:if="{{preview.usable_strength}}" class="aichat-field">
+      <view class="aichat-label">可用优势</view>
+      <view class="aichat-body">{{preview.usable_strength}}</view>
+    </view>
+    <view wx:if="{{preview.one_real_world_reminder}}" class="aichat-field">
+      <view class="aichat-label">现实提醒</view>
+      <view class="aichat-body">{{preview.one_real_world_reminder}}</view>
+    </view>
+    <view wx:if="{{preview.ai_label}}" class="aichat-muted">{{preview.ai_label}}</view>
+    <view wx:if="{{preview.disclaimer}}" class="aichat-muted">{{preview.disclaimer}}</view>
+  </view>
+  <button id="share-card-cancel" class="aichat-btn aichat-btn--ghost" bindtap="cancel">取消并返回</button>
+</view>

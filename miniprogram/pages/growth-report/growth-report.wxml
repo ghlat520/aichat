@@ -1,0 +1,130 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">{{oldVersion ? '历史报告 v1.0' : '个人优势说明书'}}</view>
+    <text class="gk-head-tag">{{sample ? '完整样例' : '已购报告'}}</text>
+  </view>
+
+  <!-- 未购买 -->
+  <view wx:if="{{locked}}" class="gk-empty">
+    <view class="report-empty-icon"><view class="ui-icon ui-icon--cards"></view></view>
+    <view class="gk-empty-title">先了解这份报告</view>
+    <view class="gk-empty-text">基础结果继续免费查看，<text class="report-br"></text>想看更完整的场景建议，可以先浏览预览。</view>
+    <button class="gk-primary" bindtap="goPreview">查看报告预览</button>
+    <button class="gk-secondary" bindtap="goDiscover">回到免费结果</button>
+  </view>
+
+  <block wx:else>
+    <view wx:if="{{sample}}" class="gk-soft-note">以下为完整报告样例，展示目录与内容密度，不是你的真实测评结论。</view>
+
+    <view class="report-header">
+      <text class="gk-tag {{sample ? 'gk-tag--gray' : 'gk-tag--aqua'}}">{{sample ? '样例阅读' : '已购 · 可重复查看'}}</text>
+      <view class="report-header-title">温柔地理解，</view>
+      <view class="report-header-title">清楚地行动。</view>
+      <view class="gk-tiny report-header-meta">个人优势说明书 · v{{oldVersion ? '1.0' : version}} · 2026.10.26 · 目标：{{goals.length ? goals[0] : '协作'}}</view>
+    </view>
+
+    <view wx:if="{{calibrated && !oldVersion}}" class="gk-soft-note">
+      <text class="report-revision-title">这次修订采纳了你的补充</text>
+      <view>{{calibrationText || '已调整经历理解和场景建议。'}}</view>
+      <view class="gk-tiny">量表得分未变，原版 v1.0 仍可查看。</view>
+    </view>
+
+    <view class="report-actions">
+      <button class="report-action-btn" bindtap="saveReport"><view class="ui-icon ui-icon--cards"></view>{{reportSaved ? '已保存在我的报告' : '保存报告'}}</button>
+      <button class="report-action-btn" bindtap="goShare"><view class="ui-icon ui-icon--leaf"></view>分享预览</button>
+    </view>
+
+    <view class="report-paper">
+      <view class="report-section">
+        <view class="report-section-title">这份报告基于什么</view>
+        <view class="report-section-text">性格特质结果、优势测评与两段{{confirmed ? '本人确认' : '示例'}}经历，共同组成这次分析的基础。{{hasMbti ? '16 型人格作为补充偏好信息纳入。' : '本次未纳入 16 型人格，不补写人格类型。'}}</view>
+        <view class="gk-tags report-source-tags">
+          <text class="gk-tag gk-tag--aqua">测评数据</text>
+          <text class="gk-tag">本人陈述</text>
+          <text class="gk-tag gk-tag--pink">系统推断</text>
+        </view>
+        <view class="report-source">测评：原型样例版本 v1，2026.10.26 · 经历：{{confirmed ? '本人已确认' : '示例内容'}} · 报告为本次结果快照</view>
+      </view>
+
+      <view class="report-section">
+        <view class="report-section-title">我的性格与行为画像</view>
+        <view class="report-section-text">在这份样例里，你既愿意理解新的可能，也会留意他人的体验。面对复杂任务，你更容易在有准备、有目标的沟通里发挥；持续、临时的情绪协调则可能让你消耗。</view>
+        <view class="report-source">依据：开放性与宜人性倾向、两段经历的行动及能量感受。它是当前线索，仍会随环境变化。</view>
+      </view>
+
+      <view class="report-section">
+        <view class="report-section-title">值得发展的三项优势</view>
+        <view wx:for="{{strengths}}" wx:for-index="i" wx:key="*this" class="report-strength">
+          <view class="report-strength-title">{{i + 1}}. {{item[0]}} <text class="gk-inference">优势候选</text></view>
+          <view class="report-section-text">{{item[1]}}</view>
+          <view class="gk-evidence">
+            <view class="gk-evidence-label">{{confirmed ? '本人确认' : '示例'}}经历 {{i === 2 ? 2 : 1}}</view>
+            <text>"{{i === 2 ? experiences[1].action : experiences[0].action}}"</text>
+          </view>
+          <view class="report-source">{{item[2]}}适合把任务缩小后，在下一次真实情境中核对。</view>
+        </view>
+      </view>
+
+      <view class="report-section">
+        <view class="report-section-title">容易发挥与容易消耗的环境</view>
+        <view class="report-sub-title">更容易发挥</view>
+        <view class="report-section-text">目标可讨论、有安静整理时间、愿意互相确认理解的合作。你不必包办全部协调，可以先贡献一份结构清楚的说明。</view>
+        <view class="report-sub-title">更容易消耗</view>
+        <view class="report-section-text">长期目标模糊、反复被打断、需要不断猜测别人期待的任务。若发现自己持续加班来替大家澄清问题，可以先确认职责边界。</view>
+      </view>
+
+      <view class="report-section">
+        <view class="report-section-title">优势过度使用与盲点</view>
+        <view class="report-section-text">理解别人，不意味着总要替别人承担。整理信息也可能变成反复推敲，迟迟不交付。可以先问"这次做到什么程度就足够？"，再给自己设一个停止点。</view>
+        <view class="report-source">待验证：你是否真的存在这些消耗？若与你的经历不符，可在校准中修正。</view>
+      </view>
+
+      <view class="report-section">
+        <view class="report-section-title">我的{{goals.length ? goals[0] : '协作'}}场景建议</view>
+        <view class="report-section-text">在下次需要共同推进的小任务中，先花 10 分钟，把目标、已知信息和待确认问题写在一页纸上。邀请对方补充，确认分工后再推进。</view>
+        <view class="report-source">来自经历 1 中"澄清与整理"的做法；如果对方更适合口头交流，可先聊再记，不必坚持书面形式。</view>
+      </view>
+
+      <view class="report-section">
+        <view class="report-section-title">未来七天，选一件小事</view>
+        <view class="report-section-text">不用三件都做。选一个适合当前节奏的练习，把新发现放回生活。</view>
+        <view wx:for="{{actions}}" wx:key="index" class="report-action-card">
+          <view class="report-sub-title">{{item.title}}</view>
+          <view class="report-section-text">{{item.body}}</view>
+          <view class="report-observe">观察与调整：{{item.observe}}</view>
+          <button class="report-action-select" data-index="{{index}}" bindtap="selectAction">{{item.selected ? '已选这个练习' : '选这个练习'}}</button>
+        </view>
+      </view>
+
+      <view class="report-section">
+        <view class="report-section-title">校准与复盘</view>
+        <view class="report-section-text">你可以在服务窗口内集中指出一次不符合实际的解读，再记录一次行动后的新发现。解释可以调整，你也可以保留自己的不同理解。</view>
+      </view>
+    </view>
+
+    <block wx:if="{{!sample}}">
+      <view class="report-service">
+        <view class="gk-between">
+          <text class="report-service-title">{{expired ? '本次服务窗口已结束' : '7 天服务，按你的节奏使用'}}</text>
+          <text class="gk-tag gk-tag--white">{{expired ? '可继续阅读' : '还剩 7 天'}}</text>
+        </view>
+        <view class="report-service-copy">{{expired ? '已购报告仍可重复查看和保存，校准与复盘记录也会保留。' : '集中校准 ' + (calibratedUsed ? '已使用' : '1 次可用') + ' · 行动复盘 ' + (reflected ? '已完成' : '1 次可用') + ' · 本次服务至 2026.11.02，不含持续陪伴。'}}</view>
+        <view class="gk-button-pair">
+          <button class="gk-secondary" bindtap="goCalibrate">{{calibratedUsed ? '查看校准记录' : '校准不符合的内容'}}</button>
+          <button class="gk-secondary" bindtap="goReflection">{{reflected ? '查看复盘记录' : '开始行动复盘'}}</button>
+        </view>
+      </view>
+      <button class="report-career-link" bindtap="goCareer">
+        <view class="ui-icon ui-icon--leaf"></view>
+        <text class="gk-grow">探索适合自己的工作方向</text>
+        <view class="gk-chevron"></view>
+      </button>
+    </block>
+
+    <view class="report-version-line">
+      <block wx:if="{{calibrated}}">当前 v{{version}} · <button class="gk-text-link" bindtap="toggleOldVersion">{{oldVersion ? '查看修订版 v' + version : '查看原版 v1.0'}}</button></block>
+      <text wx:else>这是当前输入形成的一份快照，新的测评不会覆盖它。</text>
+    </view>
+  </block>
+</view>

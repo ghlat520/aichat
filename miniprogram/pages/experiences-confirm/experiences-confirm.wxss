@@ -1,0 +1,2 @@
+.confirm-copy { font-size: 24rpx; line-height: 1.95; color: #68778f; margin-top: 20rpx; }
+.confirm-label { font-size: 20rpx; font-weight: 500; display: block; color: var(--ui-muted); margin: 20rpx 0 6rpx; }

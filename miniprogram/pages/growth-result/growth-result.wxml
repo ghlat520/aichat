@@ -1,0 +1,81 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回自测首页"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">{{toolShort}}结果</view>
+    <text class="gk-head-tag">基础免费</text>
+  </view>
+
+  <view class="result-cover">
+    <text class="gk-tag gk-tag--white">{{sourceLabel}}</text>
+    <block wx:if="{{isMbti}}">
+      <view class="result-petals">
+        <view class="gk-test-art gk-test-art--mbti result-petals-art">
+          <view class="gk-petal"></view><view class="gk-petal gk-petal-2"></view><view class="gk-petal gk-petal-3"></view><view class="gk-petal gk-petal-4"></view>
+        </view>
+      </view>
+      <view class="result-type-code">{{typeCode}}</view>
+      <view class="result-cover-heading">{{cover.heading}}</view>
+      <view class="result-cover-sub">偏好不是边界，类型也不是能力结论。</view>
+    </block>
+    <block wx:else>
+      <view class="result-cover-heading-lg">{{cover.headingFirst}}</view>
+      <view class="result-cover-heading-lg">{{cover.headingSecond}}</view>
+      <view class="result-cover-sub">{{cover.sub}}</view>
+    </block>
+  </view>
+
+  <view class="result-statement">{{statement}}</view>
+
+  <view class="gk-card">
+    <view class="gk-title-sm">{{sectionTitle}}</view>
+
+    <block wx:if="{{isMbti}}">
+      <view wx:for="{{dimensions}}" wx:key="left" class="gk-dimension">
+        <view class="gk-dimension-label"><text>{{item.left}} {{item.percent}}%</text><text>{{item.right}} {{100 - item.percent}}%</text></view>
+        <view class="gk-dimension-track"><view class="gk-dimension-fill" style="width: {{item.percent}}%;"></view><view class="gk-dimension-rest"></view></view>
+        <view class="gk-dimension-note">{{item.note}}</view>
+      </view>
+    </block>
+
+    <block wx:if="{{toolId === 'traits'}}">
+      <view wx:for="{{dimensions}}" wx:key="label" class="gk-dimension">
+        <view class="gk-dimension-label"><text class="gk-strong">{{item.label}}</text><text>{{item.score}} / 100</text></view>
+        <view class="gk-dimension-track"><view class="gk-dimension-fill gk-dimension-fill--teal" style="width: {{item.score}}%;"></view><view class="gk-dimension-rest"></view></view>
+        <view class="gk-dimension-note">{{item.note}}</view>
+      </view>
+    </block>
+
+    <block wx:if="{{toolId === 'strengths'}}">
+      <view wx:for="{{strengths}}" wx:key="index" class="gk-strength-summary">
+        <text class="gk-strength-number">{{item.index}}</text>
+        <view>
+          <view class="gk-title-sm">{{item.name}}</view>
+          <view class="gk-small">{{item.desc}}</view>
+        </view>
+      </view>
+    </block>
+
+    <view class="gk-source-row">
+      <view class="ui-icon ui-icon--test result-source-icon"></view>
+      <view class="result-source-text">
+        <view>{{sourceLabel}} · {{sourceName}}</view>
+        <view>{{sourceDate}} · {{sourceNote}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="gk-card">
+    <view class="gk-title-sm">带回日常的一点提示</view>
+    <view class="gk-small result-tip-copy">沟通前给自己一点整理时间。先说清"我在意什么"，再听听对方在意的部分，留意这样做是否让交流更顺畅。</view>
+    <view class="gk-tiny result-tip-note">这是基础练习，不要求你改变成某一种性格。结果会受情境与作答时状态影响。</view>
+  </view>
+
+  <view class="result-free-banner">这份基础结果可以完整查看、保存和分享，继续免费使用也没关系。</view>
+
+  <button class="gk-primary" bindtap="exploreExperiences">结合我的经历，继续探索优势</button>
+  <button class="gk-secondary" bindtap="otherTests">先看看其他测评</button>
+  <view class="gk-button-pair">
+    <button class="gk-text-link" bindtap="shareResult">分享基础结果</button>
+    <button class="gk-text-link" bindtap="retest">重新测评</button>
+  </view>
+</view>

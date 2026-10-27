@@ -1,0 +1,29 @@
+<import src="../../templates/preview.wxml" />
+<view id="mirror-page" class="container">
+  <template is="page-head" data="{{title:'看看这次整理'}}" />
+  <view class="ui-page-lede">逐段看看，哪些被理解了，哪些还想修正。</view>
+  <view id="mirror-loading" wx:if="{{loading}}" class="aichat-card aichat-muted">生成镜像中…</view>
+  <view id="mirror-error" wx:if="{{error}}" class="aichat-warning">{{error}}</view>
+  <view id="mirror-sections" wx:if="{{!loading && sections.length}}" class="aichat-card">
+    <view id="mirror-section-{{item.key}}" class="aichat-field" wx:for="{{sections}}" wx:key="key">
+      <view class="aichat-label">{{item.label}}</view>
+      <view class="aichat-body">{{item.text}}</view>
+      <radio-group id="mirror-accuracy-{{item.key}}" data-key="{{item.key}}" bindchange="onAccuracyChange">
+        <label class="aichat-chip"><radio value="accurate" checked="{{item.accuracy === 'accurate'}}" color="#6577dc" />准确</label>
+        <label class="aichat-chip"><radio value="partially_accurate" checked="{{item.accuracy === 'partially_accurate'}}" color="#6577dc" />部分准确</label>
+        <label class="aichat-chip"><radio value="inaccurate" checked="{{item.accuracy === 'inaccurate'}}" color="#6577dc" />不准确</label>
+      </radio-group>
+      <textarea
+        wx:if="{{item.accuracy !== 'accurate'}}"
+        id="mirror-correction-{{item.key}}"
+        class="aichat-textarea"
+        maxlength="500"
+        data-key="{{item.key}}"
+        value="{{item.correction}}"
+        bindinput="onCorrectionInput"
+        placeholder="请写下你的修正"
+      />
+    </view>
+    <button id="mirror-confirm" class="aichat-btn" disabled="{{submitting}}" loading="{{submitting}}" bindtap="confirm">确认五段镜像</button>
+  </view>
+</view>

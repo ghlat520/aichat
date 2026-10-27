@@ -1,0 +1,57 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="回到首页"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">{{isComfort ? '朋友送来的一点力量' : (isTopic ? '朋友邀你来猜一猜' : '朋友分享的一个小发现')}}</view>
+    <text class="gk-head-tag">{{isComfort ? '给此刻的你' : '朋友分享'}}</text>
+  </view>
+
+  <!-- 力量海报直达 -->
+  <block wx:if="{{isComfort}}">
+    <view class="invite-hero invite-hero--comfort">
+      <text class="gk-tag gk-tag--white">有人想把这句话，轻轻送给你</text>
+      <view class="invite-comfort-quote">{{comfort.quote}}</view>
+      <view class="invite-comfort-author">—— {{comfort.name}}（{{comfort.quoteLabel}}）</view>
+      <view class="ui-companion invite-hero-mascot"></view>
+    </view>
+    <view class="invite-start">
+      <view class="invite-start-title">如果今天有点难，先在这里坐一会儿。</view>
+      <view class="invite-start-copy">读读他走过的那段路，再给自己留一小步。<text class="invite-br"></text>不急着填写什么，也可以先静静看一看。</view>
+      <button class="gk-primary" bindtap="startInvited">读读这段经历</button>
+    </view>
+    <button class="gk-secondary" bindtap="goDiscover">也想和自己更近一点</button>
+  </block>
+
+  <!-- 名人挑战 / 偏好 / 优势海报直达 -->
+  <block wx:else>
+    <view class="invite-hero">
+      <text class="gk-tag gk-tag--white">{{isTopic ? '来自朋友的名人观察卡' : '从认识自己开始'}}</text>
+      <block wx:if="{{isTopic}}">
+        <view class="invite-hero-title">马斯克更像</view>
+        <view class="invite-hero-title">INFP，还是 INTJ？</view>
+        <view class="gk-rocket invite-hero-rocket"></view>
+      </block>
+      <block wx:else>
+        <view class="invite-hero-title">你的偏好与优势，</view>
+        <view class="invite-hero-title">也值得被看见。</view>
+        <view class="ui-companion invite-hero-mascot"></view>
+      </block>
+      <view class="invite-hero-copy">{{pickLine || '从一个轻入口，慢慢看见更丰富的自己。'}}</view>
+    </view>
+    <view wx:if="{{isTopic}}" class="gk-tiny invite-topic-note">公开言行讨论，类型为推测。没有已证实的人格答案。</view>
+
+    <view class="invite-start">
+      <view class="gk-feature-icon {{tool.color ? 'gk-feature-icon--' + tool.color : ''}}"><view class="ui-icon ui-icon--test"></view></view>
+      <view class="invite-start-tool-title">{{tool.name}}</view>
+      <view class="invite-start-copy">{{tool.desc}}</view>
+      <view class="gk-tags">
+        <text class="gk-tag gk-tag--aqua">基础结果免费</text>
+        <text class="gk-tag gk-tag--gray">{{entryTag}}</text>
+      </view>
+      <button class="gk-primary invite-start-btn" bindtap="startInvited">开始我的小探索</button>
+      <button class="gk-quiet" bindtap="invitedIntro">先看看介绍与免费内容</button>
+    </view>
+
+    <button class="gk-secondary" bindtap="{{isTopic ? 'goCelebrity' : 'goDiscover'}}">{{isTopic ? '先参与这个名人话题' : '先看看全部自测'}}</button>
+    <view class="gk-footer-note">从这张卡直接开始，不必先填写经历。<text class="invite-br"></text>完成后可直接查看基础结果，再决定要不要继续探索。</view>
+  </block>
+</view>

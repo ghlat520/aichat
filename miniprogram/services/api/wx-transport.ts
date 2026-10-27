@@ -1,4 +1,5 @@
 import type {HttpRequest, HttpResponse, HttpTransport} from './generated/client';
+import {maskPiiDeep} from './privacy-mask';
 
 export interface WxRequestSuccess {
   statusCode: number;
@@ -26,7 +27,7 @@ export class WxTransport implements HttpTransport {
         url: request.url,
         method: request.method,
         header: request.headers,
-        ...(request.body === undefined ? {} : {data: request.body}),
+        ...(request.body === undefined ? {} : {data: maskPiiDeep(request.body)}),
         success(result) {
           resolve({
             status: result.statusCode,

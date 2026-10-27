@@ -1,0 +1,12 @@
+.celebrity-cover { position: relative; border-radius: 42rpx; overflow: hidden; background: linear-gradient(135deg, #e9e5fa, #e6f1fc); padding: 48rpx 40rpx; min-height: 470rpx; box-sizing: border-box; }
+.celebrity-cover-title { position: relative; font-size: 54rpx; line-height: 1.55; letter-spacing: -1.6rpx; font-weight: 550; margin-top: 34rpx; }
+.celebrity-cover-copy { position: relative; font-size: 22rpx; line-height: 1.9; color: #9191af; margin-top: 18rpx; }
+.celebrity-cover-rocket { position: absolute; right: -28rpx; bottom: 14rpx; width: 300rpx; height: 300rpx; }
+.celebrity-br { display: block; height: 0; }
+.celebrity-note { margin: 30rpx 0 24rpx; }
+.celebrity-options { display: flex; flex-direction: column; gap: 20rpx; margin: 0 0 44rpx; }
+.celebrity-guess { padding: 30rpx 26rpx; background: #ffffff; border: 1rpx solid #e4e8f3; border-radius: 24rpx; width: 100%; box-sizing: border-box; display: flex; gap: 24rpx; align-items: center; text-align: left; min-height: 124rpx; line-height: 1.6; }
+.celebrity-guess::after { border: 0; }
+.celebrity-guess--selected { border-color: #b8c3ec; background: #eff2fc; }
+.celebrity-guess-key { font-size: 32rpx; font-weight: 550; letter-spacing: .8rpx; min-width: 92rpx; color: #8d7db4; }
+.celebrity-guess-desc { font-size: 22rpx; line-height: 1.8; color: #8190a7; flex: 1; }

@@ -1,0 +1,42 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">校准这份解读</view>
+    <text class="gk-head-tag">说明书服务</text>
+  </view>
+
+  <view class="gk-eyebrow">说明书服务 · 一次集中校准</view>
+  <view class="gk-page-title">不符合你的地方，</view>
+  <view class="gk-page-title">可以直接告诉我们。</view>
+  <view class="gk-lead">先把不符合的内容集中写下来，再补充实际情况。一次提交会生成一份修订报告。</view>
+
+  <block wx:if="{{calibrated}}">
+    <view class="gk-card">
+      <text class="gk-tag gk-tag--aqua">已完成校准</text>
+      <view class="gk-title-sm calibrate-done-title">修订版 v{{version}} 已保存</view>
+      <view class="gk-small">{{calibrationText || '已根据你确认的新信息调整了解读。'}}</view>
+      <view class="gk-tiny calibrate-done-note">量表得分保持原样，修订了经历理解与应用建议。原版 v1.0 仍可查看。</view>
+    </view>
+    <button class="gk-primary" bindtap="openReport">打开修订报告</button>
+  </block>
+
+  <block wx:else>
+    <view wx:if="{{expired}}" class="gk-notice">本次 7 天服务已结束。报告仍可查看，内容错误与交付问题可从售后入口反馈。</view>
+
+    <view class="gk-field">
+      <view class="gk-field-label">想校准哪一部分？</view>
+      <picker mode="selector" range="{{targets}}" value="{{targetIndex}}" bindchange="onTargetChange">
+        <view class="gk-input calibrate-picker">{{targets[targetIndex]}}</view>
+      </picker>
+    </view>
+    <view class="gk-field">
+      <view class="gk-field-label">哪里不符合？实际情况是什么？</view>
+      <textarea class="gk-textarea" value="{{text}}" placeholder="例如：我不是不喜欢团队交流，而是不适应没有准备的临时会议。" maxlength="800" bindinput="onTextinput" />
+    </view>
+
+    <view class="gk-soft-note">校准解释与个人经历，不会静默改变测评得分。一次集中提交后，原版与修订版都会保留。</view>
+
+    <button class="gk-primary" bindtap="submit" disabled="{{expired}}">提交这次集中校准</button>
+    <button class="gk-secondary" bindtap="goBack">先回去读一读</button>
+  </block>
+</view>

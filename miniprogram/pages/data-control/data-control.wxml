@@ -1,0 +1,6 @@
+<import src="../../templates/preview.wxml" />
+<view id="data-control-page" class="container">
+  <template is="page-head" data="{{title:'隐私与数据'}}" />
+  <view class="ui-page-lede">你的内容，由你管理。</view>
+  <view id="data-control-stub" class="aichat-warning">{{error || '该模块依赖后端 ' + 'G5' + ' 实现，本轮为骨架占位。'}}</view>
+</view>

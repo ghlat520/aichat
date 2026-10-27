@@ -1,0 +1,8 @@
+{
+  "source": "node --test miniprogram/*.test.mjs",
+  "scope": "UI baseline before personal virtual-payment integration",
+  "tests": 44,
+  "passed": 44,
+  "failed": 0,
+  "evidence": "Summarized from the local UI baseline run; original log remains local."
+}

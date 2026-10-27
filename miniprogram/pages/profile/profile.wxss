@@ -1,0 +1,15 @@
+.profile-welcome { display: flex; align-items: center; gap: 24rpx; padding: 31rpx 0 42rpx; }
+.profile-avatar { width: 98rpx; height: 98rpx; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #eee9ff; }
+.profile-avatar .ui-icon { width: 43rpx; height: 43rpx; }
+.profile-name { font-size: 39rpx; font-weight: 600; letter-spacing: -.8rpx; margin-bottom: 8rpx; }
+.profile-start { padding: 35rpx; margin-bottom: 13rpx; }
+.profile-start .aichat-title { font-size: 28rpx; margin-bottom: 14rpx; }
+.profile-start .aichat-btn { margin-top: 28rpx; }
+.profile-footer { margin-top: 47rpx; }
+/* V1.2：自我探索统计 */
+.profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); margin: 24rpx 0; }
+.profile-stat { text-align: center; font-size: 20rpx; color: var(--ui-muted); }
+.profile-stat-value { display: block; font-size: 44rpx; color: #7984b4; font-weight: 500; margin-bottom: 12rpx; }
+.profile-menu-note { margin-left: auto; font-size: 20rpx; color: var(--ui-muted); }
+.profile-growth-card { margin-top: 24rpx; }
+.profile-growth-copy { margin: 16rpx 0 8rpx; }

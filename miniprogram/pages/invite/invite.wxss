@@ -1,0 +1,16 @@
+.invite-hero { position: relative; overflow: hidden; background: linear-gradient(135deg, #e9e5fb, #e8f4fa); padding: 48rpx 40rpx; border-radius: 40rpx; min-height: 468rpx; box-sizing: border-box; }
+.invite-hero--comfort { background: linear-gradient(135deg, #f9edf2, #edf2fc); }
+.invite-hero-title { position: relative; font-size: 50rpx; line-height: 1.6; font-weight: 550; letter-spacing: -1.4rpx; margin-top: 32rpx; }
+.invite-hero-copy { position: relative; font-size: 22rpx; color: #969bb5; line-height: 1.9; margin-top: 24rpx; max-width: 430rpx; }
+.invite-hero-rocket { position: absolute; right: -20rpx; bottom: 44rpx; width: 260rpx; height: 260rpx; opacity: .75; }
+.invite-hero-mascot { position: absolute; right: -20rpx; bottom: 44rpx; width: 260rpx; height: 260rpx; opacity: .75; }
+.invite-comfort-quote { position: relative; font-size: 50rpx; line-height: 1.9; font-weight: 550; letter-spacing: -1.4rpx; margin: 32rpx 0 38rpx; max-width: 520rpx; }
+.invite-comfort-author { position: relative; font-size: 22rpx; color: #969bb5; }
+.invite-topic-note { margin: 24rpx 0 36rpx; }
+.invite-start { background: #ffffff; border: 1rpx solid var(--ui-line); border-radius: 34rpx; padding: 40rpx; margin: 36rpx 0; }
+.invite-start .gk-feature-icon { width: 80rpx; height: 80rpx; }
+.invite-start-tool-title { font-size: 36rpx; font-weight: 550; margin: 26rpx 0 16rpx; }
+.invite-start-title { font-size: 36rpx; font-weight: 550; margin-bottom: 16rpx; line-height: 1.6; }
+.invite-start-copy { font-size: 22rpx; color: #8f9db4; line-height: 1.8; margin-bottom: 26rpx; }
+.invite-start-btn { margin-top: 36rpx; }
+.invite-br { display: block; height: 0; }

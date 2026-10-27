@@ -1,0 +1,23 @@
+.report-book { padding: 54rpx 48rpx 50rpx; position: relative; background: linear-gradient(135deg, #e7edff, #eee9fa); border-radius: 18rpx 40rpx 40rpx 18rpx; border-left: 12rpx solid #c0c7ee; overflow: hidden; margin: 6rpx 0 38rpx; min-height: 436rpx; box-sizing: border-box; }
+.gk-payment-state-desc { margin: 8rpx 0; }
+.gk-payment-state-desc + .gk-card { margin-top: 40rpx; }
+.report-book-title { font-size: 52rpx; line-height: 1.55; font-weight: 550; letter-spacing: -1.6rpx; margin: 30rpx 0 20rpx; position: relative; }
+.report-book-owner { font-size: 20rpx; color: #8790b2; position: relative; }
+.report-book-decoration { position: absolute; right: -38rpx; top: 70rpx; height: 308rpx; width: 308rpx; opacity: .54; border: 1rpx solid #b8b5dc; border-radius: 50%; }
+.report-book-decoration::before, .report-book-decoration::after { content: ""; position: absolute; height: 308rpx; width: 308rpx; border: 1rpx solid #b8b5dc; border-radius: 50%; left: -80rpx; top: 0; }
+.report-book-decoration::after { left: -40rpx; top: 72rpx; }
+.preview-fragment-copy { margin-top: 24rpx; }
+.preview-chapter-card { padding-top: 10rpx; padding-bottom: 10rpx; }
+.preview-chapter { display: flex; gap: 22rpx; padding: 26rpx 0; border-bottom: 1rpx solid var(--ui-line); align-items: center; }
+.preview-chapter:last-child { border-bottom: 0; }
+.preview-chapter-num { font-size: 22rpx; color: #adb8ce; width: 40rpx; }
+.preview-chapter-name { font-size: 24rpx; flex: 1; }
+.preview-chapter-note { font-size: 18rpx; color: #99a3b5; }
+.preview-benefits { display: flex; justify-content: space-between; gap: 12rpx; margin: 40rpx 0; }
+.preview-benefit { text-align: center; font-size: 18rpx; color: var(--ui-muted); line-height: 1.8; flex: 1; }
+.preview-benefit-strong { display: block; color: #6b7896; font-size: 22rpx; font-weight: 550; margin-bottom: 6rpx; }
+.preview-price-row { margin-bottom: 10rpx; }
+.preview-price { margin-top: 14rpx; }
+.preview-box-links { margin-top: 28rpx; }
+.preview-step-note { margin-top: 20rpx; }
+.preview-br { display: block; height: 0; }

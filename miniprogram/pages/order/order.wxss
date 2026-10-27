@@ -1,0 +1,14 @@
+.page-hero .aichat-muted { position: relative; z-index: 1; }
+/* V1.2：自我探索订单与售后 */
+.order-head-row { margin: 12rpx 0 34rpx; }
+.order-head-title { font-size: 46rpx; }
+.order-meta { margin-top: 14rpx; }
+.order-section-title { margin: 40rpx 0 24rpx; }
+.order-timeline { border-left: 2rpx solid #e0e5f0; margin: 38rpx 0 38rpx 12rpx; padding-left: 36rpx; }
+.order-timeline-item { position: relative; font-size: 22rpx; padding-bottom: 42rpx; line-height: 1.8; color: var(--ui-muted); }
+.order-timeline-item::before { content: ""; height: 14rpx; width: 14rpx; background: #ccd4e5; border: 6rpx solid #f7f9fd; box-sizing: content-box; position: absolute; border-radius: 50%; left: -50rpx; top: 2rpx; }
+.order-timeline-item--current::before { background: var(--ui-brand); }
+.order-timeline-title { display: block; font-size: 24rpx; font-weight: 500; color: var(--ui-ink); margin-bottom: 8rpx; }
+.order-scope-label { margin-top: 44rpx; }
+.order-scope-note { margin-top: 20rpx; }
+.order-br { display: block; height: 0; }

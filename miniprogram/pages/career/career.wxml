@@ -1,0 +1,49 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">职业探索</view>
+    <text class="gk-head-tag">第二期</text>
+  </view>
+
+  <text class="gk-tag gk-tag--aqua">把偏好放回现实条件</text>
+  <view class="career-title">适合的方向，</view>
+  <view class="career-title">可以一步步试出来。</view>
+  <view class="gk-lead">在已有优势的基础上，再了解你的兴趣、重视的事和现实条件。补充这些信息不额外收费。</view>
+
+  <view class="gk-card">
+    <view class="gk-title-sm">你的基础画像已带入</view>
+    <view class="gk-small career-base-copy">性格特质、优势主题、两段确认经历，{{paid ? '及 16 型人格偏好。' : '本次未纳入 16 型人格。'}}</view>
+  </view>
+
+  <view class="gk-field-label career-chip-label">哪些事情会让你想继续了解？</view>
+  <view class="gk-chips">
+    <button wx:for="{{interests}}" wx:key="*this" class="gk-chip {{selectedInterests.indexOf(item) >= 0 ? 'gk-chip--selected' : ''}}" data-item="{{item}}" bindtap="toggleInterest">{{item}}</button>
+  </view>
+
+  <view class="gk-field-label career-chip-label">工作中，你更重视什么？</view>
+  <view class="gk-chips">
+    <button wx:for="{{values}}" wx:key="*this" class="gk-chip {{selectedValues.indexOf(item) >= 0 ? 'gk-chip--selected' : ''}}" data-item="{{item}}" bindtap="toggleValue">{{item}}</button>
+  </view>
+
+  <view class="gk-field">
+    <view class="gk-field-label">已经有的技能与相关经历</view>
+    <textarea class="gk-textarea" value="{{skills}}" placeholder="写下你做过的事、能独立完成的任务。" maxlength="800" data-f="skills" bindinput="onInput" />
+  </view>
+  <view class="gk-field">
+    <view class="gk-field-label">当前想探索什么？</view>
+    <textarea class="gk-textarea" value="{{goal}}" placeholder="如在现岗位调整任务，或尝试一个新方向。" maxlength="800" data-f="careerGoal" bindinput="onInput" />
+  </view>
+  <view class="gk-field">
+    <view class="gk-field-label">近期可投入的时间</view>
+    <input class="gk-input" value="{{time}}" placeholder="如每周 3 小时，不确定也可写暂不清楚。" maxlength="60" data-f="careerTime" bindinput="onInput" />
+  </view>
+  <view class="gk-field">
+    <view class="gk-field-label">需要照顾的现实条件</view>
+    <textarea class="gk-textarea" value="{{constraints}}" placeholder="可填写工作经历、地点、收入需要或暂不考虑的方向。" maxlength="800" data-f="careerConstraints" bindinput="onInput" />
+  </view>
+
+  <view class="gk-soft-note">未提供的条件会保持未知。结果会比较多个方向，并说明哪些还需要你亲自验证。</view>
+
+  <button class="gk-primary" bindtap="careerPreview">{{careerPaid ? '查看我的职业报告' : upgradeLabel}}</button>
+  <view class="gk-footer-note">第二期交付原型；职业方向是探索线索，<text class="career-br"></text>不会只凭人格类型给出唯一答案。</view>
+</view>

@@ -1,0 +1,11 @@
+.portrait-title { margin: 40rpx 0 20rpx; font-size: 44rpx; line-height: 1.6; letter-spacing: -1.2rpx; font-weight: 550; }
+.portrait-lead { margin: 20rpx 0 10rpx; }
+.portrait-input-name { font-size: 24rpx; font-weight: 550; line-height: 1.8; }
+.portrait-input-btn { white-space: nowrap; padding-top: 6rpx; }
+.portrait-goal-note { margin-top: 18rpx; }
+.portrait-strength-desc { margin-top: 18rpx; }
+.portrait-practice-copy { margin: 18rpx 0 24rpx; }
+.portrait-br { display: block; height: 0; }
+.portrait-career-link { display: flex; align-items: center; gap: 22rpx; padding: 33rpx 3rpx; border-bottom: 1rpx solid var(--ui-line); background: transparent; text-align: left; font-size: 25rpx; line-height: 1.6; width: 100%; }
+.portrait-career-link::after { border: 0; }
+.portrait-career-tag { margin-left: auto; }

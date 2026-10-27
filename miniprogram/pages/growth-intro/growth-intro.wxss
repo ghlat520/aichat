@@ -1,0 +1,11 @@
+.intro-art { height: 300rpx; display: flex; align-items: center; justify-content: center; margin: 18rpx 0 10rpx; }
+.intro-art-mascot { width: 316rpx; height: 316rpx; }
+.intro-art-scale { transform: scale(1.5); overflow: visible; }
+.intro-title { font-size: 50rpx; line-height: 1.6; font-weight: 600; letter-spacing: -1.8rpx; text-align: center; }
+.intro-desc { font-size: 24rpx; color: var(--ui-muted); line-height: 1.9; text-align: center; margin-top: 24rpx; }
+.intro-desc-last { margin: 0 0 44rpx; }
+.intro-meta { display: grid; grid-template-columns: repeat(3, 1fr); padding: 34rpx 0; margin: 40rpx 0; background: #ffffff; border-radius: 28rpx; text-align: center; }
+.intro-meta-value { font-size: 26rpx; font-weight: 600; margin-bottom: 10rpx; color: var(--ui-ink); }
+.intro-meta-item text { font-size: 18rpx; color: var(--ui-muted); }
+.intro-card-copy { margin-top: 16rpx; }
+.intro-note-br { display: block; height: 0; }

@@ -1,0 +1,6 @@
+<import src="../../templates/preview.wxml" />
+<view id="action-page" class="container">
+  <template is="page-head" data="{{title:'下一步的小行动'}}" />
+  <view class="ui-page-lede">由自己掌握的一小步，就很好。</view>
+  <view id="action-stub" class="aichat-warning">{{error || '该模块依赖后端 ' + 'G5' + ' 实现，本轮为骨架占位。'}}</view>
+</view>

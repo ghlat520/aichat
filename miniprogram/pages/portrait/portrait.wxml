@@ -1,0 +1,67 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回自测首页"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">我的探索画像</view>
+    <text class="gk-head-tag">自我探索</text>
+  </view>
+
+  <text class="gk-tag {{missing ? 'gk-tag--gray' : 'gk-tag--aqua'}}">{{missing ? '再聊一点你的经历' : '你的故事，已经准备好了'}}</text>
+  <view class="portrait-title">从你做过的小事里，</view>
+  <view class="portrait-title">看见自己的力量。</view>
+  <view class="gk-small portrait-lead">那些你认真做过的小事，值得被好好看见。把不同的发现放在一起，慢慢找到适合自己的方式。</view>
+
+  <view class="gk-section-title"><view class="gk-section-title-title">这次画像基于什么</view></view>
+  <view class="gk-card">
+    <view wx:for="{{inputs}}" wx:key="id" class="gk-path-step">
+      <view class="gk-step-check {{item.done ? '' : 'gk-step-check--missing'}}">{{item.done ? '✓' : '○'}}</view>
+      <view class="gk-grow">
+        <view class="portrait-input-name">{{item.name}}</view>
+        <view class="gk-tiny">{{item.desc}}</view>
+      </view>
+      <button class="gk-text-link portrait-input-btn" data-id="{{item.id}}" data-done="{{item.done}}" bindtap="openInput">{{item.done ? '查看' : '补充'}}</button>
+    </view>
+    <view class="gk-divider"></view>
+    <view class="gk-between">
+      <text class="gk-small">16 型人格 · 可选</text>
+      <text class="gk-tag {{hasMbti ? '' : 'gk-tag--gray'}}">{{hasMbti ? '已纳入' : '未纳入，不影响报告'}}</text>
+    </view>
+    <view class="gk-tiny portrait-goal-note">应用目标：{{goalsText}}</view>
+  </view>
+
+  <view class="gk-section-title">
+    <view class="gk-section-title-title">值得发展的优势候选</view>
+    <text class="gk-section-title-note">待在生活中验证</text>
+  </view>
+  <view wx:for="{{strengths}}" wx:key="index" class="gk-card">
+    <view class="gk-between">
+      <view class="gk-title-sm">{{item.name}}</view>
+      <text class="gk-inference">综合推断</text>
+    </view>
+    <view class="gk-small portrait-strength-desc">{{item.desc}}</view>
+    <view class="gk-evidence">
+      <view class="gk-evidence-label">当前依据</view>
+      <text>{{item.basis}}</text>
+    </view>
+    <text class="gk-tag {{item.tagColor}}">优势候选 {{item.index}}</text>
+  </view>
+
+  <view class="gk-card">
+    <view class="gk-title-sm">先免费试一个小练习</view>
+    <view class="gk-small portrait-practice-copy">下次协作前，把共同目标写成一句话，再请对方确认。看看这是否让沟通更清楚。</view>
+    <button class="gk-text-link" bindtap="freePractice">记下这个练习</button>
+  </view>
+
+  <block wx:if="{{missing}}">
+    <view class="gk-notice">{{missingText}}</view>
+    <button class="gk-primary" bindtap="completeInput">补齐报告所需信息</button>
+  </block>
+  <button wx:else class="gk-primary" bindtap="{{canReadBase ? 'openReport' : 'generatePreview'}}">{{canReadBase ? '打开我的个人优势说明书' : '查看个人优势说明书预览'}}</button>
+
+  <view class="gk-footer-note">单项结果与基础练习免费。<text class="portrait-br"></text>报告整合与场景建议为可选的深度内容。</view>
+  <button class="portrait-career-link" bindtap="goCareer">
+    <view class="ui-icon ui-icon--leaf"></view>
+    <text class="gk-grow">也想探索工作方向？</text>
+    <text class="gk-tag gk-tag--aqua portrait-career-tag">第二期</text>
+    <view class="gk-chevron"></view>
+  </button>
+</view>

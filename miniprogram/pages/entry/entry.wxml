@@ -1,0 +1,86 @@
+<import src="../../templates/preview.wxml" />
+<!-- pages/entry/entry.wxml — 产品首页（V1.2 严格对齐原型 home 屏；边界闸已移除） -->
+<view id="entry-page" class="entry-page">
+  <view class="entry-sky entry-sky--home">
+    <view class="entry-brand">
+      <view class="entry-brand-mark">清</view>
+      <view>
+        <view class="entry-brand-name">{{productName || '关系清晰卡'}}</view>
+        <view class="entry-brand-note">把事实、感受和下一步分开</view>
+      </view>
+    </view>
+  </view>
+
+  <view id="entry-loading" wx:if="{{loading}}" class="entry-loading-card aichat-muted">正在准备清晰空间…</view>
+  <view id="entry-error" wx:if="{{error && loading === false}}" class="aichat-warning">{{error}}</view>
+
+  <view wx:if="{{!loading}}" id="home-page" class="home-shell">
+    <view class="home-welcome">
+      <view>
+        <view class="home-greeting">嗨，今天也照顾好自己</view>
+        <view class="home-greeting-note">给心事一点空间，给自己一点时间。</view>
+      </view>
+      <button class="home-boundary-shortcut" bindtap="goProfile" aria-label="打开我的空间"><view class="ui-icon ui-icon--user"></view></button>
+    </view>
+
+    <view class="home-tool-grid">
+      <button id="home-assessment" class="home-tool" bindtap="goAssessment">
+        <view class="home-tool-icon home-tool-icon--blue"><view class="home-line-icon home-line-icon--test"></view></view>
+        <text class="home-tool-name">认识自己</text>
+        <text class="home-tool-note">偏好与优势</text>
+      </button>
+      <button id="home-clarity" class="home-tool" bindtap="goClarity">
+        <view class="home-tool-icon home-tool-icon--pink"><view class="home-line-icon home-line-icon--heart"></view></view>
+        <text class="home-tool-name">整理关系</text>
+        <text class="home-tool-note">看清具体心事</text>
+      </button>
+      <button id="home-venting" class="home-tool" bindtap="goVenting">
+        <view class="home-tool-icon home-tool-icon--aqua"><view class="home-line-icon home-line-icon--chat"></view></view>
+        <text class="home-tool-name">先说一说</text>
+        <text class="home-tool-note">给心事一个出口</text>
+      </button>
+    </view>
+
+    <button id="home-practice" class="home-hero-card" bindtap="goClarity">
+      <view class="home-hero-copy">
+        <text class="home-eyebrow">今天的清晰练习</text>
+        <view class="home-hero-title"><view>不急着想通，</view><view>先说清一件小事。</view></view>
+        <view class="home-hero-subtitle">把事实、感受和下一步分开。</view>
+        <view class="home-hero-action">试着理一理 <text class="home-hero-chevron">›</text></view>
+      </view>
+      <template is="companion" data="{{className: 'home-companion'}}" />
+    </button>
+
+    <view class="home-section-head">
+      <view class="home-section-title">多认识自己一点</view>
+      <button class="home-section-link" bindtap="goAssessment">探索全部</button>
+    </view>
+    <button id="home-featured-growth" class="home-featured-test" bindtap="goAssessment">
+      <view class="gk-test-art gk-test-art--mbti home-test-art" aria-hidden="true">
+        <view class="gk-petal"></view><view class="gk-petal gk-petal-2"></view><view class="gk-petal gk-petal-3"></view><view class="gk-petal gk-petal-4"></view>
+        <text class="gk-test-art--mbti-text">我</text>
+      </view>
+      <view class="home-test-copy">
+        <view class="home-test-title">从性格偏好，到个人优势</view>
+        <view class="home-test-note">三种自测入口，发现更丰富的自己。</view>
+        <text class="home-test-tag">基础结果免费</text>
+      </view>
+      <text class="home-chevron">›</text>
+    </button>
+
+    <view class="home-section-head">
+      <view class="home-section-title">留给自己的发现</view>
+    </view>
+    <button id="home-growth-reports" class="home-recent-row" bindtap="goReports">
+      <view class="gk-feature-icon gk-feature-icon--sm gk-feature-icon--aqua"><view class="ui-icon ui-icon--cards"></view></view>
+      <view class="gk-grow">
+        <view class="home-recent-name">我的结果与个人报告</view>
+        <view class="gk-tiny">把每一次小发现，留在自己的空间</view>
+      </view>
+      <view class="gk-chevron"></view>
+    </button>
+    <view class="gk-footer-note">原有关系整理与新增个人探索，可以各自开始。</view>
+
+    <view class="home-tabbar-safe-space"></view>
+  </view>
+</view>

@@ -1,0 +1,43 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">{{tool.short}}</view>
+    <text class="gk-head-tag">自我探索</text>
+  </view>
+
+  <view class="intro-art">
+    <view wx:if="{{toolId === 'mbti'}}" class="ui-companion intro-art-mascot"></view>
+    <view wx:else class="gk-test-art intro-art-scale {{toolId === 'traits' ? 'gk-test-art--traits' : 'gk-test-art--strengths'}}">
+      <block wx:if="{{toolId === 'traits'}}">
+        <view class="gk-test-art--traits-bar" style="height: 44rpx;"></view>
+        <view class="gk-test-art--traits-bar" style="height: 74rpx;"></view>
+        <view class="gk-test-art--traits-bar" style="height: 58rpx;"></view>
+        <view class="gk-test-art--traits-bar" style="height: 84rpx;"></view>
+        <view class="gk-test-art--traits-bar" style="height: 52rpx;"></view>
+      </block>
+    </view>
+  </view>
+  <view class="intro-title">{{tool.titleFirst}}</view>
+  <view class="intro-title">{{tool.titleSecond}}</view>
+  <view class="intro-desc">{{tool.introFirst}}</view>
+  <view class="intro-desc intro-desc-last">{{tool.introSecond}}</view>
+
+  <view wx:if="{{isClassic}}" class="gk-soft-note">经典条目来自 IPIP-50，本轮体验 6 道中文适配题。正式测评使用确认后的完整版本。</view>
+
+  <view class="intro-meta">
+    <view class="intro-meta-item"><view class="intro-meta-value">{{total}} 道演示题</view><text>正式题量待确认</text></view>
+    <view class="intro-meta-item"><view class="intro-meta-value">随时暂停</view><text>进度可以继续</text></view>
+    <view class="intro-meta-item"><view class="intro-meta-value">基础结果免费</view><text>完整基础解释</text></view>
+  </view>
+
+  <view class="gk-card">
+    <view class="gk-title-sm">这次可以了解什么？</view>
+    <view class="gk-small intro-card-copy">{{tool.desc}}。完成后可查看完整基础结果、解释，以及一个可以尝试的小练习。</view>
+    <view class="gk-divider"></view>
+    <view class="gk-tiny">想进一步整合自己的经历？可选购个人优势说明书 ¥29.90，包含场景建议、一次校准和 7 天复盘。</view>
+  </view>
+
+  <button class="gk-primary" bindtap="startTest">{{answered > 0 ? '接着上次，继续认识自己' : '开始我的小探索'}}</button>
+  <button class="gk-secondary" bindtap="openImport">使用我已有的结果</button>
+  <view class="gk-footer-note">本轮为交互演示，题目与结果均为样例。<text class="intro-note-br"></text>认识自己，按自己的节奏来。</view>
+</view>

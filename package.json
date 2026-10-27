@@ -1,0 +1,19 @@
+{
+  "name": "aichat-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "description": "aichat 小程序 E2E 测试（miniprogram-automator 驱动，仅测试依赖）",
+  "scripts": {
+    "e2e": "node scripts/e2e/run-all.mjs",
+    "smoke:pages": "node scripts/e2e/smoke-pages.mjs",
+    "e2e:canary:shot": "E2E_FAULT=shot node scripts/e2e/run-all.mjs",
+    "e2e:canary:selector": "E2E_FAULT=selector node scripts/e2e/run-all.mjs",
+    "e2e:canary:pii": "E2E_FAULT=pii node scripts/e2e/run-all.mjs",
+    "test:store": "node --test miniprogram/*.test.mjs",
+    "ui": "python3 -m http.server 4188 --bind 127.0.0.1 --directory docs/ui"
+  },
+  "devDependencies": {
+    "@weapp-vite/miniprogram-automator": "^1.2.7",
+    "ws": "^8.21.0"
+  }
+}

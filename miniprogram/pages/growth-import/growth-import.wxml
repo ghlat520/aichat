@@ -1,0 +1,49 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">使用已有结果</view>
+    <text class="gk-head-tag">自我探索</text>
+  </view>
+
+  <view class="gk-page-title">带着已经发现的自己，</view>
+  <view class="gk-page-title">继续往前。</view>
+  <view class="gk-lead">如果你已经做过测评，可以录入结果。它会保留原来的来源与日期。</view>
+
+  <text class="gk-tag">{{toolId === 'mbti' ? '认识我的性格偏好' : toolId === 'traits' ? '看见我的性格底色' : '发现我身上的优势'}}</text>
+
+  <block wx:if="{{isMbti}}">
+    <view class="gk-field">
+      <view class="gk-field-label">我的类型</view>
+      <picker mode="selector" range="{{types}}" value="{{typeIndex}}" bindchange="onTypeChange">
+        <view class="gk-input import-picker-value">{{types[typeIndex]}}</view>
+      </picker>
+    </view>
+  </block>
+  <view wx:else class="gk-soft-note">本轮先演示已有结果的来源确认；维度输入将随具体测评工具提供的字段展示。</view>
+
+  <view class="gk-field">
+    <view class="gk-field-label">测评平台或工具名称</view>
+    <input class="gk-input" value="{{sourceName}}" placeholder="填写你使用的测评工具" bindinput="onSourceInput" maxlength="60" />
+  </view>
+  <view class="gk-field">
+    <view class="gk-field-label">工具版本</view>
+    <input class="gk-input" value="{{version}}" placeholder="如：报告上标注的版本；不清楚可填未知" bindinput="onVersionInput" maxlength="40" />
+  </view>
+  <view class="gk-field">
+    <view class="gk-field-label">测评日期</view>
+    <picker mode="date" value="{{date}}" bindchange="onDateChange">
+      <view class="gk-input import-picker-value">{{date}}</view>
+    </picker>
+  </view>
+
+  <checkbox-group bindchange="toggleConfirm">
+    <label class="gk-check-row">
+      <checkbox value="confirm" color="#6577dc" />
+      <text>我确认以上内容与已有报告一致，同意以"本人录入"的来源继续探索。</text>
+    </label>
+  </checkbox-group>
+  <view wx:if="{{showError}}" class="import-error">请先确认来源信息与原报告一致。</view>
+
+  <button class="gk-primary" bindtap="confirmImport">确认结果，继续探索</button>
+  <view class="gk-footer-note">录入结果会单独标记来源，后续仍可编辑。</view>
+</view>

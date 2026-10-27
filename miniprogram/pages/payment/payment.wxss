@@ -1,0 +1,2 @@
+.payment-desc-line { font-size: 24rpx; color: var(--ui-muted); line-height: 1.9; margin: 6rpx 0; }
+.payment-desc-line:first-of-type { margin-top: 24rpx; }

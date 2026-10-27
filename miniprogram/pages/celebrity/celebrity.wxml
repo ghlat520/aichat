@@ -1,0 +1,34 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">名人观察</view>
+    <text class="gk-head-tag">公开资料</text>
+  </view>
+
+  <view class="celebrity-cover">
+    <text class="gk-tag gk-tag--white">从一个熟悉的人，打开一个新话题</text>
+    <view class="celebrity-cover-title">马斯克更像</view>
+    <view class="celebrity-cover-title">哪一种偏好？</view>
+    <view class="celebrity-cover-copy">先凭直觉选一个。<text class="celebrity-br"></text>再看看，公开资料能告诉我们什么。</view>
+    <view class="gk-rocket celebrity-cover-rocket"></view>
+  </view>
+
+  <view class="gk-tiny celebrity-note">类型是讨论假设，非本人测评结果。</view>
+
+  <view class="celebrity-options">
+    <button
+      wx:for="{{options}}"
+      wx:key="id"
+      class="celebrity-guess {{vote === item.id ? 'celebrity-guess--selected' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="choose"
+    >
+      <text class="celebrity-guess-key">{{item.id === 'uncertain' ? '？' : item.id}}</text>
+      <text class="celebrity-guess-desc">{{item.label}}</text>
+      <view class="gk-chevron"></view>
+    </button>
+  </view>
+
+  <view class="gk-footer-note">四字母类型不等于一个人的全部。<text class="celebrity-br"></text>你的选择将用于本次讨论，不计入你的测评分数。</view>
+  <button class="gk-secondary" bindtap="goIntro">我想先测测自己</button>
+</view>

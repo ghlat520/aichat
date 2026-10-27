@@ -1,0 +1,34 @@
+<import src="../../templates/preview.wxml" />
+<view id="reflection-page" class="container">
+  <template is="page-head" data="{{title:'再靠近自己一点'}}" />
+  <view class="ui-page-lede">把事实与未知分开，再留下一步能做的小事。</view>
+
+  <view id="reflection-loading" wx:if="{{loading}}" class="aichat-card aichat-muted">加载中…</view>
+  <view id="reflection-round-1" wx:if="{{!loading && !error && round === 1}}" class="aichat-card">
+    <view class="aichat-title">第一轮：事实与未知</view>
+    <view class="aichat-field">
+      <view class="aichat-label">已确认事实（每行一条）</view>
+      <textarea id="reflection-facts" class="aichat-textarea" maxlength="1000" value="{{confirmedFacts}}" data-key="confirmedFacts" bindinput="onInput" placeholder="对方连续两次在约定前取消见面。" />
+    </view>
+    <view class="aichat-field">
+      <view class="aichat-label">仍需验证的未知（每行一条）</view>
+      <textarea id="reflection-unknowns" class="aichat-textarea" maxlength="1000" value="{{unknowns}}" data-key="unknowns" bindinput="onInput" placeholder="还不知道取消的具体原因。" />
+    </view>
+    <button id="reflection-submit-1" class="aichat-btn" disabled="{{!canSubmit || submitting}}" loading="{{submitting}}" bindtap="reflect">提交第一轮</button>
+  </view>
+
+  <view id="reflection-round-2" wx:if="{{!loading && !error && round === 2}}" class="aichat-card">
+    <view class="aichat-title">第二轮：边界与目标</view>
+    <view class="aichat-field">
+      <view class="aichat-label">优先需要或边界</view>
+      <textarea id="reflection-priority" class="aichat-textarea" maxlength="300" value="{{priority}}" data-key="priority" bindinput="onInput" placeholder="我现在优先保护清晰和尊重的边界。" />
+    </view>
+    <view class="aichat-field">
+      <view class="aichat-label">由我能执行的目标</view>
+      <textarea id="reflection-goal" class="aichat-textarea" maxlength="300" value="{{goal}}" data-key="goal" bindinput="onInput" placeholder="未来 48 小时内整理一次只讨论可观察事实的沟通提纲。" />
+    </view>
+    <button id="reflection-submit-2" class="aichat-btn" disabled="{{!canSubmit || submitting}}" loading="{{submitting}}" bindtap="reflect">提交并生成报告</button>
+  </view>
+
+  <view id="reflection-error" wx:if="{{error}}" class="aichat-warning">{{error}}</view>
+</view>

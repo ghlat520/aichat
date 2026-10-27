@@ -1,0 +1,96 @@
+{
+  "checks": [
+    {
+      "label": "介绍进入性格特质题目",
+      "ok": true
+    },
+    {
+      "label": "五个整行选项在390宽视口内",
+      "ok": true
+    },
+    {
+      "label": "自动下一题保存4题",
+      "ok": true
+    },
+    {
+      "label": "关闭自动前进后保持选中态",
+      "ok": true
+    },
+    {
+      "label": "修改前题后逐题继续",
+      "ok": true
+    },
+    {
+      "label": "暂停弹层保留4题进度",
+      "ok": true
+    },
+    {
+      "label": "暂停返回自测目录",
+      "ok": true
+    },
+    {
+      "label": "重新进入续答第5题",
+      "ok": true
+    },
+    {
+      "label": "经典来源使用底部弹层",
+      "ok": true
+    },
+    {
+      "label": "6题完成进入性格特质结果",
+      "ok": true
+    }
+  ],
+  "optionRects": [
+    {
+      "left": 20,
+      "right": 370,
+      "top": 251,
+      "bottom": 303,
+      "width": 350,
+      "height": 52,
+      "font-weight": "400",
+      "font-size": "13px"
+    },
+    {
+      "left": 20,
+      "right": 370,
+      "top": 312,
+      "bottom": 364,
+      "width": 350,
+      "height": 52,
+      "font-weight": "400",
+      "font-size": "13px"
+    },
+    {
+      "left": 20,
+      "right": 370,
+      "top": 373,
+      "bottom": 425,
+      "width": 350,
+      "height": 52,
+      "font-weight": "400",
+      "font-size": "13px"
+    },
+    {
+      "left": 20,
+      "right": 370,
+      "top": 434,
+      "bottom": 486,
+      "width": 350,
+      "height": 52,
+      "font-weight": "400",
+      "font-size": "13px"
+    },
+    {
+      "left": 20,
+      "right": 370,
+      "top": 495,
+      "bottom": 547,
+      "width": 350,
+      "height": 52,
+      "font-weight": "400",
+      "font-size": "13px"
+    }
+  ]
+}

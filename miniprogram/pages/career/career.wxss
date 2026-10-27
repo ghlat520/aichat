@@ -1,0 +1,4 @@
+.career-title { font-size: 46rpx; line-height: 1.6; letter-spacing: -1.2rpx; font-weight: 550; margin: 28rpx 0 10rpx; }
+.career-base-copy { margin-top: 16rpx; }
+.career-chip-label { margin-top: 46rpx; }
+.career-br { display: block; height: 0; }

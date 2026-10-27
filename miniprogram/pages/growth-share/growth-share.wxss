@@ -1,0 +1,34 @@
+.poster-tabs { display: flex; gap: 10rpx; background: #edf1f8; padding: 8rpx; border-radius: 22rpx; margin: 20rpx 0 30rpx; }
+.poster-tab { flex: 1; font-size: 20rpx; padding: 18rpx 6rpx; color: #9aa5b9; border-radius: 16rpx; background: transparent; line-height: 1.5; }
+.poster-tab::after { border: 0; }
+.poster-tab--selected { background: #ffffff; color: #6d7fbd; box-shadow: 0 4rpx 10rpx #52658212; }
+.growth-poster { background: linear-gradient(145deg, #e8edff, #f8faff); padding: 44rpx 42rpx 28rpx; border: 1rpx solid #e0e6f5; border-radius: 36rpx; overflow: hidden; position: relative; margin: 30rpx 0 40rpx; }
+.growth-poster--comfort { background: linear-gradient(145deg, #fcf0f3, #f4f6fd); }
+.growth-poster--strength { background: linear-gradient(145deg, #e2f2ef, #f7fafc); }
+.poster-topline { display: flex; justify-content: space-between; gap: 20rpx; font-size: 22rpx; color: #7d8fb9; }
+.poster-topline-note { font-size: 16rpx; color: #a4aec5; }
+.poster-eyebrow { font-size: 18rpx; color: #8f9bb9; display: inline-block; margin: 52rpx 0 20rpx; }
+.poster-title { font-size: 52rpx; line-height: 1.55; letter-spacing: -1.6rpx; font-weight: 550; position: relative; z-index: 1; margin-bottom: 32rpx; max-width: 500rpx; }
+.poster-art { width: 190rpx; height: 190rpx; position: absolute; right: 2rpx; top: 254rpx; opacity: .7; }
+.poster-art-mascot { position: absolute; width: 210rpx; height: 210rpx; right: -8rpx; top: 260rpx; bottom: auto; opacity: .7; }
+.poster-description { font-size: 22rpx; line-height: 1.95; color: #8797b0; margin: 60rpx 0 32rpx; position: relative; z-index: 1; max-width: 440rpx; }
+.poster-private-snippet { font-size: 20rpx; line-height: 1.8; color: #8f9db5; background: #ffffff99; padding: 22rpx; border-radius: 16rpx; margin: 28rpx 0; }
+.poster-private-label { font-size: 16rpx; color: #a6b1c5; margin-bottom: 8rpx; }
+.poster-sender { font-size: 20rpx; line-height: 1.8; color: #98a5bc; margin: 54rpx 0 34rpx; }
+.poster-code-row { display: flex; gap: 26rpx; align-items: center; background: #ffffffc9; margin: 0 -16rpx; padding: 24rpx 20rpx; border-radius: 24rpx; }
+.poster-code-target { display: flex; flex-direction: column; align-items: center; gap: 4rpx; font-size: 16rpx; color: #a9b3c5; flex-shrink: 0; background: transparent; padding: 0; margin: 0; line-height: 1.6; }
+.poster-code-target::after { border: 0; }
+.poster-code-box { width: 134rpx; height: 134rpx; border-radius: 28rpx; background: #f2f5fc; display: flex; align-items: center; justify-content: center; margin-bottom: 8rpx; }
+.poster-code-mark { width: 84rpx; height: 76rpx; border-radius: 44rpx; background: #e3eafa; color: var(--ui-brand); font-size: 40rpx; display: flex; align-items: center; justify-content: center; }
+.poster-code-copy { flex: 1; min-width: 0; }
+.poster-code-cta { font-size: 22rpx; font-weight: 550; color: #7d8fb5; }
+.poster-code-note { font-size: 18rpx; line-height: 1.9; color: #a0adc3; margin-top: 10rpx; }
+.poster-code-link { color: #899dca; font-size: 18rpx; text-align: left; padding: 4rpx 0; background: transparent; line-height: 1.9; }
+.poster-code-link::after { border: 0; }
+.poster-truth { font-size: 16rpx; line-height: 1.8; color: #aeb7c8; margin-top: 26rpx; }
+.share-flag-group { margin-top: 34rpx; }
+.share-flag { display: flex; align-items: flex-start; gap: 18rpx; font-size: 22rpx; line-height: 1.9; background: transparent; text-align: left; padding: 6rpx 0; width: 100%; color: var(--ui-ink); }
+.share-flag::after { border: 0; }
+.share-flag-check { color: var(--ui-brand); }
+.share-br { display: block; height: 0; }
+.poster-canvas { position: fixed; left: -9999rpx; top: 0; width: 900px; height: 1380px; }

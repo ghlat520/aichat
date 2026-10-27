@@ -1,0 +1,181 @@
+{
+  "passed": 35,
+  "total": 35,
+  "results": [
+    {
+      "url": "/pages/assessment/assessment",
+      "label": "自测首页目录",
+      "ok": true
+    },
+    {
+      "url": "/pages/assessment/assessment",
+      "label": "自测首页 hero 插画",
+      "ok": true
+    },
+    {
+      "url": "/pages/assessment/assessment",
+      "label": "继续作答卡（演示态）",
+      "ok": true
+    },
+    {
+      "url": "/pages/assessment/assessment",
+      "label": "三张测评卡",
+      "ok": true
+    },
+    {
+      "url": "/pages/assessment/assessment",
+      "label": "名人观察入口卡",
+      "ok": true
+    },
+    {
+      "url": "/pages/assessment/assessment",
+      "label": "关系自测入口",
+      "ok": true
+    },
+    {
+      "url": "/pages/voices/voices",
+      "label": "借一点力量",
+      "ok": true
+    },
+    {
+      "url": "/pages/voice/voice",
+      "label": "他们走过的路",
+      "ok": true
+    },
+    {
+      "url": "/pages/celebrity/celebrity",
+      "label": "猜名人偏好",
+      "ok": true
+    },
+    {
+      "url": "/pages/celebrity-insight/celebrity-insight",
+      "label": "公开线索与自测",
+      "ok": true
+    },
+    {
+      "url": "/pages/invite/invite?entry=traits&kind=challenge&pick=INTJ",
+      "label": "接收方直达·测评",
+      "ok": true
+    },
+    {
+      "url": "/pages/invite/invite?entry=voices&kind=comfort&voice=federer",
+      "label": "接收方直达·力量",
+      "ok": true
+    },
+    {
+      "url": "/pages/growth-intro/growth-intro?tool=mbti",
+      "label": "测评介绍·MBTI",
+      "ok": true
+    },
+    {
+      "url": "/pages/growth-intro/growth-intro?tool=traits",
+      "label": "测评介绍·经典题",
+      "ok": true
+    },
+    {
+      "url": "/pages/growth-question/growth-question?tool=traits",
+      "label": "答题页",
+      "ok": true
+    },
+    {
+      "url": "/pages/growth-result/growth-result?tool=mbti",
+      "label": "基础结果·MBTI",
+      "ok": true
+    },
+    {
+      "url": "/pages/growth-result/growth-result?tool=traits",
+      "label": "基础结果·特质",
+      "ok": true
+    },
+    {
+      "url": "/pages/growth-import/growth-import?tool=mbti",
+      "label": "使用已有结果",
+      "ok": true
+    },
+    {
+      "url": "/pages/experiences/experiences",
+      "label": "个人经历",
+      "ok": true
+    },
+    {
+      "url": "/pages/experiences-confirm/experiences-confirm",
+      "label": "经历确认",
+      "ok": true
+    },
+    {
+      "url": "/pages/portrait/portrait",
+      "label": "综合画像",
+      "ok": true
+    },
+    {
+      "url": "/pages/report-preview/report-preview",
+      "label": "个人报告预览",
+      "ok": true
+    },
+    {
+      "url": "/pages/checkout/checkout",
+      "label": "购买确认",
+      "ok": true
+    },
+    {
+      "url": "/pages/payment/payment",
+      "label": "支付状态",
+      "ok": true
+    },
+    {
+      "url": "/pages/growth-report/growth-report?sample=1",
+      "label": "完整报告样例",
+      "ok": true
+    },
+    {
+      "url": "/pages/calibrate/calibrate",
+      "label": "结果校准",
+      "ok": true
+    },
+    {
+      "url": "/pages/growth-reflection/growth-reflection",
+      "label": "7 天行动复盘",
+      "ok": true
+    },
+    {
+      "url": "/pages/career/career",
+      "label": "职业探索输入",
+      "ok": true
+    },
+    {
+      "url": "/pages/career-report/career-report",
+      "label": "职业报告",
+      "ok": true
+    },
+    {
+      "url": "/pages/reports/reports",
+      "label": "我的报告",
+      "ok": true
+    },
+    {
+      "url": "/pages/growth-share/growth-share",
+      "label": "分享预览与海报",
+      "ok": true
+    },
+    {
+      "url": "/pages/order/order",
+      "label": "订单与售后·已购视图",
+      "ok": true
+    },
+    {
+      "url": "交互·答题闭环：6 题自动前进并落到结果页",
+      "label": "交互·答题闭环：6 题自动前进并落到结果页",
+      "ok": true
+    },
+    {
+      "url": "交互·名人猜想 → 线索页",
+      "label": "交互·名人猜想 → 线索页",
+      "ok": true
+    },
+    {
+      "url": "交互·力量海报接收方直达故事页",
+      "label": "交互·力量海报接收方直达故事页",
+      "ok": true
+    }
+  ]
+}

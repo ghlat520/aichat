@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>原型与小程序对照 · 2026-10-27</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#eef1f8;color:#28334b;font-family:"PingFang SC","Microsoft YaHei",sans-serif}main{max-width:1380px;margin:auto;padding:36px 24px 70px}h1{font-size:28px;font-weight:600;margin:0 0 14px}h2{font-size:18px;margin:0 0 16px}p{max-width:1000px;font-size:14px;line-height:1.9;color:#66738b}a{color:#6577dc;text-decoration:none}.status{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}.status span{padding:10px 16px;background:white;border-radius:12px;color:#5166bc;font-size:13px}.comparisons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}article{padding:22px;background:#fff;border-radius:22px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}figure{margin:0;min-width:0}figcaption{font-size:12px;color:#778298;margin:0 0 10px}img{display:block;width:100%;height:auto;border:1px solid #e5e9f3;border-radius:12px}.all-shots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;margin-top:24px}.all-shots figcaption{margin-top:10px}details{margin-top:35px}summary{font-size:18px;cursor:pointer}.note{background:#fff;border-radius:16px;padding:16px 20px;margin:26px 0}.back{display:inline-block;margin-bottom:20px;font-size:13px}@media(max-width:900px){.comparisons{grid-template-columns:1fr}.all-shots{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:520px){main{padding:24px 12px}.all-shots{grid-template-columns:repeat(2,minmax(0,1fr))}article{padding:14px}.pair{gap:8px}}
+  </style>
+</head>
+<body><main>
+  <a class="back" href="/self-growth-prototype.html?variant=A&amp;screen=discover">打开指定的 A 版原型 →</a>
+  <h1>原型与小程序对照</h1>
+  <p>2026-10-27 · 下列小程序图片来自微信开发者工具实际渲染；探索入口与答题选项另经实际点击验证。</p>
+  <div class="status"><span>状态与交互测试 44 / 44</span><span>页面与关键路径冒烟 35 / 35</span><span>性格特质专项 10 / 10</span><span>说一说：直接进入与两轮长消息通过</span></div>
+  <p>两侧按相同的 390px 内容宽度展示，保留原始截图高度。网页原型的审阅浮条在截图时隐藏；系统导航、安全区和字体栅格存在平台差异。点击图片可查看原图。</p>
+  <section id="comparisons" class="comparisons"></section>
+  <div class="note">
+    <p>本轮修复：原生按钮默认样式覆盖布局、性格特质插画比例与答题排版、修改前题后的推进顺序、暂停与来源弹层、说一说布局与长消息滚动，以及匿名会话的直接进入和过期恢复。冒烟脚本不再写入虚假身份，并在结束后恢复探索数据。</p>
+    <p>验证范围为开发者工具和本地后端。说一说的回复来自现有演示服务；六道测评题、报告与支付演示不代表正式测评计分、生产 AI 或支付能力已验收。</p>
+    <p><a href="traits-checks.json">性格特质检查记录</a> · <a href="chat-checks.json">说一说检查记录</a> · <a href="growth-smoke.json">35 项冒烟记录</a> · <a href="native-tap-checks.json">实际点击记录</a> · <a href="unit-tests-summary.json">44 项测试摘要</a></p>
+  </div>
+  <details><summary>查看全部 40 张原生状态截图</summary><section id="all-shots" class="all-shots"></section></details>
+</main>
+<script>
+  const pairs=[['01-discover','自测首页'],['02-home','首页 · 区块间距'],['10-intro-traits','性格特质 · 介绍'],['35-traits-question','性格特质 · 首题'],['36-traits-selected','手动选择与保存'],['37-traits-pause','暂停与保留进度'],['32-chat','说一说 · 直接进入'],['29-share-result','分享海报 · 插画定位']];
+  const states=['01-discover','02-home','03-voices','04-voice','05-celebrity','06-celebrity-insight','07-invite-topic','08-invite-comfort','09-intro-mbti','10-intro-traits','11-question','12-result-mbti','13-result-traits','14-import','15-experiences','16-confirm','17-portrait','18-preview','19-checkout','20-career-report-preview','21-report','22-calibrate','23-reflection','24-career','25-reports','26-order','27-order-refund','28-share-challenge','29-share-result','30-share-comfort','31-profile','32-chat','33-relationship','34-chat-two-turns','35-traits-question','36-traits-selected','37-traits-pause','38-traits-source','39-traits-result','40-traits-after-tap'];
+  const shot=(folder,name,label)=>`<figure><figcaption>${label}</figcaption><a href="${folder}/${name}.png" target="_blank"><img src="${folder}/${name}.png" alt="${label}" loading="lazy"></a></figure>`;
+  document.querySelector('#comparisons').innerHTML=pairs.map(([name,title])=>`<article><h2>${title}</h2><div class="pair">${shot('prototype',name,'网页原型')}${shot('native',name,'微信开发者工具')}</div></article>`).join('');
+  document.querySelector('#all-shots').innerHTML=states.map(name=>shot('native',name,name)).join('');
+</script>
+</body></html>

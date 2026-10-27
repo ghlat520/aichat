@@ -1,0 +1,2 @@
+.import-picker-value { display: flex; align-items: center; min-height: 84rpx; }
+.import-error { font-size: 22rpx; color: #b55e74; line-height: 1.8; margin-top: 20rpx; }

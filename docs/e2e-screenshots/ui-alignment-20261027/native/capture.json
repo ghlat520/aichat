@@ -1,0 +1,134 @@
+[
+  {
+    "name": "01-discover",
+    "ok": true
+  },
+  {
+    "name": "02-home",
+    "ok": true
+  },
+  {
+    "name": "03-voices",
+    "ok": true
+  },
+  {
+    "name": "04-voice",
+    "ok": true
+  },
+  {
+    "name": "05-celebrity",
+    "ok": true
+  },
+  {
+    "name": "06-celebrity-insight",
+    "ok": true
+  },
+  {
+    "name": "07-invite-topic",
+    "ok": true
+  },
+  {
+    "name": "08-invite-comfort",
+    "ok": true
+  },
+  {
+    "name": "09-intro-mbti",
+    "ok": true
+  },
+  {
+    "name": "10-intro-traits",
+    "ok": true
+  },
+  {
+    "name": "11-question",
+    "ok": true
+  },
+  {
+    "name": "12-result-mbti",
+    "ok": true
+  },
+  {
+    "name": "13-result-traits",
+    "ok": true
+  },
+  {
+    "name": "14-import",
+    "ok": true
+  },
+  {
+    "name": "15-experiences",
+    "ok": true
+  },
+  {
+    "name": "16-confirm",
+    "ok": true
+  },
+  {
+    "name": "17-portrait",
+    "ok": true
+  },
+  {
+    "name": "18-preview",
+    "ok": true
+  },
+  {
+    "name": "19-checkout",
+    "ok": true
+  },
+  {
+    "name": "20-career-report-preview",
+    "ok": true
+  },
+  {
+    "name": "21-report",
+    "ok": true
+  },
+  {
+    "name": "22-calibrate",
+    "ok": true
+  },
+  {
+    "name": "23-reflection",
+    "ok": true
+  },
+  {
+    "name": "24-career",
+    "ok": true
+  },
+  {
+    "name": "25-reports",
+    "ok": true
+  },
+  {
+    "name": "26-order",
+    "ok": true
+  },
+  {
+    "name": "27-order-refund",
+    "ok": true
+  },
+  {
+    "name": "28-share-challenge",
+    "ok": true
+  },
+  {
+    "name": "29-share-result",
+    "ok": true
+  },
+  {
+    "name": "30-share-comfort",
+    "ok": true
+  },
+  {
+    "name": "31-profile",
+    "ok": true
+  },
+  {
+    "name": "32-chat",
+    "ok": true
+  },
+  {
+    "name": "33-relationship",
+    "ok": true
+  }
+]

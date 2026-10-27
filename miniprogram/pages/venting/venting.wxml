@@ -1,0 +1,42 @@
+<import src="../../templates/preview.wxml" />
+<view id="venting-page" class="container ui-tab-page gk-screen venting-page">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goHome" aria-label="返回首页"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">先说一说</view>
+    <text class="gk-head-tag">原有入口</text>
+  </view>
+  <view class="venting-intro"><view class="venting-avatar"><view class="ui-icon ui-icon--chat"></view></view><view><view class="venting-intro-title">一个慢慢说话的地方</view><view class="venting-intro-note">从你愿意说的地方开始</view></view></view>
+  <view id="venting-loading" wx:if="{{loading}}" class="aichat-muted">正在为你准备一个安静的空间…</view>
+  <view id="venting-disabled" wx:if="{{!enabled}}" class="aichat-warning">{{error}}</view>
+  <view id="venting-error" wx:if="{{error && enabled}}" class="aichat-warning">{{error}}</view>
+  <view id="venting-chat" wx:if="{{!summary}}">
+    <view id="venting-messages" class="venting-messages">
+      <view class="venting-bubble"><view>嗨，我在这里。</view><view>不必把话想好再说。今天，有什么事让你放不下？</view></view>
+      <view id="vent-message-{{index}}" class="venting-message-row {{item.role === 'user' ? 'venting-message-row--user' : ''}}" wx:for="{{messages}}" wx:key="index"><view class="venting-bubble {{item.role === 'user' ? 'venting-bubble--user' : ''}}">{{item.text}}</view></view>
+      <view id="venting-limit" wx:if="{{limitReached}}" class="ui-quiet-note">这一轮先到这里，给自己一点整理的空间。</view>
+      <button id="venting-finish" wx:if="{{aiTurnsUsed > 0}}" class="venting-finish" disabled="{{finishing}}" loading="{{finishing}}" bindtap="finish">整理一下刚才的话</button>
+      <button id="venting-restart" wx:if="{{limitReached}}" class="venting-finish" bindtap="restart">开始新的倾诉</button>
+    </view>
+    <view class="venting-composer">
+      <textarea id="venting-input" class="venting-input" auto-height="true" maxlength="2000" value="{{input}}" bindinput="onInput" disabled="{{limitReached || sending}}" placeholder="从一个具体的小片段开始…" show-confirm-bar="false" aria-label="想说的心事" />
+      <button id="venting-send" class="venting-send" disabled="{{loading || sending || limitReached || !ventSessionId}}" loading="{{sending}}" bindtap="send" aria-label="发送心事">→</button>
+    </view>
+    <button wx:if="{{error && !ventSessionId}}" class="gk-quiet" bindtap="restart">重新开始</button>
+    <view class="gk-footer-note">本轮为对话界面演示，沿用原有倾诉入口。</view>
+    <button class="gk-secondary" bindtap="goToClarity">想整理一下这段关系</button>
+  </view>
+  <view id="venting-summary" wx:if="{{summary}}" class="aichat-card">
+    <view class="aichat-title">把刚才的话，留下一点</view>
+    <view class="aichat-field"><view class="aichat-label">关系场景</view><input id="venting-summary-context" class="aichat-input" value="{{summary.context}}" data-key="context" bindinput="onSummaryInput" /></view>
+    <view class="aichat-field"><view class="aichat-label">观察到的事实</view><textarea id="venting-summary-observed" class="aichat-textarea" value="{{summary.observed_fact}}" data-key="observed_fact" bindinput="onSummaryInput" /></view>
+    <view class="aichat-field"><view class="aichat-label">反复出现的想法</view><textarea id="venting-summary-thought" class="aichat-textarea" value="{{summary.looping_thought}}" data-key="looping_thought" bindinput="onSummaryInput" /></view>
+    <view class="aichat-field"><view class="aichat-label">情绪（逗号分隔，最多 3 项）</view><input id="venting-summary-emotion" class="aichat-input" value="{{summaryEmotionText}}" data-key="emotion" bindinput="onSummaryInput" /></view>
+    <view class="aichat-field"><view class="aichat-label">需要或边界（逗号分隔，最多 3 项）</view><input id="venting-summary-needs" class="aichat-input" value="{{summaryNeedsText}}" data-key="need_or_boundary" bindinput="onSummaryInput" /></view>
+    <view class="aichat-field"><view class="aichat-label">当前目标</view><textarea id="venting-summary-goal" class="aichat-textarea" value="{{summary.current_goal}}" data-key="current_goal" bindinput="onSummaryInput" /></view>
+    <view class="aichat-field"><view class="aichat-label">当前清晰度（0–10）</view><input id="venting-summary-clarity" class="aichat-input" type="number" value="{{summary.clarity_pre}}" data-key="clarity_pre" bindinput="onSummaryInput" /></view>
+    <button id="venting-confirm" class="aichat-btn" disabled="{{confirming || confirmedTaskId}}" loading="{{confirming}}" bindtap="confirmSummary">保存这次整理</button>
+    <button id="venting-to-mirror" wx:if="{{confirmedTaskId}}" class="aichat-btn" bindtap="goToMirror">继续镜像确认</button>
+  </view>
+  <button wx:if="{{summary}}" class="aichat-btn aichat-btn--ghost" bindtap="restart">开始新的倾诉</button>
+  <view id="venting-bottom"></view>
+</view>

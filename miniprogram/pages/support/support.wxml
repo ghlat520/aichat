@@ -1,0 +1,6 @@
+<import src="../../templates/preview.wxml" />
+<view id="support-page" class="container">
+  <template is="page-head" data="{{title:'帮助与反馈'}}" />
+  <view class="ui-page-lede">遇到问题时，从这里告诉我们。</view>
+  <view id="support-stub" class="aichat-warning">{{error || '该模块依赖后端 ' + 'G5' + ' 实现，本轮为骨架占位。'}}</view>
+</view>

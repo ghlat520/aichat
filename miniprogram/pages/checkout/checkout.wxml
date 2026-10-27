@@ -1,0 +1,62 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">{{upgrade ? '职业报告补差升级' : '确认购买'}}</view>
+    <text class="gk-head-tag">单次购买</text>
+  </view>
+
+  <view class="gk-card">
+    <view class="gk-row">
+      <view class="checkout-mini-book {{career ? 'checkout-mini-book--aqua' : ''}}"><view class="ui-icon {{career ? 'ui-icon--leaf' : 'ui-icon--cards'}}"></view></view>
+      <view>
+        <view class="gk-title-sm">{{career ? '职业探索报告' : '个人优势说明书'}}</view>
+        <view class="gk-tiny">同一份测评与经历快照 · {{career ? '职业交付' : '个人优势'}} v1.0</view>
+      </view>
+    </view>
+    <view class="gk-divider"></view>
+    <view class="gk-delivery-list">
+      <view wx:for="{{delivery}}" wx:key="*this" class="gk-delivery-item">{{item}}</view>
+    </view>
+  </view>
+
+  <view class="gk-card">
+    <view class="gk-title-sm">这次实际纳入的内容</view>
+    <view class="gk-tags checkout-include-tags">
+      <text class="gk-tag gk-tag--aqua">性格特质</text>
+      <text class="gk-tag gk-tag--pink">优势测评</text>
+      <text class="gk-tag">2 段确认经历</text>
+      <text wx:if="{{hasMbti}}" class="gk-tag">16 型人格</text>
+    </view>
+    <view class="gk-tiny checkout-include-note">{{hasMbti ? '' : '未纳入 16 型人格；不影响标准报告。'}}应用目标：{{goalsText}}</view>
+    <view wx:if="{{career && careerReady}}" class="gk-tiny checkout-include-note">已补充职业兴趣、价值观、技能和现实条件。</view>
+  </view>
+
+  <view class="gk-card">
+    <view class="gk-title-sm">费用明细</view>
+    <view class="gk-price-line"><text>{{career ? '职业探索报告' : '个人优势说明书'}}</text><text>¥{{career ? '49.90' : '29.90'}}</text></view>
+    <view wx:if="{{upgrade}}" class="gk-price-line gk-price-line--credit"><text>抵扣基础报告实际净支付</text><text>− ¥{{credit}}</text></view>
+    <view class="gk-price-line gk-price-line--total">
+      <text>{{upgrade ? '本次补差' : '本次实付'}}</text>
+      <text class="checkout-total">¥{{amount}}</text>
+    </view>
+    <view wx:if="{{upgrade}}" class="gk-tiny checkout-upgrade-note">原基础报告仍可查看，升级只增加新的职业交付。</view>
+  </view>
+
+  <button class="checkout-bind" bindtap="bindAccount">
+    <view class="ui-icon ui-icon--user"></view>
+    <text class="gk-grow">报告保存至微信账号</text>
+    <text class="checkout-bind-meta">{{bound ? '已绑定 · 演示' : '购买时绑定'}}</text>
+    <view class="gk-chevron"></view>
+  </button>
+
+  <view class="gk-soft-note">服务从付款确认后开始，共 7 天。到期后报告仍可重复查看；30 天职业计划为自主执行内容。</view>
+
+  <block wx:if="{{blocked}}">
+    <view class="gk-notice">基础订单正在处理退款，暂时不能抵扣升级。可以先查看原订单进度。</view>
+    <button class="gk-primary" bindtap="goOrder">查看订单进度</button>
+  </block>
+  <button wx:else class="gk-primary" bindtap="confirmPurchase">{{amountNumber === 0 ? '确认领取职业升级' : '确认' + (upgrade ? '补差' : '购买') + ' ¥' + amount}}</button>
+
+  <view class="gk-footer-note">继续即确认本次商品、交付与服务范围。<text class="checkout-br"></text><button class="gk-text-link checkout-terms" bindtap="purchaseInfo">购买须知与售后说明</button></view>
+  <button class="gk-quiet" bindtap="backToFree">暂不购买，继续免费使用</button>
+</view>

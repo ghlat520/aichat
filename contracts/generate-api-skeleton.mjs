@@ -574,7 +574,10 @@ function writeMiniProgram(operations) {
   fs.mkdirSync(generated, {recursive: true});
   fs.writeFileSync(path.join(generated, 'types.ts'), tsTypesSource(operations));
   fs.writeFileSync(path.join(generated, 'client.ts'), tsClientSource(operations));
-  fs.writeFileSync(path.join(miniRoot, 'wx-transport.ts'), wxTransportSource());
+  // The runtime adapter owns privacy masking; regenerate contracts without overwriting it.
+  if (!fs.existsSync(path.join(miniRoot, 'wx-transport.ts'))) {
+    fs.writeFileSync(path.join(miniRoot, 'wx-transport.ts'), wxTransportSource());
+  }
   fs.writeFileSync(path.join(miniRoot, 'index.ts'), `export * from './generated/types';\nexport * from './generated/client';\nexport * from './wx-transport';\n`);
 }
 

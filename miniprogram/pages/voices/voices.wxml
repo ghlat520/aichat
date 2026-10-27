@@ -1,0 +1,42 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">借一点力量</view>
+    <text class="gk-head-tag">慢慢来</text>
+  </view>
+
+  <view class="voices-welcome">
+    <text class="gk-tag gk-tag--white">给此刻正在努力的你</text>
+    <view class="voices-welcome-title">有些路，</view>
+    <view class="voices-welcome-title">他们也曾慢慢走过。</view>
+    <view class="voices-welcome-copy">从一段真实经历里，借一点力量。<text class="voices-copy-br"></text>也许今天，只需要往前一小步。</view>
+    <view class="ui-companion voices-welcome-mascot"></view>
+  </view>
+
+  <view class="gk-chips voices-moods">
+    <button wx:for="{{moods}}" wx:key="*this" class="gk-chip {{mood === item ? 'gk-chip--selected' : ''}}" data-mood="{{item}}" bindtap="setMood">{{item}}</button>
+  </view>
+
+  <block wx:if="{{stories.length}}">
+    <button wx:for="{{stories}}" wx:key="id" class="voice-card" data-id="{{item.id}}" bindtap="openStory">
+      <view class="gk-between">
+        <view class="voice-person"><view class="voice-person-avatar">{{item.initial}}</view><text>{{item.name}}</text></view>
+        <text class="gk-tag {{item.tagColor}}">{{item.mood}}</text>
+      </view>
+      <view class="voice-card-title">{{item.title}}</view>
+      <view class="voice-card-quote">"{{item.quote}}"</view>
+      <view class="gk-between">
+        <text class="gk-tiny voice-card-source">{{item.source}}</text>
+        <view class="voice-read">读读这段经历 →</view>
+      </view>
+    </button>
+  </block>
+  <view wx:else class="gk-empty">
+    <view class="voice-empty-icon"><view class="ui-icon ui-icon--heart"></view></view>
+    <view class="gk-empty-title">给自己慢慢留一点力量。</view>
+    <view class="gk-empty-text">遇见有共鸣的一句话，<text class="voices-copy-br"></text>可以先留在这里，再回来看。</view>
+    <button class="gk-primary" bindtap="allVoices">先读一段经历</button>
+  </view>
+
+  <view class="gk-footer-note">原话与经历可以查看出处。<text class="voices-copy-br"></text>从中借一点思路，下一步仍由你自己决定。</view>
+</view>

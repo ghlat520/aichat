@@ -1,0 +1,42 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">七天里的一个小变化</view>
+    <text class="gk-head-tag">行动复盘</text>
+  </view>
+
+  <text class="gk-tag gk-tag--aqua">{{reflected ? '复盘已保存' : '行动复盘 · 1 次'}}</text>
+  <view class="reflection-title">试过之后，</view>
+  <view class="reflection-title">有什么新发现？</view>
+  <view class="gk-lead">不是为了完成打卡，而是看看这个练习是否真的适合你。</view>
+
+  <view class="reflection-days">
+    <view wx:for="{{[1, 2, 3, 4, 5, 6, 7]}}" wx:key="*this" class="reflection-day {{actionStarted && index === 0 ? 'reflection-day--done' : ''}}">第 {{item}} 天</view>
+  </view>
+
+  <view class="gk-card">
+    <view class="gk-tiny">我选择的小练习</view>
+    <view class="gk-title-sm reflection-action-title">{{action[0]}}</view>
+    <view class="gk-small">{{action[1]}}</view>
+  </view>
+
+  <view wx:if="{{expired && !reflected}}" class="gk-notice">本次服务窗口已结束。你仍可查看报告和已有的行动记录。</view>
+
+  <view class="gk-field">
+    <view class="gk-field-label">我实际尝试了什么？</view>
+    <textarea class="gk-textarea" value="{{reviewText}}" placeholder="写一个具体片段，没做成也可以如实记录。" maxlength="800" data-f="reviewText" bindinput="onInput" />
+  </view>
+  <view class="gk-field">
+    <view class="gk-field-label">发生了什么变化？</view>
+    <textarea class="gk-textarea" value="{{reviewOutcome}}" placeholder="哪些有帮助，哪些与你预想的不同？" maxlength="800" data-f="reviewOutcome" bindinput="onInput" />
+  </view>
+  <view class="gk-field">
+    <view class="gk-field-label">接下来，我想保留或调整什么？</view>
+    <textarea class="gk-textarea" value="{{reviewNext}}" placeholder="一个很小的调整就可以。" maxlength="800" data-f="reviewNext" bindinput="onInput" />
+  </view>
+
+  <view wx:if="{{reflected}}" class="reflection-saved-banner">这次行动复盘已保存，可以从"我的报告"重新查看。</view>
+  <button wx:else class="gk-primary" bindtap="submit" disabled="{{expired}}">保存这次复盘</button>
+
+  <button class="gk-secondary" bindtap="backToReport">回到我的说明书</button>
+</view>

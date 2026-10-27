@@ -1,0 +1,18 @@
+<import src="../../templates/preview.wxml" />
+<view id="clarity-page" class="container">
+  <template is="page-head" data="{{title:'整理一段关系'}}" />
+  <view class="ui-page-lede"><view>先留下一件具体的小事，</view><view>再慢慢分清，哪些是事实，哪些是感受。</view></view>
+  <view id="clarity-loading" wx:if="{{loading}}" class="aichat-muted">正在准备…</view>
+  <view id="clarity-form" wx:if="{{!loading}}">
+    <view class="clarity-context-row"><text>这段关系</text><picker id="clarity-context" mode="selector" range="{{contextLabels}}" value="{{contextIndex}}" bindchange="onContextChange"><view class="clarity-context-value">{{contextLabels[contextIndex]}} ⌄</view></picker></view>
+    <view class="aichat-field"><view class="clarity-field-heading"><text class="clarity-field-number">1</text><text>发生了什么</text></view><textarea id="clarity-observed" class="aichat-textarea" maxlength="500" value="{{fields.observed_fact}}" data-key="observed_fact" bindinput="onTextInput" placeholder="写下一个具体片段，只写能确认的动作、时间或原话" /></view>
+    <view class="aichat-field"><view class="clarity-field-heading"><text class="clarity-field-number">2</text><text>此刻的感受</text><text class="clarity-emotion-hint">选 1–3 种</text></view><checkbox-group id="clarity-emotions" class="clarity-emotions" bindchange="onEmotionChange"><label id="clarity-emotion-label-{{item.value}}" class="clarity-emotion-chip {{item.checked ? 'clarity-emotion-chip--active' : ''}}" wx:for="{{emotionOptions}}" wx:key="value"><checkbox id="clarity-emotion-{{item.value}}" class="clarity-checkbox" value="{{item.value}}" checked="{{item.checked}}" color="#6577dc" /><text>{{item.label}}</text></label></checkbox-group></view>
+    <view class="aichat-field"><view class="clarity-field-heading"><text class="clarity-field-number">3</text><text>我在意的是什么</text></view><textarea id="clarity-needs" class="aichat-textarea" maxlength="80" value="{{needText}}" bindinput="onNeedsInput" placeholder="我希望被理解、被回应，还是被尊重？" /></view>
+    <view class="aichat-field"><view class="clarity-field-heading"><text class="clarity-field-number">4</text><text>还不能确定的部分</text></view><textarea id="clarity-interpretation" class="aichat-textarea" maxlength="500" value="{{fields.interpretation}}" data-key="interpretation" bindinput="onTextInput" placeholder="哪些只是我的推测？" /></view>
+    <view class="aichat-field"><view class="clarity-field-heading"><text class="clarity-field-number">5</text><text>我想保留的边界</text></view><textarea id="clarity-boundary" class="aichat-textarea" maxlength="80" value="{{boundaryText}}" bindinput="onBoundaryInput" placeholder="哪些事，我现在还不想勉强自己？" /></view>
+    <view class="aichat-field"><view class="clarity-field-heading"><text class="clarity-field-number">6</text><text>愿意尝试的一小步</text></view><textarea id="clarity-goal" class="aichat-textarea" maxlength="200" value="{{fields.next_step_goal}}" data-key="next_step_goal" bindinput="onTextInput" placeholder="选一个由自己掌握的小行动" /></view>
+    <button id="clarity-submit" class="aichat-btn" disabled="{{!canSubmit || saving}}" loading="{{saving}}" bindtap="submit">把这段关系理一理</button>
+  </view>
+  <view id="clarity-error" wx:if="{{error}}" class="aichat-warning">{{error}}</view>
+  <view id="clarity-saved" wx:if="{{saved}}" class="aichat-card clarity-saved"><view class="aichat-title">把心事留下一点，就很好</view><view class="aichat-muted">接下来，看看哪些被理解了，哪些还想再说清楚。</view><button id="clarity-to-mirror" class="aichat-btn" bindtap="goToMirror">看看这次整理</button></view>
+</view>
