@@ -27,3 +27,13 @@ Thumbs.db
 logs/
 npm-debug.log*
 .env*
+
+# Local generated artifacts (graphify code-graph output)
+graphify-out/
+
+# Playwright screenshots
+output/playwright/
+
+# WeChat devtools machine-private config and scratch screenshots
+miniprogram/project.private.config.json
+miniprogram/2SRN_D_*.png
