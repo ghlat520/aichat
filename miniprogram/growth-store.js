@@ -1,6 +1,6 @@
 // growth-store.js — 自我探索流程的共享状态（原型 V1.2 状态机 1:1 移植）
 // 纯逻辑工厂 + wx storage 注入：页面用 getGrowth() 单例，单测用 createGrowthStore(mock)。
-// 与原型一致：题目为演示数据、支付为本地模拟，不连接后端与支付渠道。
+// 题目与报告模板保持现有版本；支付与权益由服务端验证。
 const CONTENT = require('./growth-content');
 
 const STORAGE_KEY = 'aichat_growth_state_v1';
@@ -111,6 +111,12 @@ function createGrowthStore(storage) {
       state = defaults();
     }
     loaded = true;
+    // Persisted UI state cannot authenticate a paid report after restart.
+    state.paid = false;
+    state.careerPaid = false;
+    state.bound = false;
+    if (state.order) state.payment = 'pending';
+    else state.payment = 'none';
   }
 
   function get() {
@@ -298,7 +304,7 @@ function createGrowthStore(storage) {
       .join('&');
   }
 
-  // —— 报告购买（本地模拟）——
+  // —— 报告购买：本地只保存展示信息，页面读取仍由服务端鉴权 ——
   function reportPrice() {
     if (state.product === 'career') {
       return state.paid ? Math.max(0, CONTENT.PRICES.career - state.baseNet) : CONTENT.PRICES.career;
@@ -306,26 +312,40 @@ function createGrowthStore(storage) {
     return CONTENT.PRICES.base;
   }
 
-  function createOrder() {
-    state.order = {
-      product: state.product,
-      amount: reportPrice(),
-      upgrade: state.product === 'career' && state.paid,
-      baseCredit: state.product === 'career' && state.paid ? state.baseNet : 0,
-      id: '1026',
-      date: '2026-10-26'
-    };
+  function applyServerOrder(order) {
+    const active = order.payment_state === 'PAID' && order.entitlement_state === 'ACTIVE' && order.refund_state === 'NONE';
+    state.order = Object.assign({}, order, { id: order.order_id, amount: order.price_fen / 100,
+      product: order.sku === 'base' ? 'base' : 'career', upgrade: order.sku === 'upgrade' });
+    state.product = state.order.product;
+    state.paid = active && order.sku === 'base';
+    state.careerPaid = active && order.sku !== 'base';
+    state.payment = order.refund_state === 'COMPLETED' ? 'refunded'
+      : order.refund_state === 'PARTIAL' || order.refund_state === 'PROCESSING' || order.entitlement_state === 'SUSPENDED' ? 'suspended'
+      : active ? 'success' : order.payment_state === 'CLOSED' ? 'failed'
+      : order.payment_state === 'PAID' ? 'delivery' : 'pending';
+    state.refund = order.refund_state === 'COMPLETED' ? 'refunded' : order.refund_state === 'PARTIAL' ? 'partial'
+      : order.refund_state === 'PROCESSING' ? 'processing' : order.support_requested ? 'requested' : 'none';
+    state.refundAmount = order.refunded_fen / 100;
+    state.paymentNotice = '';
     persist();
     return state.order;
   }
 
-  function settlePayment(paymentState) {
-    state.payment = paymentState;
-    if (paymentState === 'success') {
-      if (state.product === 'career') state.careerPaid = true;
-      else state.paid = true;
+  function purchaseSnapshot(product) {
+    const snapshot = JSON.parse(JSON.stringify({ answers: state.answers, results: state.results,
+      sources: state.sources, experiences: state.experiences, goals: state.goals, confirmed: state.confirmed }));
+    if (product === 'career') snapshot.career = { interests: state.careerInterest, values: state.careerValues,
+      skills: state.skills, goal: state.careerGoal, time: state.careerTime, constraints: state.careerConstraints };
+    return snapshot;
+  }
+
+  function paymentPreparationKey(orderId) {
+    state.paymentPreparationKeys = state.paymentPreparationKeys || {};
+    if (!state.paymentPreparationKeys[orderId]) {
+      state.paymentPreparationKeys[orderId] = 'prepare-' + Date.now() + '-' + Math.random().toString(36).slice(2, 14);
+      persist();
     }
-    persist();
+    return state.paymentPreparationKeys[orderId];
   }
 
   function canReadBase() {
@@ -336,22 +356,6 @@ function createGrowthStore(storage) {
     state.supportReason = reason;
     state.supportText = text;
     state.supportSent = true;
-    state.refund = 'requested';
-    persist();
-  }
-
-  function advanceRefund() {
-    if (state.refund === 'requested') state.refund = 'processing';
-    else if (state.refund === 'processing') {
-      state.refund = 'refunded';
-      state.refundAmount = state.order ? state.order.amount : reportPrice();
-      if (state.product === 'career') {
-        state.careerPaid = false;
-        if (state.refundScope === 'all') state.paid = false;
-      } else {
-        state.paid = false;
-      }
-    }
     persist();
   }
 
@@ -410,11 +414,11 @@ function createGrowthStore(storage) {
     inviteQuery,
     inviteQueryString,
     reportPrice,
-    createOrder,
-    settlePayment,
+    applyServerOrder,
+    purchaseSnapshot,
+    paymentPreparationKey,
     canReadBase,
     submitSupport,
-    advanceRefund,
     submitCalibration,
     submitReflection,
     deleteReport

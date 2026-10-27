@@ -8,6 +8,8 @@
   <view class="gk-page-title">每一次发现，</view>
   <view class="gk-page-title">都可以再回来看看。</view>
   <view class="gk-lead">免费结果与已购报告，各自好好保存。</view>
+  <view wx:if="{{notice}}" class="gk-notice">{{notice}}</view>
+  <button class="gk-quiet" bindtap="restorePaid">微信登录并恢复已购报告</button>
 
   <view class="reports-filters">
     <button wx:for="{{filters}}" wx:key="id" class="reports-filter {{filter === item.id ? 'reports-filter--selected' : ''}}" data-filter="{{item.id}}" bindtap="setFilter">{{item.label}}</button>
@@ -15,24 +17,25 @@
 
   <block wx:if="{{filter !== 'free'}}">
     <view wx:for="{{paidItems}}" wx:key="id" class="gk-card reports-item">
-      <button class="reports-item-main" data-id="{{item.id}}" bindtap="openPaid">
+      <button class="reports-item-main" data-id="{{item.id}}" data-kind="{{item.kind}}" bindtap="openPaid">
         <view class="reports-mini-book {{item.aqua ? 'reports-mini-book--aqua' : ''}}"><view class="ui-icon {{item.aqua ? 'ui-icon--leaf' : 'ui-icon--cards'}}"></view></view>
         <view class="gk-grow">
           <view class="reports-item-title">{{item.name}}</view>
-          <view class="gk-tiny">2026.10.26 · v{{item.version}}</view>
+          <view class="gk-tiny">{{item.date}} · {{item.version}}</view>
           <view class="gk-tags reports-item-tags">
-            <text class="gk-tag">{{item.id === 'career' ? '已购 · 含个人优势内容' : (expired ? '已购 · 可重复查看' : '已购 · 服务还剩 7 天')}}</text>
-            <text wx:if="{{item.id === 'base' && calibrated}}" class="gk-tag gk-tag--aqua">已修订</text>
+            <text class="gk-tag">{{item.kind === 'career' ? '已购 · 含个人优势内容' : '已购 · 可重复查看'}}</text>
           </view>
         </view>
         <view class="gk-chevron"></view>
       </button>
       <view class="reports-item-footer">
-        <text>{{item.id === 'base' && calibrated ? '保留原版与修订版' : '独立报告快照'}}</text>
+        <text>独立报告快照</text>
         <button class="gk-text-link" bindtap="goOrder">订单与售后</button>
       </view>
     </view>
   </block>
+
+  <button wx:if="{{nextCursor && filter !== 'free'}}" class="gk-quiet" bindtap="morePaid">继续读取更早的购买记录</button>
 
   <block wx:if="{{filter !== 'paid'}}">
     <view wx:for="{{freeItems}}" wx:key="id" class="gk-card reports-item">
@@ -50,14 +53,14 @@
 
   <view wx:if="{{(filter === 'paid' && !paidItems.length) || (filter !== 'paid' && !freeItems.length && !paidItems.length)}}" class="gk-empty">
     <view class="reports-empty-icon"><view class="ui-icon ui-icon--cards"></view></view>
-    <view class="gk-empty-title">{{filter === 'paid' ? '还没有购买报告' : '从一个小发现开始'}}</view>
+    <view class="gk-empty-title">{{filter === 'paid' ? (nextCursor ? '当前页暂无有效已购报告' : '暂未读取到已购报告') : '从一个小发现开始'}}</view>
     <view class="gk-empty-text">{{filter === 'paid' ? '免费结果仍可完整查看。想继续探索时，再了解个人报告。' : '先选一项自测，按自己的节奏认识自己。'}}</view>
     <button class="gk-primary" bindtap="goDiscover">去自测看看</button>
   </view>
 
   <view wx:if="{{hasPaid}}" class="gk-between reports-manage">
     <button class="gk-text-link" bindtap="exportReport">保存文本副本</button>
-    <button class="gk-text-link" bindtap="deleteReport">管理与删除报告</button>
+    <button class="gk-text-link" bindtap="deleteReport">清空本机报告展示</button>
   </view>
 
   <view class="gk-footer-note">新的测评不会覆盖已有报告。<text class="reports-br"></text>服务窗口结束后，已购报告仍可重复查看。</view>

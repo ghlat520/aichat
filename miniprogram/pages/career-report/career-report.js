@@ -2,6 +2,8 @@
 // 多个可验证方向，不给唯一职业结论；30 天为自主实践计划长度。
 const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
+const { getVirtualPayment } = require('../../services/virtual-payment');
+const { friendlyError } = require('../../app-store');
 
 function money(n) {
   return Number(n).toFixed(2);
@@ -26,17 +28,29 @@ Page({
     price: '49.90'
   },
 
-  onShow() {
+  onLoad(query) { this.orderId = query && query.orderId; },
+  async onShow() {
     const growth = getGrowth();
     const state = growth.get();
+    let snapshot = null;
+    this.setData({ paid: false, directions: [] });
+    const id = this.orderId || (state.order && state.order.product === 'career' && state.order.id);
+    if (id) {
+      try {
+        const report = await getVirtualPayment().readReport(id);
+        if (report.order.sku !== 'base') snapshot = report.snapshot;
+      } catch (error) { wx.showToast({ title: friendlyError(error), icon: 'none' }); }
+    }
+    const paid = !!snapshot;
+    const career = snapshot && snapshot.career;
     this.setData({
-      paid: state.careerPaid,
+      paid,
       basePaid: state.paid,
-      goal: state.careerGoal,
-      time: state.careerTime || '尚未提供',
-      constraints: state.careerConstraints || '现实条件尚未补充，后续需要核对。',
-      values: state.careerValues,
-      directions: CONTENT.CAREER_DIRECTIONS.slice(0, state.careerPaid ? 3 : 1).map(([name, basis, conflict, action], index) => ({
+      goal: career ? career.goal : state.careerGoal,
+      time: (career ? career.time : state.careerTime) || '尚未提供',
+      constraints: (career ? career.constraints : state.careerConstraints) || '现实条件尚未补充，后续需要核对。',
+      values: career ? career.values : state.careerValues,
+      directions: CONTENT.CAREER_DIRECTIONS.slice(0, paid ? 3 : 1).map(([name, basis, conflict, action], index) => ({
         index: index + 1,
         name,
         basis,

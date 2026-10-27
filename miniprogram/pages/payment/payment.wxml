@@ -14,12 +14,14 @@
   <view class="gk-card">
     <view class="gk-price-line"><text>商品</text><text>{{productLabel}}</text></view>
     <view class="gk-price-line"><text>{{upgradeLabel}}</text><text>¥{{amount}}</text></view>
-    <view class="gk-price-line"><text>订单</text><text>演示订单 {{orderId}}</text></view>
+    <view class="gk-price-line"><text>订单</text><text>{{orderId}}</text></view>
     <view class="gk-price-line"><text>交付</text><text>{{deliveryText}}</text></view>
   </view>
 
+  <view wx:if="{{notice}}" class="gk-notice">{{notice}}</view>
   <button wx:if="{{payment === 'success'}}" class="gk-primary" bindtap="viewReport">查看我的完整报告</button>
-  <button wx:if="{{payment === 'pending'}}" class="gk-primary" bindtap="queryOrder">查询这笔订单</button>
+  <button wx:if="{{payment !== 'success'}}" class="gk-primary" disabled="{{busy}}" loading="{{busy}}" bindtap="queryOrder">查询这笔订单</button>
+  <button wx:if="{{canResume}}" class="gk-secondary" bindtap="backToCheckout">返回购买确认</button>
   <button wx:if="{{payment === 'delivery'}}" class="gk-primary" bindtap="goOrder">查看交付与售后进度</button>
   <button wx:if="{{payment === 'cancel' || payment === 'failed'}}" class="gk-primary" bindtap="backToCheckout">返回购买确认</button>
 

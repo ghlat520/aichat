@@ -33,8 +33,7 @@
 
   <view class="gk-card">
     <view class="gk-title-sm">费用明细</view>
-    <view class="gk-price-line"><text>{{career ? '职业探索报告' : '个人优势说明书'}}</text><text>¥{{career ? '49.90' : '29.90'}}</text></view>
-    <view wx:if="{{upgrade}}" class="gk-price-line gk-price-line--credit"><text>抵扣基础报告实际净支付</text><text>− ¥{{credit}}</text></view>
+    <view class="gk-price-line"><text>{{upgrade ? '关联基础订单的职业补差' : career ? '职业探索报告' : '个人优势说明书'}}</text><text>{{quoteReady ? '已取得最新报价' : '等待报价'}}</text></view>
     <view class="gk-price-line gk-price-line--total">
       <text>{{upgrade ? '本次补差' : '本次实付'}}</text>
       <text class="checkout-total">¥{{amount}}</text>
@@ -45,18 +44,20 @@
   <button class="checkout-bind" bindtap="bindAccount">
     <view class="ui-icon ui-icon--user"></view>
     <text class="gk-grow">报告保存至微信账号</text>
-    <text class="checkout-bind-meta">{{bound ? '已绑定 · 演示' : '购买时绑定'}}</text>
+    <text class="checkout-bind-meta">{{bound ? '已验证微信身份' : '购买时绑定'}}</text>
     <view class="gk-chevron"></view>
   </button>
 
-  <view class="gk-soft-note">服务从付款确认后开始，共 7 天。到期后报告仍可重复查看；30 天职业计划为自主执行内容。</view>
+  <view class="gk-soft-note">付款确认后可重复查看本次快照；30 天职业计划为自主执行内容。iOS 退款请向 App Store 申请。</view>
+  <view wx:if="{{error}}" class="gk-notice">{{error}}</view>
 
   <block wx:if="{{blocked}}">
     <view class="gk-notice">基础订单正在处理退款，暂时不能抵扣升级。可以先查看原订单进度。</view>
     <button class="gk-primary" bindtap="goOrder">查看订单进度</button>
   </block>
-  <button wx:else class="gk-primary" bindtap="confirmPurchase">{{amountNumber === 0 ? '确认领取职业升级' : '确认' + (upgrade ? '补差' : '购买') + ' ¥' + amount}}</button>
+  <button wx:else class="gk-primary" disabled="{{busy || !quoteReady}}" loading="{{busy}}" bindtap="confirmPurchase">{{quoteReady ? '确认' + (upgrade ? '补差' : '购买') + ' ¥' + amount : '暂时无法购买'}}</button>
 
   <view class="gk-footer-note">继续即确认本次商品、交付与服务范围。<text class="checkout-br"></text><button class="gk-text-link checkout-terms" bindtap="purchaseInfo">购买须知与售后说明</button></view>
+  <view class="gk-footer-note">本页金额为本次商品成交价。平台开发者侧费率：Android 等 1%、iOS 12%；结算参考为 Android 等 T+3、iOS 约 45–60 天，以签约规则为准。个人主体全终端月支付总限额 10 万元。</view>
   <button class="gk-quiet" bindtap="backToFree">暂不购买，继续免费使用</button>
 </view>

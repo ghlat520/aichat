@@ -107,6 +107,7 @@ function plainJavaParameter(parameter) {
 }
 
 function requestSchemaName(operation) {
+  if (operation['x-raw-body-required'] === true) return undefined;
   const schema = operation.requestBody?.content?.['application/json']?.schema;
   if (!schema) return undefined;
   if (schema.$ref) return schema.$ref.split('/').at(-1);
@@ -122,6 +123,11 @@ function mappingAnnotation(method, route) {
     delete: 'DeleteMapping',
   }[method];
   return `@${annotation}(${javaString(route)})`;
+}
+
+function responseJavaType(operation) {
+  return Object.values(operation.responses ?? {}).some(response => response.content?.['text/plain'])
+    ? 'String' : 'ApiEnvelope<Map<String, Object>>';
 }
 
 function tagPackage(tag) {
@@ -150,14 +156,12 @@ function controllerSource(tag, operations) {
       ...resolved.map(parameter => javaType(parameter).name),
     ];
     const schemaName = requestSchemaName(operation);
-    if (schemaName) {
-      if (operation.operationId === 'acceptWechatPayWebhook') {
+    if (operation.requestBody && operation['x-raw-body-required'] === true) {
         parameters.push('@RequestBody byte[] rawBody');
         delegateArguments.push('rawBody');
-      } else {
+    } else if (schemaName) {
         parameters.push(`@Valid @RequestBody ContractRequests.${schemaName} request`);
         delegateArguments.push('request');
-      }
     }
     parameters.push('HttpServletRequest httpRequest');
 
@@ -178,7 +182,7 @@ function controllerSource(tag, operations) {
     return `    ${mappingAnnotation(method, route)}
 ${responseStatus ? `    ${responseStatus}\n` : ''}    ${contractOperation}
     ${authPolicy}${makerChecker}
-    public ApiEnvelope<Map<String, Object>> ${operation.operationId}(${formattedParameters}) {
+    public ${responseJavaType(operation)} ${operation.operationId}(${formattedParameters}) {
         return delegate.${operation.operationId}(${delegateArguments.join(', ')});
     }`;
   }).join('\n\n');
@@ -236,13 +240,10 @@ function delegateSource(tag, operations) {
       ...resolvedParameters(pathItem, operation).map(plainJavaParameter),
     ];
     const schemaName = requestSchemaName(operation);
-    if (schemaName) {
-      parameters.push(operation.operationId === 'acceptWechatPayWebhook'
-        ? 'byte[] rawBody'
-        : `ContractRequests.${schemaName} request`);
-    }
+    if (operation.requestBody && operation['x-raw-body-required'] === true) parameters.push('byte[] rawBody');
+    else if (schemaName) parameters.push(`ContractRequests.${schemaName} request`);
     const formattedParameters = `\n            ${parameters.join(',\n            ')}\n    `;
-    return `    default ApiEnvelope<Map<String, Object>> ${operation.operationId}(${formattedParameters}) {
+    return `    default ${responseJavaType(operation)} ${operation.operationId}(${formattedParameters}) {
         return SkeletonResponses.notImplemented(${javaString(operation.operationId)});
     }`;
   }).join('\n\n');

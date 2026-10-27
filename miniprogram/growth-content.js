@@ -225,7 +225,9 @@ const PAYMENT_STATES = {
   success: { icon: '✓', cls: '', title: '报告已经准备好了', desc: '付款已确认，你的说明书可以打开了。\n之后也可以从"我的报告"找回。' },
   cancel: { icon: '×', cls: 'failure', title: '这次购买已取消', desc: '还没有完成付款。\n免费测评结果和经历都还在。' },
   failed: { icon: '!', cls: 'failure', title: '本次支付未完成', desc: '支付已明确结束。\n可以返回确认页再试，或继续免费使用。' },
-  delivery: { icon: '…', cls: 'wait', title: '付款已收到，正在交付', desc: '这份报告还在恢复交付中。\n请勿重复购买，可在订单中查看处理进度。' }
+  delivery: { icon: '…', cls: 'wait', title: '付款已收到，正在交付', desc: '这份报告还在恢复交付中。\n请勿重复购买，可在订单中查看处理进度。' },
+  refunded: { icon: '↩', cls: '', title: '退款已确认', desc: '原付款记录保留，对应付费权益已撤销。\n已确认到账金额可在订单页查看。' },
+  suspended: { icon: '…', cls: 'wait', title: '报告权益已暂停', desc: '退款结果或关联基础订单需要进一步核实。\n请查询原订单或登记售后，无需重复付款。' }
 };
 
 // —— 价格（评审提案，原型演示）——

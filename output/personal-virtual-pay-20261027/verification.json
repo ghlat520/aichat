@@ -1,0 +1,115 @@
+{
+  "as_of": "2026-10-27T19:04:14.608649+08:00",
+  "permission_boundary": "Local code and isolated tests. User reports MP virtual payment not activated. No real payment, refund, publishing or deployment.",
+  "workspace_state": "Uncommitted workspace; hashes identify this source snapshot. Coverage and blocked surfaces are stated per verification entry.",
+  "verification": {
+    "java_full": {
+      "tests": 74,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "log": "/tmp/aichat-virtual-pay-20261027/full-maven-final.log"
+    },
+    "node": {
+      "tests": 63,
+      "failures": 0,
+      "log": "/tmp/aichat-virtual-pay-20261027/node-final.log"
+    },
+    "mysql_http": {
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "image": "mysql:8.0.45",
+      "database": "task-owned disposable database",
+      "external_platform": "JDK loopback HTTP replacement",
+      "log": "/tmp/aichat-virtual-pay-20261027/mysql-final.log",
+      "runtime_version": "8.0.45"
+    },
+    "auth_contract": {
+      "operations": 74,
+      "classification_tests": 5,
+      "passed": true
+    },
+    "typescript": {
+      "version": "5.9.3",
+      "passed": true
+    },
+    "review": {
+      "axes": [
+        "Standards",
+        "Spec"
+      ],
+      "identified_blockers_closed": true
+    },
+    "native": {
+      "status": "BLOCKED",
+      "stage": "IDE launch",
+      "page_scenarios_executed": 0,
+      "reason": "Official CLI could not initialize Default/.cli; native application could not be started. No current screenshots or native success proof."
+    },
+    "platform": {
+      "status": "NOT_VERIFIED",
+      "activation": "user reported not opened",
+      "real_transaction": "NOT_RUN",
+      "refund": "NOT_RUN",
+      "public_callback_deployment": "NOT_DONE",
+      "bill_reconciliation": "NOT_RUN"
+    }
+  },
+  "source_sha256": {
+    "contracts/auth-rules.yaml": "fe31996e583b6d55a2720b3b495ae59b122cec27b00d7c9221f391c43b4a908e",
+    "contracts/check-auth-contract.mjs": "ea5a90cef7fb26849638c8f81e94b09eac610e407ed27c0317bbc4a2a086f187",
+    "contracts/compile-auth-rules.mjs": "4ceede442b8d1d2035074ae4e8b790292cb66ef36798c101ba965c1656e2cfe9",
+    "contracts/generate-api-skeleton.mjs": "70d00e8eb9c39845e99c1e61378a1b4302617997e74333a973608b6c7dd11ab4",
+    "contracts/openapi.generated.json": "8c8b2ec46c7ac9c31c9fd48a3ca952a540ac4fc79b32fe4fadd1b3f6858cf9fc",
+    "contracts/openapi.yaml": "53fd6a7fb29c44d71548f9399f7864a676b61f0d39e3296bb2d2f39f4a9a59ab",
+    "docs/NATIVE_GROWTH_IMPLEMENTATION_REVIEW_2026-10-26.md": "9680042f3140945cdfce2fe567bc03c8221edb28dd82fbc2df3e0fbe5f1b7eac",
+    "miniprogram/growth-content.js": "2885e3e2a901e5c8d906a940ec17dc67e7ccde48d1e645c194b17ff3f471f1d6",
+    "miniprogram/growth-store.js": "f2558ef35d0f78e2942cc401030e25441be809414e9af34d86d17aaca1f8cb6d",
+    "miniprogram/pages/career-report/career-report.js": "c642aee04db466065ba5db3b1fe21ad75e40edaf7000278b53d9de7ceaa677a7",
+    "miniprogram/pages/career-report/career-report.wxml": "9d284702ea685e733fabbf4389c315d4b7898a2eb350bb1f0522f8495a942c51",
+    "miniprogram/pages/checkout/checkout.js": "343b77d760f76481d2d7f73c8c81477f79dbaa2feb722e1102e545a04b69835d",
+    "miniprogram/pages/checkout/checkout.wxml": "c9223be36cbda70c5f3a04212ed50f048cc83a42515196dc82d3938613fa352b",
+    "miniprogram/pages/growth-report/growth-report.js": "1a9b389fe29d4d091395e64bc307409e6912cab5c30198e908a91f9dc95c8520",
+    "miniprogram/pages/growth-report/growth-report.wxml": "279c461a76dcea733a6d327e3cf576c31600419496771a6bd1859f81439d512e",
+    "miniprogram/pages/order/order.js": "e02733bbc74c701db1e55877c5e528773c1499c124e718a59d6876314af32141",
+    "miniprogram/pages/order/order.wxml": "79408a759c62350da5a09708a82cd5206b9678cf06d8703f8fd58680d0c7f517",
+    "miniprogram/pages/payment/payment.js": "1e1b302850196186ec1bd73d5ce31abaf169cdd77c0ec1c266537c35da091cbb",
+    "miniprogram/pages/payment/payment.wxml": "702a3920125de99a63aa59ee988a73440ab4f6e5ad9d55b3fdd85f565b1f8f78",
+    "miniprogram/pages/portrait/portrait.wxml": "f1b937b9199bf2508b813f073f0976a23ecac3c9d0c3cb3949d088ec721527d3",
+    "miniprogram/pages/report-preview/report-preview.js": "b68c1369b4b7dc429d60f49fbdb03373b5f1fc5c342f15c507c16f1821835116",
+    "miniprogram/pages/report-preview/report-preview.wxml": "05a58c3ffa9ec94ab9c7e13b914db965faa70d6278e375b8dee7a98d848b5d6a",
+    "miniprogram/pages/reports/reports.js": "d25641fc939d0883975c0726d84aa1ac14153646a3d9085004f3eece52b1020e",
+    "miniprogram/pages/reports/reports.wxml": "d9267e3b16ecad07bb86f8291a490666a258405ed6e9de8e3bbb111abb577aac",
+    "miniprogram/services/api/generated/client.ts": "9296123f7455a7a598dc775c2d878db52587bcaf8d211d7065aeeaff8ee3510d",
+    "miniprogram/services/api/generated/types.ts": "6aee6a91bb86ee2657e314cd75dd7ffc2921e22383cbec1b9e98fe4c845779cd",
+    "miniprogram/services/api/privacy-mask.js": "a050ca6f22a886cbfb54fce14c593a1604f2837080dfb9d16c7d57784709872d",
+    "miniprogram/services/api/wx-transport.ts": "df69b59a33145c4cc428264db3c3510e5a65b0822f162e5b6a23ecd0f731ae7f",
+    "miniprogram/services/virtual-payment.js": "c7474de3a487456cca435139b973ba0fbb97302f7456cad9556c74682dabaef7",
+    "miniprogram/virtual-payment-pages.test.mjs": "b17391bc0c4b3a46ca7bff227461023613575c52a7d791036f0a124a67082683",
+    "miniprogram/virtual-payment.test.mjs": "4e13ebe5ffae02d22fe2f1cb7102c152dbf45646b704052aea6697e6218587ed",
+    "package.json": "27cde9da801b690dc4cce6ca41c25bbbfb932478a2d8fe831071e62417669b08",
+    "scripts/e2e/archive/README.md": "4a6d143b327c0fcfb6e46a86813a3947410f99243793cd9003d967993a8beb30",
+    "scripts/e2e/archive/growth-shots-v12.mjs": "820e0fc6fcc872589e9cbfd2e7bb5f7071d69b312f52f996d349e30e6be24aac",
+    "scripts/e2e/archive/growth-smoke-v12.mjs": "1612e2a84e272d86da854358d06ac61203a7f5b6bf3f05e254d538c16ff3b4c6",
+    "scripts/e2e/virtual-pay-smoke.mjs": "6ce8656499c904808f296c84be512f08a1d7edd38db1cf70e8d8a29fdf03bd69",
+    "server/src/main/java/com/aichat/contract/ContractRequests.java": "bd18df90f2c925e740d0550d7e3b7e192d12e5f9fe0bbe82f99284aad2f5dfcd",
+    "server/src/main/java/com/aichat/identity/application/SessionApplicationService.java": "4b04fde5eaf1ad64112706008671ebffac117e7781ba598e1435bc4906fddec0",
+    "server/src/main/java/com/aichat/identity/infrastructure/DatabaseSubjectResolver.java": "f7a2c28053762b4eaf25148ad4aeeb7e86d91eb2cb6f783b899ac6611c250d2f",
+    "server/src/main/java/com/aichat/payment/api/PaymentApiController.java": "e2642049d4c459c04440db78e42d291dac51869df28cfcc3319efe738ea478b4",
+    "server/src/main/java/com/aichat/payment/api/PaymentApiDelegate.java": "4c4b28784710ddd663af92321898359bba68e625daa1770e4a3d6a95d5b54dd5",
+    "server/src/main/java/com/aichat/payment/application/VirtualPaySettings.java": "4083bc2539a9128ae719228091c3b5d71a3889f0649bbfb5d8ecdb51f73dc2fc",
+    "server/src/main/java/com/aichat/payment/application/VirtualPaymentApplicationService.java": "454c1d398b18b5ebe182995b717138066dfa46296c4d781dd571f1cf0cc36fe9",
+    "server/src/main/java/com/aichat/payment/application/VirtualPaymentMapper.java": "d232fc4f8959603136f06ba65d93a55e667b999bda90fc89c568577c1cb4a9fd",
+    "server/src/main/java/com/aichat/payment/application/VirtualPaymentPushBodyFilter.java": "2f253da37e92f230d043fc85396ef51b012af0c41a34fe2f03f426398039b775",
+    "server/src/main/java/com/aichat/payment/application/WechatVirtualPayGateway.java": "2aa0b273dd66a236e3b08e43ff4908da4492b5de788def44771eee92c12b022f",
+    "server/src/main/java/com/aichat/payment/application/WechatVirtualPayProtocol.java": "cd983c408259f048906488747117a68c8ccc7d021b87e56f2100b8466f03cc91",
+    "server/src/main/java/com/aichat/report/application/GrowthReportPurchasePolicy.java": "03ab8107321a7df1b430f210a34331d10977de538c0262908338443a32c4eba2",
+    "server/src/main/resources/application.properties": "f1e736ecbfdd487b022dd0400c4609a42d01186b215fd4ac3006e85624649efd",
+    "server/src/main/resources/db/migration/V7__personal_virtual_payment.sql": "274eddba1446e0c688010267ae3e421fa6239803282ad0904194393f618fd77e",
+    "server/src/test/java/com/aichat/payment/VirtualPayConfigurationTest.java": "a67b99bf2006edce9684191d8ee01f98fc275becd8e8700dff92d4b13a9efa82",
+    "server/src/test/java/com/aichat/payment/VirtualPaymentWebMvcTest.java": "72fc2c922516bf49619b060a48d39204899dfcbb87e9b6fdfbb990e68ae431fd",
+    "server/src/test/java/com/aichat/payment/WechatVirtualPayProtocolTest.java": "1d16276f2b822a12468c3708fb97f1d7bf5d8371570e16de27f5562d8934c2ea",
+    "server/virtual-pay.env.example": "4752e5bc1b698bb885c2d9c38069f801439a4b03bb3667681ae11c8818d24956"
+  }
+}

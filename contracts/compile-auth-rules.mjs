@@ -19,7 +19,7 @@ const LEVEL_SCHEMES = {
   Public: null,
   Visitor: new Set(['opaqueBearer', 'refreshToken']),
   Principal: new Set(['opaqueBearer']),
-  Internal: new Set(['wechatPaySignature']),
+  Internal: new Set(['wechatPaySignature', 'wechatVirtualPaySignature']),
   Operator: new Set(['operatorBearer']),
 };
 

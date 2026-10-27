@@ -37,6 +37,123 @@ public class PaymentApiController {
         this.delegate = delegateProvider.getIfAvailable(() -> new PaymentApiDelegate() { });
     }
 
+    @PostMapping("/api/v1/virtual-pay/quotes")
+    @ContractOperation(operationId = "quoteVirtualPurchase", domainOwner = "Payment")
+    @AuthPolicy(ruleId = "private-user-default", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
+    public ApiEnvelope<Map<String, Object>> quoteVirtualPurchase(
+            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            @Valid @RequestBody ContractRequests.VirtualQuoteRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.quoteVirtualPurchase(ApiCallContext.from(httpRequest), idempotencyKey, request);
+    }
+
+    @GetMapping("/api/v1/virtual-pay/orders")
+    @ContractOperation(operationId = "listVirtualOrders", domainOwner = "Payment")
+    @AuthPolicy(ruleId = "principal-virtual-pay-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
+    public ApiEnvelope<Map<String, Object>> listVirtualOrders(
+            @RequestParam(name = "before", required = false) String before,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.listVirtualOrders(ApiCallContext.from(httpRequest), before);
+    }
+
+    @PostMapping("/api/v1/virtual-pay/orders")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ContractOperation(operationId = "createVirtualOrder", domainOwner = "Payment")
+    @AuthPolicy(ruleId = "principal-virtual-pay-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
+    public ApiEnvelope<Map<String, Object>> createVirtualOrder(
+            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            @Valid @RequestBody ContractRequests.VirtualOrderRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.createVirtualOrder(ApiCallContext.from(httpRequest), idempotencyKey, request);
+    }
+
+    @GetMapping("/api/v1/virtual-pay/orders/{orderId}")
+    @ContractOperation(operationId = "getVirtualOrder", domainOwner = "Payment")
+    @AuthPolicy(ruleId = "principal-virtual-pay-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
+    public ApiEnvelope<Map<String, Object>> getVirtualOrder(
+            @PathVariable("orderId") String orderId,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.getVirtualOrder(ApiCallContext.from(httpRequest), orderId);
+    }
+
+    @PostMapping("/api/v1/virtual-pay/orders/{orderId}/payment")
+    @ContractOperation(operationId = "prepareVirtualPayment", domainOwner = "Payment")
+    @AuthPolicy(ruleId = "principal-virtual-pay-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
+    public ApiEnvelope<Map<String, Object>> prepareVirtualPayment(
+            @PathVariable("orderId") String orderId,
+            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.prepareVirtualPayment(ApiCallContext.from(httpRequest), orderId, idempotencyKey);
+    }
+
+    @PostMapping("/api/v1/virtual-pay/orders/{orderId}/query")
+    @ContractOperation(operationId = "queryVirtualPayment", domainOwner = "Payment")
+    @AuthPolicy(ruleId = "principal-virtual-pay-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
+    public ApiEnvelope<Map<String, Object>> queryVirtualPayment(
+            @PathVariable("orderId") String orderId,
+            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.queryVirtualPayment(ApiCallContext.from(httpRequest), orderId, idempotencyKey);
+    }
+
+    @GetMapping("/api/v1/virtual-pay/orders/{orderId}/report")
+    @ContractOperation(operationId = "getPurchasedGrowthSnapshot", domainOwner = "Payment")
+    @AuthPolicy(ruleId = "principal-virtual-pay-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
+    public ApiEnvelope<Map<String, Object>> getPurchasedGrowthSnapshot(
+            @PathVariable("orderId") String orderId,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.getPurchasedGrowthSnapshot(ApiCallContext.from(httpRequest), orderId);
+    }
+
+    @PostMapping("/api/v1/virtual-pay/orders/{orderId}/support")
+    @ContractOperation(operationId = "requestVirtualPaymentSupport", domainOwner = "Payment")
+    @AuthPolicy(ruleId = "principal-virtual-pay-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
+    public ApiEnvelope<Map<String, Object>> requestVirtualPaymentSupport(
+            @PathVariable("orderId") String orderId,
+            @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
+            @Valid @RequestBody ContractRequests.VirtualSupportRequest request,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.requestVirtualPaymentSupport(ApiCallContext.from(httpRequest), orderId, idempotencyKey, request);
+    }
+
+    @GetMapping("/api/v1/webhooks/wechat-virtual-pay")
+    @ContractOperation(operationId = "verifyVirtualPaymentPushUrl", domainOwner = "Payment")
+    @AuthPolicy(ruleId = "internal-virtual-pay-webhook", operatorPolicyRuleId = "", level = AuthLevel.INTERNAL, accepted = {AuthLevel.INTERNAL}, roles = {}, mfaRequired = false, rawBodyRequired = true)
+    public String verifyVirtualPaymentPushUrl(
+            @RequestParam(name = "signature", required = false) String signature,
+            @RequestParam(name = "msg_signature", required = false) String msgSignature,
+            @RequestParam(name = "timestamp", required = false) String timestamp,
+            @RequestParam(name = "nonce", required = false) String nonce,
+            @RequestParam(name = "encrypt_type", required = false) String encryptType,
+            @RequestParam(name = "echostr", required = true) String echostr,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.verifyVirtualPaymentPushUrl(ApiCallContext.from(httpRequest), signature, msgSignature, timestamp, nonce, encryptType, echostr);
+    }
+
+    @PostMapping("/api/v1/webhooks/wechat-virtual-pay")
+    @ContractOperation(operationId = "acceptVirtualPaymentPush", domainOwner = "Payment")
+    @AuthPolicy(ruleId = "internal-virtual-pay-webhook", operatorPolicyRuleId = "", level = AuthLevel.INTERNAL, accepted = {AuthLevel.INTERNAL}, roles = {}, mfaRequired = false, rawBodyRequired = true)
+    public String acceptVirtualPaymentPush(
+            @RequestParam(name = "signature", required = false) String signature,
+            @RequestParam(name = "msg_signature", required = false) String msgSignature,
+            @RequestParam(name = "timestamp", required = false) String timestamp,
+            @RequestParam(name = "nonce", required = false) String nonce,
+            @RequestParam(name = "encrypt_type", required = false) String encryptType,
+            @RequestBody byte[] rawBody,
+            HttpServletRequest httpRequest
+    ) {
+        return delegate.acceptVirtualPaymentPush(ApiCallContext.from(httpRequest), signature, msgSignature, timestamp, nonce, encryptType, rawBody);
+    }
+
     @PostMapping("/api/v1/orders/{orderId}/wechat-prepay")
     @ContractOperation(operationId = "createWechatPrepay", domainOwner = "Payment")
     @AuthPolicy(ruleId = "private-principal-orders", operatorPolicyRuleId = "", level = AuthLevel.PRINCIPAL, accepted = {AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)

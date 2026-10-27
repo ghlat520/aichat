@@ -56,6 +56,7 @@
     <button class="gk-primary" bindtap="completeInput">补齐报告所需信息</button>
   </block>
   <button wx:else class="gk-primary" bindtap="{{canReadBase ? 'openReport' : 'generatePreview'}}">{{canReadBase ? '打开我的个人优势说明书' : '查看个人优势说明书预览'}}</button>
+  <button wx:if="{{canReadBase && ready}}" class="gk-secondary" bindtap="generatePreview">查看本次输入的报告预览</button>
 
   <view class="gk-footer-note">单项结果与基础练习免费。<text class="portrait-br"></text>报告整合与场景建议为可选的深度内容。</view>
   <button class="portrait-career-link" bindtap="goCareer">

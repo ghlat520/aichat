@@ -1,74 +1,43 @@
-// pages/payment/payment.js — 支付与交付状态（V1.2 原型 payment 屏）
-// 待确认、成功、取消、失败、交付中分别展示；状态未知时不诱导重复支付。
 const { getGrowth } = require('../../growth-store');
+const { getVirtualPayment } = require('../../services/virtual-payment');
+const { friendlyError } = require('../../app-store');
 const CONTENT = require('../../growth-content');
 
-function money(n) {
-  return Number(n).toFixed(2);
-}
-
 Page({
-  data: {
-    payment: 'pending',
-    view: CONTENT.PAYMENT_STATES.pending,
-    descLines: [],
-    productLabel: '个人优势说明书',
-    upgradeLabel: '本次金额',
-    amount: '29.90',
-    orderId: '1026',
-    deliveryText: '付款确认后解锁'
+  data: { payment: 'pending', view: CONTENT.PAYMENT_STATES.pending, descLines: [], productLabel: '',
+    upgradeLabel: '本次金额', amount: '--', orderId: '', deliveryText: '付款确认后解锁', notice: '', busy: false, canResume: false },
+  async onShow() {
+    const order = getGrowth().get().order;
+    if (!order || !order.id) { wx.redirectTo({ url: '/pages/reports/reports' }); return; }
+    this.setData({ payment: 'pending', view: CONTENT.PAYMENT_STATES.pending, canResume: false });
+    try { await getVirtualPayment().getOrder(order.id); this.refresh(); }
+    catch (error) { this.setData({ notice: friendlyError(error), descLines: CONTENT.PAYMENT_STATES.pending.desc.split('\n') }); }
   },
-
-  onShow() {
-    this.refresh();
-  },
-
   refresh() {
-    const growth = getGrowth();
-    const state = growth.get();
-    const payment = state.payment;
-    if (!CONTENT.PAYMENT_STATES[payment]) {
-      wx.redirectTo({ url: '/pages/portrait/portrait' });
-      return;
-    }
-    const view = CONTENT.PAYMENT_STATES[payment];
-    this.setData({
-      payment,
-      view,
-      descLines: view.desc.split('\n'),
-      productLabel: state.product === 'career' ? '职业探索报告' : '个人优势说明书',
-      upgradeLabel: state.product === 'career' && state.paid ? '本次补差' : '本次金额',
-      amount: money(state.order ? state.order.amount : growth.reportPrice()),
-      orderId: state.order ? state.order.id : '1026',
-      deliveryText: payment === 'success' ? '已就绪' : payment === 'delivery' ? '处理中' : '付款确认后解锁'
-    });
+    const state = getGrowth().get();
+    const order = state.order;
+    const view = CONTENT.PAYMENT_STATES[state.payment] || CONTENT.PAYMENT_STATES.pending;
+    this.setData({ payment: state.payment, view, descLines: view.desc.split('\n'), notice: state.paymentNotice || '',
+      canResume: order.payment_state === 'PENDING' && order.payment_started === false && order.refund_state === 'NONE',
+      productLabel: order.product === 'career' ? '职业探索报告' : '个人优势说明书',
+      upgradeLabel: order.upgrade ? '本次补差' : '本次金额', amount: (order.price_fen / 100).toFixed(2),
+      orderId: order.id, deliveryText: state.payment === 'success' ? '有效权益已确认'
+        : order.entitlement_state === 'SUSPENDED' || order.entitlement_state === 'REVOKED' ? '权益暂停或已撤销，请查看售后' : '付款确认后解锁' });
   },
-
-  goBack() {
-    wx.navigateBack({ fail: () => wx.redirectTo({ url: '/pages/reports/reports' }) });
+  async queryOrder() {
+    if (this.data.busy) return;
+    this.setData({ busy: true, notice: '' });
+    try { await getVirtualPayment().query(getGrowth().get().order.id); this.refresh(); }
+    catch (error) { this.setData({ notice: friendlyError(error) }); }
+    finally { this.setData({ busy: false }); }
   },
-
-  queryOrder() {
-    getGrowth().settlePayment('success');
-    wx.showToast({ title: '演示查单已确认，报告已解锁', icon: 'none' });
-    this.refresh();
-  },
-
   viewReport() {
-    wx.redirectTo({
-      url: getGrowth().get().product === 'career' ? '/pages/career-report/career-report' : '/pages/growth-report/growth-report'
-    });
+    const order = getGrowth().get().order;
+    wx.redirectTo({ url: (order.product === 'career' ? '/pages/career-report/career-report' : '/pages/growth-report/growth-report')
+      + '?orderId=' + encodeURIComponent(order.id) });
   },
-
-  goOrder() {
-    wx.navigateTo({ url: '/pages/order/order' });
-  },
-
-  backToCheckout() {
-    wx.navigateBack({ fail: () => wx.redirectTo({ url: '/pages/checkout/checkout' }) });
-  },
-
-  goReports() {
-    wx.redirectTo({ url: '/pages/reports/reports' });
-  }
+  goBack() { wx.navigateBack({ fail: () => wx.redirectTo({ url: '/pages/reports/reports' }) }); },
+  goOrder() { wx.navigateTo({ url: '/pages/order/order' }); },
+  backToCheckout() { wx.redirectTo({ url: '/pages/checkout/checkout' }); },
+  goReports() { wx.redirectTo({ url: '/pages/reports/reports' }); }
 });

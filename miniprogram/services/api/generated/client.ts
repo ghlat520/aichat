@@ -89,7 +89,7 @@ export class AiChatApiClient {
 
   bindWechatIdentity(request: Types.WechatBindRequest, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
     const path = "/api/v1/identity/wechat/bind";
-    return this.invoke("POST", path, request, undefined, "access", ["Visitor"], true, options);
+    return this.invoke("POST", path, request, undefined, "access", ["Visitor","Principal"], true, options);
   }
 
   refreshSessionToken(options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
@@ -215,6 +215,46 @@ export class AiChatApiClient {
   getProductOffer(sku: string, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
     const path = "/api/v1/products/{sku}/offer".replace("{sku}", encodeURIComponent(String(sku)));
     return this.invoke("GET", path, undefined, undefined, "access", ["Visitor","Principal"], false, options);
+  }
+
+  quoteVirtualPurchase(request: Types.VirtualQuoteRequest, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
+    const path = "/api/v1/virtual-pay/quotes";
+    return this.invoke("POST", path, request, undefined, "access", ["Visitor","Principal"], true, options);
+  }
+
+  listVirtualOrders(query: { before?: string } = {}, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
+    const path = "/api/v1/virtual-pay/orders";
+    return this.invoke("GET", path, undefined, query, "access", ["Principal"], false, options);
+  }
+
+  createVirtualOrder(request: Types.VirtualOrderRequest, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
+    const path = "/api/v1/virtual-pay/orders";
+    return this.invoke("POST", path, request, undefined, "access", ["Principal"], true, options);
+  }
+
+  getVirtualOrder(orderId: string, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
+    const path = "/api/v1/virtual-pay/orders/{orderId}".replace("{orderId}", encodeURIComponent(String(orderId)));
+    return this.invoke("GET", path, undefined, undefined, "access", ["Principal"], false, options);
+  }
+
+  prepareVirtualPayment(orderId: string, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
+    const path = "/api/v1/virtual-pay/orders/{orderId}/payment".replace("{orderId}", encodeURIComponent(String(orderId)));
+    return this.invoke("POST", path, undefined, undefined, "access", ["Principal"], true, options);
+  }
+
+  queryVirtualPayment(orderId: string, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
+    const path = "/api/v1/virtual-pay/orders/{orderId}/query".replace("{orderId}", encodeURIComponent(String(orderId)));
+    return this.invoke("POST", path, undefined, undefined, "access", ["Principal"], true, options);
+  }
+
+  getPurchasedGrowthSnapshot(orderId: string, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
+    const path = "/api/v1/virtual-pay/orders/{orderId}/report".replace("{orderId}", encodeURIComponent(String(orderId)));
+    return this.invoke("GET", path, undefined, undefined, "access", ["Principal"], false, options);
+  }
+
+  requestVirtualPaymentSupport(orderId: string, request: Types.VirtualSupportRequest, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {
+    const path = "/api/v1/virtual-pay/orders/{orderId}/support".replace("{orderId}", encodeURIComponent(String(orderId)));
+    return this.invoke("POST", path, request, undefined, "access", ["Principal"], true, options);
   }
 
   createOrder(request: Types.CreateOrderRequest, options: ApiRequestOptions = {}): Promise<Types.ApiEnvelope<Record<string, unknown>>> {

@@ -2,6 +2,8 @@
 // 免费结果、已购报告、修订版本放回同一空间；新测评不覆盖旧报告。
 const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
+const { getVirtualPayment } = require('../../services/virtual-payment');
+const { friendlyError } = require('../../app-store');
 
 const FILTERS = [
   { id: 'all', label: '全部' },
@@ -18,7 +20,9 @@ Page({
     hasPaid: false,
     version: '1.0',
     calibrated: false,
-    expired: false
+    expired: false,
+    notice: '',
+    nextCursor: null
   },
 
   onShow() {
@@ -33,22 +37,35 @@ Page({
         source: state.sources[id] && state.sources[id].kind === 'import' ? '本人录入' : '原型样例版本 v1',
         color: CONTENT.TOOLS[id].color
       }));
-    const paidItems = [];
-    if (state.careerPaid) {
-      paidItems.push({ id: 'career', name: '职业探索报告', aqua: true, version: '1.0' });
-    }
-    if (state.paid) {
-      paidItems.push({ id: 'base', name: '个人优势说明书', version: state.version });
-    }
     this.setData({
       filter,
       freeItems,
-      paidItems,
-      hasPaid: !!(state.paid || state.careerPaid),
+      paidItems: [],
+      hasPaid: false,
       version: state.version,
       calibrated: state.calibrated,
       expired: state.expired
     });
+    this.loadPaid();
+  },
+
+  async loadPaid(before) {
+    try {
+      const result = await getVirtualPayment().list(before);
+      const paidItems = result.items.filter(order => order.payment_state === 'PAID' && order.entitlement_state === 'ACTIVE' && order.refund_state === 'NONE')
+        .map(order => ({ id: order.order_id, kind: order.sku === 'base' ? 'base' : 'career',
+          name: order.sku === 'base' ? '个人优势说明书' : '职业探索报告', aqua: order.sku !== 'base', version: order.report_version,
+          date: order.created_at.slice(0, 10) }));
+      const items = before ? this.data.paidItems.concat(paidItems) : paidItems;
+      this.setData({ paidItems: items, hasPaid: items.length > 0, nextCursor: result.next_cursor, notice: '' });
+    } catch (error) { this.setData({ notice: '微信登录后可恢复已购报告；免费结果可继续查看。' }); }
+  },
+
+  async morePaid() { if (this.data.nextCursor) await this.loadPaid(this.data.nextCursor); },
+
+  async restorePaid() {
+    try { await getVirtualPayment().bind(); await this.loadPaid(); }
+    catch (error) { this.setData({ notice: friendlyError(error) }); }
   },
 
   goBack() {
@@ -66,8 +83,8 @@ Page({
   },
 
   openPaid(event) {
-    const id = event.currentTarget.dataset.id;
-    wx.navigateTo({ url: id === 'career' ? '/pages/career-report/career-report' : '/pages/growth-report/growth-report' });
+    const { id, kind } = event.currentTarget.dataset;
+    wx.navigateTo({ url: (kind === 'career' ? '/pages/career-report/career-report' : '/pages/growth-report/growth-report') + '?orderId=' + encodeURIComponent(id) });
   },
 
   goOrder() {
@@ -78,7 +95,11 @@ Page({
     wx.switchTab({ url: '/pages/assessment/assessment' });
   },
 
-  exportReport() {
+  async exportReport() {
+    const selected = this.data.paidItems[0];
+    if (!selected) return;
+    try { await getVirtualPayment().readReport(selected.id); }
+    catch (error) { wx.showToast({ title: friendlyError(error), icon: 'none' }); return; }
     const growth = getGrowth();
     const text = [
       '关系清晰卡｜个人优势说明书（UI 原型样例）',
@@ -98,14 +119,14 @@ Page({
   deleteReport() {
     wx.showModal({
       title: '删除这份个人报告？',
-      content: '将从本次演示中移除个人优势报告。免费测评结果和订单记录保留；删除报告不会自动退款。',
-      confirmText: '确认删除',
+      content: '清空本机的报告展示。后台购买记录保留，微信登录后仍可恢复；此操作不会退款。',
+      confirmText: '清空本机',
       cancelText: '保留报告',
       success: (res) => {
         if (res.confirm) {
           getGrowth().deleteReport();
-          this.onShow();
-          wx.showToast({ title: '已移除本次演示中的个人报告', icon: 'none' });
+          this.setData({ paidItems: [], hasPaid: false });
+          wx.showToast({ title: '已清空本机展示', icon: 'none' });
         }
       }
     });

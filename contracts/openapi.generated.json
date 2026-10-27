@@ -266,10 +266,11 @@
             "$ref": "#/components/responses/Conflict"
           }
         },
-        "x-auth-rule-id": "private-wechat-bind-visitor-only",
+        "x-auth-rule-id": "private-wechat-bind",
         "x-auth-level": "Visitor",
         "x-accepted-auth-levels": [
-          "Visitor"
+          "Visitor",
+          "Principal"
         ],
         "security": [
           {
@@ -1623,6 +1624,610 @@
             "opaqueBearer": []
           }
         ]
+      }
+    },
+    "/api/v1/virtual-pay/quotes": {
+      "post": {
+        "operationId": "quoteVirtualPurchase",
+        "summary": "获取探索快照的服务端报价与本人权益",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VirtualQuoteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "private-user-default",
+        "x-auth-level": "Visitor",
+        "x-accepted-auth-levels": [
+          "Visitor",
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/virtual-pay/orders": {
+      "get": {
+        "operationId": "listVirtualOrders",
+        "summary": "分页读取本人虚拟支付订单",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Ulid"
+            }
+          }
+        ],
+        "x-auth-rule-id": "principal-virtual-pay-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createVirtualOrder",
+        "summary": "冻结商品、价格与探索快照后创建订单",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VirtualOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "principal-virtual-pay-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/virtual-pay/orders/{orderId}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrderId"
+        }
+      ],
+      "get": {
+        "operationId": "getVirtualOrder",
+        "summary": "读取本人订单、支付及退款事实",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "principal-virtual-pay-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/virtual-pay/orders/{orderId}/payment": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrderId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "prepareVirtualPayment",
+        "summary": "为原订单生成个人虚拟支付双签名",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "principal-virtual-pay-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/virtual-pay/orders/{orderId}/query": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrderId"
+        },
+        {
+          "$ref": "#/components/parameters/IdempotencyKey"
+        }
+      ],
+      "post": {
+        "operationId": "queryVirtualPayment",
+        "summary": "权威查单并幂等完成权益交付",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "principal-virtual-pay-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/virtual-pay/orders/{orderId}/report": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrderId"
+        }
+      ],
+      "get": {
+        "operationId": "getPurchasedGrowthSnapshot",
+        "summary": "校验本人有效权益后读取冻结报告输入",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "principal-virtual-pay-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/virtual-pay/orders/{orderId}/support": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/OrderId"
+        }
+      ],
+      "post": {
+        "operationId": "requestVirtualPaymentSupport",
+        "summary": "登记本人售后诉求，不等同已退款",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VirtualSupportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "principal-virtual-pay-orders",
+        "x-auth-level": "Principal",
+        "x-accepted-auth-levels": [
+          "Principal"
+        ],
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/webhooks/wechat-virtual-pay": {
+      "get": {
+        "operationId": "verifyVirtualPaymentPushUrl",
+        "summary": "验证微信虚拟支付消息接收地址",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "parameters": [
+          {
+            "name": "signature",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "msg_signature",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "timestamp",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "nonce",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "encrypt_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "echostr",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 2048
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "微信协议应答；成功返回原样echostr或纯文本success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-auth-rule-id": "internal-virtual-pay-webhook",
+        "x-auth-level": "Internal",
+        "security": [
+          {
+            "wechatVirtualPaySignature": []
+          }
+        ],
+        "x-raw-body-required": true
+      },
+      "post": {
+        "operationId": "acceptVirtualPaymentPush",
+        "summary": "验证安全模式发货或退款通知",
+        "tags": [
+          "Payment"
+        ],
+        "x-domain-owner": "Payment",
+        "parameters": [
+          {
+            "name": "signature",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "msg_signature",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "timestamp",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "nonce",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "encrypt_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 256
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "微信协议应答；成功返回原样echostr或纯文本success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        },
+        "x-idempotency-source": "provider_order_id",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/xml": {
+              "schema": {
+                "type": "string",
+                "format": "binary",
+                "maxLength": 65536
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "format": "binary",
+                "maxLength": 65536
+              }
+            }
+          }
+        },
+        "x-auth-rule-id": "internal-virtual-pay-webhook",
+        "x-auth-level": "Internal",
+        "security": [
+          {
+            "wechatVirtualPaySignature": []
+          }
+        ],
+        "x-raw-body-required": true
       }
     },
     "/api/v1/orders": {
@@ -3379,6 +3984,12 @@
         "name": "X-Refresh-Token",
         "description": "一次性轮换的高熵刷新令牌；服务端只保存 hash，重放撤销整个刷新族。"
       },
+      "wechatVirtualPaySignature": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "msg_signature",
+        "description": "安全消息使用msg_signature并绑定加密正文；GET地址验证使用signature、timestamp和nonce。"
+      },
       "wechatPaySignature": {
         "type": "apiKey",
         "in": "header",
@@ -4527,6 +5138,225 @@
             "type": "string",
             "maxLength": 1000,
             "writeOnly": true
+          }
+        }
+      },
+      "GrowthPurchaseExperience": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event",
+          "action",
+          "result",
+          "energy"
+        ],
+        "properties": {
+          "event": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "result": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "energy": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "GrowthPurchaseCareer": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "interests",
+          "values",
+          "skills",
+          "goal",
+          "time",
+          "constraints"
+        ],
+        "properties": {
+          "interests": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "values": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "skills": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "goal": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "time": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "constraints": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      },
+      "GrowthPurchaseSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "answers",
+          "results",
+          "sources",
+          "experiences",
+          "goals",
+          "confirmed"
+        ],
+        "properties": {
+          "answers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "maxItems": 50,
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              }
+            },
+            "maxProperties": 3
+          },
+          "results": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "maxProperties": 3
+          },
+          "sources": {
+            "type": "object",
+            "maxProperties": 3,
+            "additionalProperties": {
+              "type": "object",
+              "maxProperties": 5,
+              "additionalProperties": {
+                "type": "string",
+                "maxLength": 256
+              }
+            }
+          },
+          "experiences": {
+            "type": "array",
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/GrowthPurchaseExperience"
+            },
+            "minItems": 2
+          },
+          "goals": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            }
+          },
+          "confirmed": {
+            "type": "boolean",
+            "const": true
+          },
+          "career": {
+            "$ref": "#/components/schemas/GrowthPurchaseCareer"
+          }
+        }
+      },
+      "VirtualQuoteRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "product",
+          "snapshot"
+        ],
+        "properties": {
+          "product": {
+            "type": "string",
+            "enum": [
+              "base",
+              "career"
+            ]
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/GrowthPurchaseSnapshot"
+          }
+        }
+      },
+      "VirtualOrderRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "product",
+          "snapshot",
+          "price_version",
+          "purchase_disclosure_version",
+          "accepted"
+        ],
+        "properties": {
+          "product": {
+            "type": "string",
+            "enum": [
+              "base",
+              "career"
+            ]
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/GrowthPurchaseSnapshot"
+          },
+          "price_version": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "purchase_disclosure_version": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "accepted": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "VirtualSupportRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reason",
+          "detail"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 1000
           }
         }
       },

@@ -11,6 +11,92 @@ import java.util.Map;
 
 public interface PaymentApiDelegate {
 
+    default ApiEnvelope<Map<String, Object>> quoteVirtualPurchase(
+            ApiCallContext context,
+            String idempotencyKey,
+            ContractRequests.VirtualQuoteRequest request
+    ) {
+        return SkeletonResponses.notImplemented("quoteVirtualPurchase");
+    }
+
+    default ApiEnvelope<Map<String, Object>> listVirtualOrders(
+            ApiCallContext context,
+            String before
+    ) {
+        return SkeletonResponses.notImplemented("listVirtualOrders");
+    }
+
+    default ApiEnvelope<Map<String, Object>> createVirtualOrder(
+            ApiCallContext context,
+            String idempotencyKey,
+            ContractRequests.VirtualOrderRequest request
+    ) {
+        return SkeletonResponses.notImplemented("createVirtualOrder");
+    }
+
+    default ApiEnvelope<Map<String, Object>> getVirtualOrder(
+            ApiCallContext context,
+            String orderId
+    ) {
+        return SkeletonResponses.notImplemented("getVirtualOrder");
+    }
+
+    default ApiEnvelope<Map<String, Object>> prepareVirtualPayment(
+            ApiCallContext context,
+            String orderId,
+            String idempotencyKey
+    ) {
+        return SkeletonResponses.notImplemented("prepareVirtualPayment");
+    }
+
+    default ApiEnvelope<Map<String, Object>> queryVirtualPayment(
+            ApiCallContext context,
+            String orderId,
+            String idempotencyKey
+    ) {
+        return SkeletonResponses.notImplemented("queryVirtualPayment");
+    }
+
+    default ApiEnvelope<Map<String, Object>> getPurchasedGrowthSnapshot(
+            ApiCallContext context,
+            String orderId
+    ) {
+        return SkeletonResponses.notImplemented("getPurchasedGrowthSnapshot");
+    }
+
+    default ApiEnvelope<Map<String, Object>> requestVirtualPaymentSupport(
+            ApiCallContext context,
+            String orderId,
+            String idempotencyKey,
+            ContractRequests.VirtualSupportRequest request
+    ) {
+        return SkeletonResponses.notImplemented("requestVirtualPaymentSupport");
+    }
+
+    default String verifyVirtualPaymentPushUrl(
+            ApiCallContext context,
+            String signature,
+            String msgSignature,
+            String timestamp,
+            String nonce,
+            String encryptType,
+            String echostr
+    ) {
+        return SkeletonResponses.notImplemented("verifyVirtualPaymentPushUrl");
+    }
+
+    default String acceptVirtualPaymentPush(
+            ApiCallContext context,
+            String signature,
+            String msgSignature,
+            String timestamp,
+            String nonce,
+            String encryptType,
+            byte[] rawBody
+    ) {
+        return SkeletonResponses.notImplemented("acceptVirtualPaymentPush");
+    }
+
     default ApiEnvelope<Map<String, Object>> createWechatPrepay(
             ApiCallContext context,
             String orderId,

@@ -2,6 +2,8 @@
 // 8 章报告、三项候选优势、适用条件、盲点与行动；一次校准和 7 天内一次复盘。
 const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
+const { getVirtualPayment } = require('../../services/virtual-payment');
+const { friendlyError } = require('../../app-store');
 
 Page({
   data: {
@@ -27,38 +29,48 @@ Page({
 
   onLoad(query) {
     this.sampleMode = query && query.sample === '1';
+    this.orderId = query && query.orderId;
   },
 
-  onShow() {
+  async onShow() {
     const growth = getGrowth();
     const state = growth.get();
-    const canRead = growth.canReadBase();
     const sample = !!this.sampleMode;
-    const experiences = growth.actualExperiences();
+    let snapshot = null;
+    let purchased = null;
+    this.setData({ sample, locked: !sample });
+    if (!sample) {
+      const id = this.orderId || (state.order && state.order.id);
+      if (!id) return;
+      try { purchased = await getVirtualPayment().readReport(id); snapshot = purchased.snapshot; }
+      catch (error) { wx.showToast({ title: friendlyError(error), icon: 'none' }); return; }
+    }
+    const experiences = snapshot ? snapshot.experiences : CONTENT.SAMPLE_EXPERIENCES;
     this.setData({
       sample,
-      locked: !canRead && !sample,
-      oldVersion: state.oldVersion,
-      version: state.version,
-      calibrated: state.calibrated,
-      calibrationText: state.calibrationText,
-      confirmed: state.confirmed,
-      hasMbti: !!state.results.mbti,
-      goals: state.goals,
+      locked: !snapshot && !sample,
+      oldVersion: false,
+      version: purchased ? purchased.report_version : '样例 v1',
+      reportDate: purchased ? purchased.order.created_at.slice(0, 10) : '样例',
+      calibrated: false,
+      calibrationText: '',
+      confirmed: snapshot ? snapshot.confirmed : false,
+      hasMbti: snapshot ? !!snapshot.results.mbti : false,
+      goals: snapshot ? snapshot.goals : [],
       experiences,
       actions: CONTENT.ACTION_DATA.map(([title, body, observe], index) => ({
         index,
         title,
         body,
         observe,
-        selected: state.actionStarted && state.selectedAction === index
+        selected: false
       })),
       reportSaved: state.reportSaved,
-      expired: state.expired,
-      calibratedUsed: state.calibrated,
-      reflected: state.reflected,
-      actionStarted: state.actionStarted,
-      selectedAction: state.selectedAction
+      expired: false,
+      calibratedUsed: false,
+      reflected: false,
+      actionStarted: false,
+      selectedAction: 0
     });
     wx.setNavigationBarTitle({ title: sample ? '完整报告样例' : state.oldVersion ? '历史报告 v1.0' : '个人优势说明书' });
   },

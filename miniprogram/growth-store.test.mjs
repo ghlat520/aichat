@@ -116,40 +116,36 @@ test('邀请参数：challenge 带上猜想，comfort 指向 voices + 人物', (
   assert.ok(g.inviteQueryString('comfort').includes('voice=jobs'));
 });
 
-test('模拟订单：基础价 29.9；已购基础后职业补差 20；支付成功解锁对应权益', () => {
+test('订单展示只从服务器响应更新：待确认不解锁，有效权益才解锁', () => {
   const g = readyStore(memWx());
-  g.patch({ product: 'base' });
-  assert.equal(g.reportPrice(), 29.9);
-  const order = g.createOrder();
-  assert.equal(order.amount, 29.9);
-  g.settlePayment('success');
+  const order = { order_id: 'TEST_BASE', sku: 'base', price_fen: 2990, payment_state: 'PENDING', refund_state: 'NONE', entitlement_state: 'NONE', refunded_fen: 0 };
+  g.applyServerOrder(order);
+  assert.equal(g.get().order.amount, 29.9);
+  assert.equal(g.canReadBase(), false);
+  g.applyServerOrder({ ...order, payment_state: 'PAID', entitlement_state: 'ACTIVE' });
   assert.equal(g.canReadBase(), true);
-  g.patch({ product: 'career' });
-  assert.equal(g.reportPrice(), 20);
-  g.createOrder();
-  g.settlePayment('success');
+  g.applyServerOrder({ ...order, order_id: 'TEST_UPGRADE', sku: 'upgrade', price_fen: 2000, payment_state: 'PAID', entitlement_state: 'ACTIVE' });
+  assert.equal(g.get().order.amount, 20);
   assert.equal(g.get().careerPaid, true);
   assert.equal(g.canReadBase(), true);
 });
 
-test('退款推进：requested → processing → refunded，撤销对应权益', () => {
+test('售后登记不改变付款与权益，只有服务端退款确认才撤销', () => {
   const g = readyStore(memWx());
-  g.patch({ product: 'base' });
-  g.createOrder();
-  g.settlePayment('success');
+  const order = { order_id: 'TEST_BASE', sku: 'base', price_fen: 2990, payment_state: 'PAID', refund_state: 'NONE', entitlement_state: 'ACTIVE', refunded_fen: 0 };
+  g.applyServerOrder(order);
   g.submitSupport('内容纠错', '解释不符合');
-  assert.equal(g.get().refund, 'requested');
-  g.advanceRefund();
-  assert.equal(g.get().refund, 'processing');
-  g.advanceRefund();
+  assert.equal(g.get().refund, 'none');
+  assert.equal(g.canReadBase(), true);
+  g.applyServerOrder({ ...order, refund_state: 'COMPLETED', entitlement_state: 'REVOKED', refunded_fen: 2990 });
   assert.equal(g.get().refund, 'refunded');
+  assert.equal(g.get().order.payment_state, 'PAID');
   assert.equal(g.get().paid, false);
   assert.equal(g.canReadBase(), false);
 });
 
 test('校准与复盘：提交后版本升级为 1.1，复盘保存 reflected', () => {
   const g = readyStore(memWx());
-  g.settlePayment('success');
   g.submitCalibration('实际是临时会议让我不适');
   assert.equal(g.get().calibrated, true);
   assert.equal(g.get().version, '1.1');

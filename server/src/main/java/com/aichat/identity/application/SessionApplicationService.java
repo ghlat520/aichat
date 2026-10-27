@@ -12,6 +12,7 @@ import com.aichat.kernel.api.ApiException;
 import com.aichat.kernel.api.IdempotencyKeys;
 import com.aichat.kernel.identity.UlidGenerator;
 import com.aichat.kernel.security.Sha256Fingerprints;
+import com.aichat.payment.application.VirtualPaymentApplicationService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -37,19 +38,28 @@ public final class SessionApplicationService implements IdentityApiDelegate {
     private final UlidGenerator ids;
     private final Clock clock;
     private final TransactionTemplate transactions;
+    private final VirtualPaymentApplicationService virtualPayments;
 
     public SessionApplicationService(
             SessionMapper mapper,
             SessionTokenService tokens,
             UlidGenerator ids,
             Clock clock,
-            TransactionTemplate transactions
+            TransactionTemplate transactions,
+            VirtualPaymentApplicationService virtualPayments
     ) {
         this.mapper = mapper;
         this.tokens = tokens;
         this.ids = ids;
         this.clock = clock;
         this.transactions = transactions;
+        this.virtualPayments = virtualPayments;
+    }
+
+    @Override
+    public ApiEnvelope<Map<String, Object>> bindWechatIdentity(ApiCallContext context, String idempotencyKey,
+            ContractRequests.WechatBindRequest request) {
+        return virtualPayments.bindWechat(context, idempotencyKey, request);
     }
 
     @Override

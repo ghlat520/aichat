@@ -105,7 +105,8 @@ for (const [path, pathItem] of Object.entries(spec.paths ?? {})) {
     }
 
     if (level === 'Internal') {
-      if (usedSchemes.length !== 1 || usedSchemes[0] !== 'wechatPaySignature') {
+      const signatureScheme = path === '/api/v1/webhooks/wechat-virtual-pay' ? 'wechatVirtualPaySignature' : 'wechatPaySignature';
+      if (usedSchemes.length !== 1 || usedSchemes[0] !== signatureScheme) {
         errors.push(`INTERNAL_SECURITY_SCHEME ${label}`);
       }
       if (path === '/api/v1/webhooks/wechat-pay' && operation['x-raw-body-required'] !== true) {
@@ -113,6 +114,10 @@ for (const [path, pathItem] of Object.entries(spec.paths ?? {})) {
       }
       if (path === '/api/v1/webhooks/wechat-pay' && operation['x-idempotency-source'] !== 'provider_event_id') {
         errors.push(`WEBHOOK_IDEMPOTENCY_SOURCE ${label}`);
+      }
+      if (path === '/api/v1/webhooks/wechat-virtual-pay' && method === 'post') {
+        if (operation['x-raw-body-required'] !== true) errors.push(`WEBHOOK_RAW_BODY_REQUIRED ${label}`);
+        if (operation['x-idempotency-source'] !== 'provider_order_id') errors.push(`WEBHOOK_IDEMPOTENCY_SOURCE ${label}`);
       }
     }
 
@@ -151,7 +156,7 @@ for (const [path, pathItem] of Object.entries(spec.paths ?? {})) {
       errors.push(`OPERATOR_POLICY_ON_NON_OPERATOR ${label}`);
     }
 
-    if (stateChangingMethods.has(method) && path !== '/api/v1/webhooks/wechat-pay') {
+    if (stateChangingMethods.has(method) && !['/api/v1/webhooks/wechat-pay', '/api/v1/webhooks/wechat-virtual-pay'].includes(path)) {
       const parameters = [...(pathItem.parameters ?? []), ...(operation.parameters ?? [])];
       const hasIdempotencyKey = parameters.some(
         (parameter) =>

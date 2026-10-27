@@ -64,7 +64,7 @@ public class IdentityApiController {
 
     @PostMapping("/api/v1/identity/wechat/bind")
     @ContractOperation(operationId = "bindWechatIdentity", domainOwner = "Identity")
-    @AuthPolicy(ruleId = "private-wechat-bind-visitor-only", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR}, roles = {}, mfaRequired = false, rawBodyRequired = false)
+    @AuthPolicy(ruleId = "private-wechat-bind", operatorPolicyRuleId = "", level = AuthLevel.VISITOR, accepted = {AuthLevel.VISITOR, AuthLevel.PRINCIPAL}, roles = {}, mfaRequired = false, rawBodyRequired = false)
     public ApiEnvelope<Map<String, Object>> bindWechatIdentity(
             @RequestHeader(name = "Idempotency-Key", required = true) String idempotencyKey,
             @Valid @RequestBody ContractRequests.WechatBindRequest request,

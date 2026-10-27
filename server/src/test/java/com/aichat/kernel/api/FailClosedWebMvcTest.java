@@ -1,10 +1,19 @@
 package com.aichat.kernel.api;
 
+import com.aichat.kernel.auth.AuthLevel;
+import com.aichat.kernel.auth.AuthenticatedSubject;
+import com.aichat.kernel.auth.SubjectResolver;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Optional;
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -59,5 +68,39 @@ class FailClosedWebMvcTest {
                                 """))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error.code").value("MALFORMED_REQUEST"));
+    }
+
+    @Test
+    void principalReachesOrderingContractAndReceivesExplicit501Stub() throws Exception {
+        mockMvc.perform(post("/api/v1/orders")
+                        .header("Authorization", "Bearer test-principal")
+                        .header("Idempotency-Key", "order-stub-contract-0001")
+                        .contentType("application/json")
+                        .content("""
+                                {
+                                  "report_id": "01J00000000000000000000000",
+                                  "sku": "RELATIONSHIP_CLARITY_CARD_V1",
+                                  "purchase_disclosure_version": "purchase-v1",
+                                  "accepted": true
+                                }
+                                """))
+                .andExpect(status().isNotImplemented())
+                .andExpect(jsonPath("$.error.code").value("API_NOT_IMPLEMENTED"))
+                .andExpect(jsonPath("$.error.details.operation_id").value("createOrder"));
+    }
+
+    @TestConfiguration
+    static class PrincipalAuthConfig {
+        @Bean
+        @Primary
+        SubjectResolver testPrincipalSubjectResolver() {
+            return (request, policy) -> {
+                if ("Bearer test-principal".equals(request.getHeader("Authorization"))) {
+                    return Optional.of(new AuthenticatedSubject(
+                            "principal-order-contract", AuthLevel.PRINCIPAL, Set.of(), false));
+                }
+                return Optional.empty();
+            };
+        }
     }
 }

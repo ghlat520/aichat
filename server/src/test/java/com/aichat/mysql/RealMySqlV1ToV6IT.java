@@ -76,12 +76,12 @@ class RealMySqlV1ToV6IT {
     private Clock clock;
 
     @Test
-    void emptyDatabaseMigratesThroughV6AndEnforcesUniqueCheckAndForeignKeyConstraints() {
+    void emptyDatabaseMigratesThroughV7AndEnforcesExistingConstraints() {
         assertThat(jdbcTemplate.queryForObject("SELECT VERSION()", String.class)).startsWith("8.0.");
         assertThat(jdbcTemplate.queryForList(
                 "SELECT version FROM flyway_schema_history WHERE success = TRUE ORDER BY installed_rank",
                 String.class
-        )).containsExactly("1", "2", "3", "4", "5", "6");
+        )).containsExactly("1", "2", "3", "4", "5", "6", "7");
 
         LocalDateTime now = utcNow();
         String sourceId = ids.next();

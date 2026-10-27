@@ -164,6 +164,64 @@ export type CheckinRequest = {
   note?: string;
 };
 
+export type VirtualQuoteRequest = {
+  product: "base" | "career";
+  snapshot: {
+  answers: Record<string, Array<number>>;
+  results: Record<string, boolean>;
+  sources: Record<string, Record<string, string>>;
+  experiences: Array<{
+  event: string;
+  action: string;
+  result: string;
+  energy: string;
+}>;
+  goals: Array<string>;
+  confirmed: true;
+  career?: {
+  interests: Array<string>;
+  values: Array<string>;
+  skills: string;
+  goal: string;
+  time: string;
+  constraints: string;
+};
+};
+};
+
+export type VirtualOrderRequest = {
+  product: "base" | "career";
+  snapshot: {
+  answers: Record<string, Array<number>>;
+  results: Record<string, boolean>;
+  sources: Record<string, Record<string, string>>;
+  experiences: Array<{
+  event: string;
+  action: string;
+  result: string;
+  energy: string;
+}>;
+  goals: Array<string>;
+  confirmed: true;
+  career?: {
+  interests: Array<string>;
+  values: Array<string>;
+  skills: string;
+  goal: string;
+  time: string;
+  constraints: string;
+};
+};
+  price_version: string;
+  purchase_disclosure_version: string;
+  accepted: true;
+};
+
+export type VirtualSupportRequest = {
+  reason: string;
+  detail: string;
+};
+
 export type CreateOrderRequest = {
   report_id: string;
   sku: "RELATIONSHIP_CLARITY_CARD_V1";

@@ -77,12 +77,13 @@
         <text class="gk-tag gk-tag--aqua">报告已就绪</text>
       </view>
       <button class="gk-primary" bindtap="{{canReadBase ? 'openReport' : 'buyBase'}}">{{canReadBase ? '打开已购报告' : '购买个人优势说明书'}}</button>
+      <button wx:if="{{canReadBase}}" class="gk-secondary" bindtap="buyBase">核对本次输入的购买状态</button>
       <button class="gk-quiet" bindtap="backToPortrait">继续免费使用</button>
       <view class="gk-between preview-box-links">
         <button class="gk-text-link" bindtap="sampleReport">查看完整样例</button>
         <button class="gk-text-link" bindtap="purchaseInfo">购买与售后说明</button>
       </view>
     </view>
-    <view class="gk-footer-note">免费基础结果不会因未购买而减少。<text class="preview-br"></text>本页为原型演示价格，非实际收费。</view>
+    <view class="gk-footer-note">免费基础结果可继续查看。<text class="preview-br"></text>金额以购买确认页的最新报价为准，付款后解锁本次快照。</view>
   </block>
 </view>

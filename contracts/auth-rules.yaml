@@ -7,6 +7,35 @@
   },
   "classification_rules": [
     {
+      "id": "internal-virtual-pay-webhook",
+      "priority": 1100,
+      "match": {
+        "path_exact": "/api/v1/webhooks/wechat-virtual-pay"
+      },
+      "policy": {
+        "level": "Internal",
+        "accepted_levels": [
+          "Internal"
+        ],
+        "security_scheme": "wechatVirtualPaySignature",
+        "raw_body_required": true
+      }
+    },
+    {
+      "id": "principal-virtual-pay-orders",
+      "priority": 710,
+      "match": {
+        "path_prefix": "/api/v1/virtual-pay/orders"
+      },
+      "policy": {
+        "level": "Principal",
+        "accepted_levels": [
+          "Principal"
+        ],
+        "security_scheme": "opaqueBearer"
+      }
+    },
+    {
       "id": "internal-wechat-webhooks",
       "priority": 1000,
       "match": {"path_regex": "^/api/v1/webhooks(?:/.*)?$"},
@@ -51,12 +80,12 @@
       }
     },
     {
-      "id": "private-wechat-bind-visitor-only",
+      "id": "private-wechat-bind",
       "priority": 750,
       "match": {"operation_ids": ["bindWechatIdentity"]},
       "policy": {
         "level": "Visitor",
-        "accepted_levels": ["Visitor"],
+        "accepted_levels": ["Visitor", "Principal"],
         "security_scheme": "opaqueBearer"
       }
     },

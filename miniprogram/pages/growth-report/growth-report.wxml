@@ -21,7 +21,7 @@
       <text class="gk-tag {{sample ? 'gk-tag--gray' : 'gk-tag--aqua'}}">{{sample ? '样例阅读' : '已购 · 可重复查看'}}</text>
       <view class="report-header-title">温柔地理解，</view>
       <view class="report-header-title">清楚地行动。</view>
-      <view class="gk-tiny report-header-meta">个人优势说明书 · v{{oldVersion ? '1.0' : version}} · 2026.10.26 · 目标：{{goals.length ? goals[0] : '协作'}}</view>
+      <view class="gk-tiny report-header-meta">个人优势说明书 · {{version}} · {{reportDate}} · 目标：{{goals.length ? goals[0] : '协作'}}</view>
     </view>
 
     <view wx:if="{{calibrated && !oldVersion}}" class="gk-soft-note">
@@ -109,10 +109,10 @@
           <text class="report-service-title">{{expired ? '本次服务窗口已结束' : '7 天服务，按你的节奏使用'}}</text>
           <text class="gk-tag gk-tag--white">{{expired ? '可继续阅读' : '还剩 7 天'}}</text>
         </view>
-        <view class="report-service-copy">{{expired ? '已购报告仍可重复查看和保存，校准与复盘记录也会保留。' : '集中校准 ' + (calibratedUsed ? '已使用' : '1 次可用') + ' · 行动复盘 ' + (reflected ? '已完成' : '1 次可用') + ' · 本次服务至 2026.11.02，不含持续陪伴。'}}</view>
+        <view class="report-service-copy">已购快照可重复查看。本机校准与行动复盘练习不会改写这份快照；交付问题可从订单页登记售后。</view>
         <view class="gk-button-pair">
-          <button class="gk-secondary" bindtap="goCalibrate">{{calibratedUsed ? '查看校准记录' : '校准不符合的内容'}}</button>
-          <button class="gk-secondary" bindtap="goReflection">{{reflected ? '查看复盘记录' : '开始行动复盘'}}</button>
+          <button class="gk-secondary" bindtap="goCalibrate">本机校准练习</button>
+          <button class="gk-secondary" bindtap="goReflection">本机行动复盘</button>
         </view>
       </view>
       <button class="report-career-link" bindtap="goCareer">

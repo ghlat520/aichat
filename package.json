@@ -10,7 +10,9 @@
     "e2e:canary:selector": "E2E_FAULT=selector node scripts/e2e/run-all.mjs",
     "e2e:canary:pii": "E2E_FAULT=pii node scripts/e2e/run-all.mjs",
     "test:store": "node --test miniprogram/*.test.mjs",
-    "ui": "python3 -m http.server 4188 --bind 127.0.0.1 --directory docs/ui"
+    "ui": "python3 -m http.server 4188 --bind 127.0.0.1 --directory docs/ui",
+    "test:virtual-pay": "node --test miniprogram/virtual-payment*.test.mjs && mvn --file server/pom.xml --batch-mode --no-transfer-progress -Dtest=WechatVirtualPayProtocolTest,VirtualPayConfigurationTest,VirtualPaymentWebMvcTest test",
+    "smoke:virtual-pay": "node scripts/e2e/virtual-pay-smoke.mjs"
   },
   "devDependencies": {
     "@weapp-vite/miniprogram-automator": "^1.2.7",

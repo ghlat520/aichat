@@ -1,79 +1,31 @@
 <import src="../../templates/preview.wxml" />
 <view id="order-page" class="container ui-tab-page gk-screen">
   <template is="page-head" data="{{title:'订单与售后'}}" />
-  <view class="ui-page-lede">购买和售后各自有明确、可追踪的状态。</view>
-
-  <!-- 自我探索订单（本地模拟） -->
+  <view class="ui-page-lede">付款、报告权益与退款到账分别确认。</view>
+  <view wx:if="{{notice}}" class="gk-notice">{{notice}}</view>
+  <button class="gk-secondary" loading="{{busy}}" disabled="{{busy}}" bindtap="restoreOrders">微信登录并恢复订单</button>
+  <view wx:for="{{orders}}" wx:key="order_id" class="gk-card">
+    <button class="gk-text-link" data-id="{{item.order_id}}" bindtap="selectOrder">{{item.label}} · ¥{{item.amount}} · {{item.order_id}}</button>
+  </view>
+  <button wx:if="{{nextCursor}}" class="gk-quiet" bindtap="moreOrders">更多订单</button>
   <block wx:if="{{hasGrowthOrder}}">
-    <view class="gk-between order-head-row">
-      <view class="gk-page-title order-head-title">这次购买</view>
-      <text class="gk-tag {{statusTone === 'gray' ? 'gk-tag--gray' : 'gk-tag--aqua'}}">{{statusLabel}}</text>
-    </view>
-
+    <view class="gk-between order-head-row"><view class="gk-page-title order-head-title">这笔购买</view><text class="gk-tag">{{statusLabel}}</text></view>
     <view class="gk-card">
-      <view class="gk-title-sm">{{productLabel}}</view>
-      <view class="gk-tiny order-meta">演示订单 1026 · 2026.10.26</view>
+      <view class="gk-title-sm">{{productLabel}}</view><view class="gk-tiny order-meta">{{orderId}} · {{date}}</view>
       <view class="gk-divider"></view>
-      <view class="gk-price-line"><text>{{upgradeLabel}}</text><text class="gk-strong">¥{{amount}}</text></view>
+      <view class="gk-price-line"><text>订单金额</text><text>¥{{amount}}</text></view>
       <view class="gk-price-line"><text>报告交付</text><text>{{deliveryText}}</text></view>
-      <view wx:if="{{linkedBase}}" class="gk-price-line"><text>关联基础订单</text><text>{{linkedBase}}</text></view>
+      <view class="gk-price-line"><text>已确认退款到账</text><text>¥{{refundAmount}}</text></view>
+      <view wx:if="{{linkedBase}}" class="gk-tiny">关联基础订单：{{linkedBase}}</view>
     </view>
-
-    <block wx:if="{{refund !== 'none'}}">
-      <view class="gk-title-sm order-section-title">售后处理进度</view>
-      <view class="order-timeline">
-        <view class="order-timeline-item">
-          <view class="order-timeline-title">已提交申请</view>
-          <view class="gk-tiny">{{reason}} · 你的说明已收到</view>
-        </view>
-        <view class="order-timeline-item {{refund === 'processing' ? 'order-timeline-item--current' : ''}}">
-          <view class="order-timeline-title">{{refund === 'requested' ? '等待受理' : '已受理，处理中'}}</view>
-          <view class="gk-tiny">建议 1 个工作日内受理，3 个工作日内给出结论</view>
-        </view>
-        <view class="order-timeline-item {{refund === 'refunded' ? 'order-timeline-item--current' : ''}}">
-          <view class="order-timeline-title">{{refund === 'refunded' ? '退款已到账' : '退款到账待渠道确认'}}</view>
-          <view class="gk-tiny">{{refund === 'refunded' ? '演示退款 ¥' + refundAmount + '，免费结果仍可查看' : '申请与受理不等于资金已到账'}}</view>
-        </view>
-      </view>
-      <button wx:if="{{refund !== 'refunded'}}" class="gk-primary" bindtap="advanceRefund">刷新处理进度</button>
-      <button class="gk-secondary" bindtap="goReports">回到我的报告</button>
-    </block>
-
-    <block wx:else>
-      <button wx:if="{{statusLabel === '支付待确认'}}" class="gk-primary" bindtap="queryOrder">查询原订单，不重复付款</button>
-      <view wx:if="{{statusLabel === '已付款 · 交付处理中'}}" class="gk-notice">已收到付款，交付正在恢复。无法完成时进入退款处理，不需要再次购买。</view>
-
-      <view class="gk-section-title"><view class="gk-section-title-title">需要我们帮你处理什么？</view></view>
-      <view class="gk-chips">
-        <button wx:for="{{reasons}}" wx:key="*this" class="gk-chip {{reason === item ? 'gk-chip--selected' : ''}}" data-reason="{{item}}" bindtap="setReason">{{item}}</button>
-      </view>
-
-      <block wx:if="{{isCareerUpgrade}}">
-        <view class="gk-field-label order-scope-label">希望处理的购买范围</view>
-        <view class="gk-chips">
-          <button wx:for="{{scopes}}" wx:key="id" class="gk-chip {{scope === item.id ? 'gk-chip--selected' : ''}}" data-scope="{{item.id}}" bindtap="setScope">{{item.label}}</button>
-        </view>
-        <view class="gk-tiny order-scope-note">{{scopeNote}}</view>
-      </block>
-
-      <view class="gk-field">
-        <view class="gk-field-label">描述遇到的问题</view>
-        <textarea class="gk-textarea" value="{{supportText}}" placeholder="写清问题即可，不需要复制全部私人经历。" maxlength="800" bindinput="onSupportInput" />
-      </view>
-      <button class="gk-primary" bindtap="submitSupport">提交售后申请</button>
-      <view class="gk-footer-note">受理、处理结论与退款到账分别展示。<text class="order-br"></text>不以是否打开过报告，直接拒绝内容质量申请。</view>
-    </block>
+    <button class="gk-primary" loading="{{busy}}" disabled="{{busy}}" bindtap="queryOrder">查询原订单与处理进度</button>
+    <button wx:if="{{deliveryText === '报告权益有效'}}" class="gk-secondary" bindtap="openReport">打开这笔订单的报告</button>
+    <view class="gk-section-title"><view class="gk-section-title-title">登记售后诉求</view></view>
+    <view class="gk-chips"><button wx:for="{{reasons}}" wx:key="*this" class="gk-chip {{reason === item ? 'gk-chip--selected' : ''}}" data-reason="{{item}}" bindtap="setReason">{{item}}</button></view>
+    <view class="gk-field"><textarea class="gk-textarea" value="{{supportText}}" placeholder="写清问题即可，无需复制全部私人经历。" maxlength="800" bindinput="onSupportInput" /></view>
+    <button class="gk-secondary" disabled="{{busy}}" bindtap="submitSupport">登记这笔订单的售后</button>
+    <view class="gk-footer-note">登记不等于已提交渠道退款。iOS退款请向App Store申请；其他终端由商家在微信后台处理。两笔购买需分别核实。</view>
   </block>
-
-  <!-- 原关系订单：G6 stub -->
-  <view wx:else id="order-stub" class="aichat-warning">关系清晰卡订单与支付功能开发中（G6）。当前页面不会发起支付或订单请求。</view>
-
-  <block wx:if="{{!hasGrowthOrder}}">
-    <view class="gk-empty">
-      <view class="gk-empty-title">还没有自我探索的购买记录</view>
-      <view class="gk-empty-text">免费基础结果可以随时查看。<text class="order-br"></text>想了解更完整的个人报告时，再慢慢选择。</view>
-      <button class="gk-primary" bindtap="goReports">查看我的免费结果</button>
-      <button class="gk-secondary" bindtap="goDiscover">回到自测首页</button>
-    </view>
-  </block>
+  <view wx:else class="gk-empty"><view class="gk-empty-title">暂未读取到购买记录</view><view class="gk-empty-text">免费结果仍可查看，可用原微信身份恢复订单。</view></view>
+  <button class="gk-secondary" bindtap="goReports">查看我的报告</button>
 </view>

@@ -156,3 +156,8 @@ target: miniprogram/（微信小程序原生实现）
 | 回归测试 | `app-store.test.mjs`、`page-session.test.mjs` |
 
 另外更新`scripts/e2e/growth-smoke.mjs`、`scripts/e2e/growth-shots.mjs`以移除虚假身份播种并恢复测试前状态。本验收记录、截图目录及其预览入口属于交付证据。
+
+
+## 2026-10-27 个人虚拟支付接入后
+
+上文的 32/35 项冒烟和 33 张截图均是当时 UI 基线的历史证据。由于个人虚拟支付已移除本地模拟订单，原 `growth-smoke.mjs` 与 `growth-shots.mjs` 已保存在 `scripts/e2e/archive/`，不能直接用于当前支付验收。当前支付原生冒烟入口为 `npm run smoke:virtual-pay`；本轮因开发者工具环境阻断而未执行页面场景，实际平台支付尚待开通后联调。

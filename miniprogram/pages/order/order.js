@@ -1,119 +1,78 @@
-// pages/order/order.js — 订单与售后（V1.2 原型 order 屏升级）
-// 原关系订单仍为 G6 stub；自我探索订单为本地模拟，申请与到账分开展示。
-const { store, syncTabBar, goHome } = require('../../app-store');
+const { syncTabBar, friendlyError } = require('../../app-store');
 const { getGrowth } = require('../../growth-store');
+const { getVirtualPayment } = require('../../services/virtual-payment');
 const CONTENT = require('../../growth-content');
-
-function money(n) {
-  return Number(n).toFixed(2);
-}
-
 Page({
-  data: {
-    hasGrowthOrder: false,
-    productLabel: '个人优势说明书',
-    upgradeLabel: '订单实付',
-    amount: '29.90',
-    statusLabel: '已完成',
-    refund: 'none',
-    statusTone: 'aqua',
-    deliveryText: '报告可查看',
-    linkedBase: '',
-    reasons: CONTENT.SUPPORT_REASONS,
-    reason: '内容纠错',
-    scopes: [{ id: 'upgrade', label: '仅处理升级部分' }, { id: 'all', label: '处理整套购买' }],
-    scope: 'upgrade',
-    scopeNote: '仅处理升级时，原基础报告与对应权益保留。',
-    supportText: '',
-    isCareerUpgrade: false,
-    refundAmount: '0.00'
-  },
-
-  onShow() {
-    syncTabBar(this, 3);
-    this.refresh();
-  },
-
-  refresh() {
-    const growth = getGrowth();
-    const state = growth.get();
-    const hasGrowthOrder = !!(state.order || state.paid || state.careerPaid || state.refund !== 'none');
-    const refund = state.refund;
-    const statusLabel = refund === 'refunded' ? '已退款'
-      : refund === 'processing' ? '退款处理中'
-      : refund === 'requested' ? '售后已提交'
-      : state.payment === 'pending' ? '支付待确认'
-      : state.payment === 'delivery' ? '已付款 · 交付处理中'
-      : (state.paid || state.careerPaid) ? '已完成' : '未完成购买';
-    const isCareerUpgrade = state.product === 'career' && state.paid;
-    const amount = state.order ? state.order.amount : growth.reportPrice();
-    this.setData({
-      hasGrowthOrder,
-      productLabel: state.product === 'career' ? '职业探索报告' : '个人优势说明书',
-      upgradeLabel: isCareerUpgrade ? '升级实付' : '订单实付',
-      amount: money(amount),
-      statusLabel,
-      statusTone: refund === 'refunded' ? 'gray' : 'aqua',
-      refund,
-      deliveryText: refund === 'refunded' ? '对应付费内容已撤销'
-        : state.payment === 'pending' ? '付款确认后解锁'
-        : state.payment === 'delivery' ? '正在恢复交付'
-        : '报告可查看',
-      linkedBase: isCareerUpgrade ? `¥${money(state.baseNet)} · 独立保留` : '',
-      reason: state.supportReason || this.data.reason,
-      scope: state.refundScope,
-      scopeNote: state.refundScope === 'all'
-        ? `涉及两笔实际交易：基础 ¥${money(state.baseNet)} + 升级 ¥${money(amount)}`
-        : '仅处理升级时，原基础报告与对应权益保留。',
-      supportText: state.supportText,
-      isCareerUpgrade,
-      refundAmount: money(state.refundAmount || amount)
-    });
-  },
-
-  goHome,
-
-  goReports() {
-    wx.navigateTo({ url: '/pages/reports/reports' });
-  },
-
-  goDiscover() {
-    wx.switchTab({ url: '/pages/assessment/assessment' });
-  },
-
-  queryOrder() {
-    getGrowth().settlePayment('success');
-    wx.showToast({ title: '演示查单已确认，报告已解锁', icon: 'none' });
-    this.refresh();
-  },
-
-  setReason(event) {
-    getGrowth().patch({ supportReason: event.currentTarget.dataset.reason });
-    this.setData({ reason: event.currentTarget.dataset.reason });
-  },
-
-  setScope(event) {
-    getGrowth().patch({ refundScope: event.currentTarget.dataset.scope });
-    this.refresh();
-  },
-
-  onSupportInput(event) {
-    getGrowth().patch({ supportText: event.detail.value });
-    this.setData({ supportText: event.detail.value });
-  },
-
-  submitSupport() {
-    if (!this.data.supportText.trim()) {
-      wx.showToast({ title: '请简单写下遇到的问题', icon: 'none' });
-      return;
+  data: { hasGrowthOrder: false, orders: [], orderId: '', date: '', amount: '--', productLabel: '',
+    statusLabel: '', deliveryText: '', refund: 'none', refundAmount: '0.00', reasons: CONTENT.SUPPORT_REASONS,
+    reason: '内容纠错', supportText: '', notice: '', busy: false, linkedBase: '', nextCursor: null },
+  onShow() { syncTabBar(this, 3); this.refresh(); },
+  async refresh() {
+    const order = getGrowth().get().order;
+    if (order && order.id) {
+      try { await getVirtualPayment().getOrder(order.id); this.render(); }
+      catch (error) { this.setData({ notice: friendlyError(error) }); }
     }
-    getGrowth().submitSupport(this.data.reason, this.data.supportText);
-    this.refresh();
-    wx.showToast({ title: '售后申请已提交，可在这里查看进度', icon: 'none' });
+    try { const result = await getVirtualPayment().list(); this.setData({ orders: this.rows(result.items), nextCursor: result.next_cursor }); }
+    catch (error) { if (!order) this.setData({ notice: '微信登录后可恢复原订单。' }); }
   },
-
-  advanceRefund() {
-    getGrowth().advanceRefund();
-    this.refresh();
-  }
+  rows(items) { return items.map(order => ({ ...order, label: order.sku === 'base' ? '个人优势说明书' : '职业探索报告', amount: (order.price_fen / 100).toFixed(2) })); },
+  render() {
+    const state = getGrowth().get(); const order = state.order;
+    if (!order) return;
+    this.setData({ hasGrowthOrder: true, orderId: order.id, date: order.created_at.slice(0, 10),
+      productLabel: order.product === 'career' ? '职业探索报告' : '个人优势说明书', amount: (order.price_fen / 100).toFixed(2),
+      statusLabel: order.refund_state === 'COMPLETED' ? '已退款' : order.refund_state === 'PARTIAL' ? '部分退款已确认'
+        : order.refund_state === 'PROCESSING' ? '退款结果待确认' : order.payment_state === 'PAID' ? '付款已确认'
+        : order.payment_state === 'CLOSED' ? '订单已关闭' : '支付待确认',
+      deliveryText: order.entitlement_state === 'ACTIVE' && order.refund_state === 'NONE' ? '报告权益有效'
+        : order.entitlement_state === 'REVOKED' ? '对应权益已撤销' : order.entitlement_state === 'SUSPENDED' ? '权益已暂停，请联系售后' : '付款确认后解锁',
+      refund: state.refund, refundAmount: (order.refunded_fen / 100).toFixed(2), linkedBase: order.base_order_id || '',
+      supportText: state.supportText, reason: state.supportReason, notice: '' });
+  },
+  async restoreOrders() {
+    if (this.data.busy) return;
+    this.setData({ busy: true });
+    try {
+      await getVirtualPayment().bind();
+      const result = await getVirtualPayment().list();
+      this.setData({ orders: this.rows(result.items), nextCursor: result.next_cursor, notice: '' });
+      if (result.items.length) { getGrowth().applyServerOrder(result.items[0]); this.render(); }
+    } catch (error) { this.setData({ notice: friendlyError(error) }); }
+    finally { this.setData({ busy: false }); }
+  },
+  async moreOrders() {
+    try { const result = await getVirtualPayment().list(this.data.nextCursor);
+      this.setData({ orders: this.data.orders.concat(this.rows(result.items)), nextCursor: result.next_cursor }); }
+    catch (error) { this.setData({ notice: friendlyError(error) }); }
+  },
+  async selectOrder(event) {
+    try { await getVirtualPayment().getOrder(event.currentTarget.dataset.id); this.render(); }
+    catch (error) { this.setData({ notice: friendlyError(error) }); }
+  },
+  async queryOrder() {
+    if (this.data.busy) return;
+    this.setData({ busy: true });
+    try { await getVirtualPayment().query(getGrowth().get().order.id); this.render(); }
+    catch (error) { this.setData({ notice: friendlyError(error) }); }
+    finally { this.setData({ busy: false }); }
+  },
+  setReason(event) { getGrowth().patch({ supportReason: event.currentTarget.dataset.reason }); this.setData({ reason: event.currentTarget.dataset.reason }); },
+  onSupportInput(event) { getGrowth().patch({ supportText: event.detail.value }); this.setData({ supportText: event.detail.value }); },
+  async submitSupport() {
+    if (!this.data.supportText.trim() || this.data.busy) return;
+    this.setData({ busy: true });
+    try {
+      const result = await getVirtualPayment().support(getGrowth().get().order.id, this.data.reason, this.data.supportText);
+      getGrowth().submitSupport(this.data.reason, this.data.supportText);
+      this.setData({ notice: result.message });
+    } catch (error) { this.setData({ notice: friendlyError(error) }); }
+    finally { this.setData({ busy: false }); }
+  },
+  openReport() {
+    const order = getGrowth().get().order;
+    wx.navigateTo({ url: (order.product === 'career' ? '/pages/career-report/career-report' : '/pages/growth-report/growth-report') + '?orderId=' + encodeURIComponent(order.id) });
+  },
+  goReports() { wx.navigateTo({ url: '/pages/reports/reports' }); },
+  goDiscover() { wx.switchTab({ url: '/pages/assessment/assessment' }); }
 });

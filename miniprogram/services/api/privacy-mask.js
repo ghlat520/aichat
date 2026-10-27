@@ -10,17 +10,21 @@ function maskString(value) {
     .replace(MOBILE_PATTERN, (_match, prefix) => prefix + '[MOBILE]');
 }
 
-function maskPiiDeep(value) {
+const PROTOCOL_FIELDS = new Set(['login_code', 'price_version', 'purchase_disclosure_version',
+  'client_instance_id', 'policy_version', 'order_id', 'base_order_id', 'report_version',
+  'session_id', 'access_token', 'refresh_token', 'signData', 'paySig', 'signature']);
+
+function maskPiiDeep(value, depth = 0) {
   if (typeof value === 'string') {
     return maskString(value);
   }
   if (Array.isArray(value)) {
-    return value.map(maskPiiDeep);
+    return value.map(child => maskPiiDeep(child, depth + 1));
   }
   if (value && typeof value === 'object') {
     const masked = {};
     for (const [key, child] of Object.entries(value)) {
-      masked[key] = maskPiiDeep(child);
+      masked[key] = depth === 0 && PROTOCOL_FIELDS.has(key) ? child : maskPiiDeep(child, depth + 1);
     }
     return masked;
   }

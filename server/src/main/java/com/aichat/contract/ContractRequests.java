@@ -24,6 +24,50 @@ public final class ContractRequests {
     private ContractRequests() {
     }
 
+    public record GrowthPurchaseExperience(
+            @NotBlank @Size(max = 1000) String event,
+            @NotBlank @Size(max = 1000) String action,
+            @NotBlank @Size(max = 1000) String result,
+            @NotNull @Size(max = 1000) String energy
+    ) { }
+
+    public record GrowthPurchaseCareer(
+            @NotNull @Size(max = 10) List<@NotBlank @Size(max = 64) String> interests,
+            @NotNull @Size(max = 10) List<@NotBlank @Size(max = 64) String> values,
+            @NotNull @Size(max = 1000) String skills,
+            @NotNull @Size(max = 1000) String goal,
+            @NotNull @Size(max = 1000) String time,
+            @NotNull @Size(max = 1000) String constraints
+    ) { }
+
+    public record GrowthPurchaseSnapshot(
+            @NotNull @Size(max = 3) Map<String, List<@Min(1) @Max(5) Integer>> answers,
+            @NotNull @Size(max = 3) Map<String, Boolean> results,
+            @NotNull @Size(max = 3) Map<String, Map<String, String>> sources,
+            @NotNull @Size(min = 2, max = 2) List<@NotNull @Valid GrowthPurchaseExperience> experiences,
+            @NotNull @Size(max = 5) List<@NotBlank @Size(max = 64) String> goals,
+            @AssertTrue boolean confirmed,
+            @Valid GrowthPurchaseCareer career
+    ) { }
+
+    public record VirtualQuoteRequest(
+            @NotBlank @Pattern(regexp = "base|career") String product,
+            @NotNull @Valid GrowthPurchaseSnapshot snapshot
+    ) { }
+
+    public record VirtualOrderRequest(
+            @NotBlank @Pattern(regexp = "base|career") String product,
+            @NotNull @Valid GrowthPurchaseSnapshot snapshot,
+            @JsonProperty("price_version") @NotBlank @Size(max = 64) String priceVersion,
+            @JsonProperty("purchase_disclosure_version") @NotBlank @Size(max = 64) String purchaseDisclosureVersion,
+            @AssertTrue boolean accepted
+    ) { }
+
+    public record VirtualSupportRequest(
+            @NotBlank @Size(max = 64) String reason,
+            @NotBlank @Size(max = 1000) String detail
+    ) { }
+
     public record ExpectedVersionRequest(
             @JsonProperty("expected_version") @Min(1) int expectedVersion
     ) {
