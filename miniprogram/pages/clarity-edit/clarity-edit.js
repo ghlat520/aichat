@@ -1,6 +1,7 @@
 const {
   store,
-  getApiClient,
+  getSessionBoundClient,
+  ensureGuestSession,
   friendlyError,
   ensureEntryUnlocked,
   goHome,
@@ -22,6 +23,8 @@ Page({
     saved: false,
     canSubmit: false,
     taskId: '',
+    ownerSessionId: '',
+    sessionHidden: false,
     taskVersion: 0,
     error: '',
     contextOptions: CONTEXTS,
@@ -51,6 +54,7 @@ Page({
 
   onLoad(query) {
     if (!ensureEntryUnlocked()) return;
+    this.logoutVersion = store.getLogoutVersion();
     const activeTask = store.getState().activeTask || {};
     const directEntry = query.entry === 'direct';
     const candidate = directEntry ? {} : (activeTask.candidateFields || {});
@@ -60,6 +64,7 @@ Page({
     const draft = !directEntry && activeTask.fieldDraft || {};
     this.setData({
       loading: false,
+      ownerSessionId: (store.getState().session || {}).sessionId || '',
       taskId: directEntry ? '' : (query.taskId || activeTask.taskId || ''),
       taskVersion: directEntry ? 0 : (activeTask.version || 0),
       contextIndex: Math.max(0, CONTEXTS.findIndex(item => item.value === fields.context)),
@@ -73,6 +78,9 @@ Page({
 
   onShow() {
     ensureEntryUnlocked();
+    const sessionId = (store.getState().session || {}).sessionId;
+    this.setData({ sessionHidden: (this.logoutVersion !== undefined && this.logoutVersion !== store.getLogoutVersion())
+      || (!!this.data.ownerSessionId && this.data.ownerSessionId !== sessionId) });
   },
 
   goHome,
@@ -136,7 +144,14 @@ Page({
     if (!this.data.canSubmit || this.data.saving) return;
     this.setData({ saving: true, error: '' });
     try {
-      const client = getApiClient();
+      const initialOwner = this.data.ownerSessionId || (store.getState().session || {}).sessionId;
+      const logoutVersion = store.getLogoutVersion();
+      if (this.logoutVersion !== undefined && this.logoutVersion !== logoutVersion) throw new Error('登录状态已变化，请重试');
+      const sessionId = await ensureGuestSession();
+      if ((this.data.taskId && initialOwner && initialOwner !== sessionId) || logoutVersion !== store.getLogoutVersion()) throw new Error('登录状态已变化，请重试');
+      this.setData({ ownerSessionId: sessionId });
+      const isCurrent = () => (store.getState().session || {}).sessionId === sessionId && logoutVersion === store.getLogoutVersion();
+      const client = getSessionBoundClient(sessionId);
       const fields = this.data.fields;
       let taskId = this.data.taskId;
       let taskVersion = this.data.taskVersion || (store.getState().activeTask || {}).version;
@@ -146,6 +161,7 @@ Page({
           context: fields.context,
           clarity_pre: 3
         });
+        if (!isCurrent()) { this.setData({ saving: false, sessionHidden: true }); return; }
         taskId = created.data.task_id;
         taskVersion = created.data.version || 1;
       }
@@ -153,6 +169,7 @@ Page({
         expected_version: taskVersion,
         fields
       });
+      if (!isCurrent()) { this.setData({ saving: false, sessionHidden: true }); return; }
       if (routeToSafetyIfBlocked(saved.data)) {
         this.setData({ saving: false });
         return;
@@ -172,7 +189,9 @@ Page({
         taskVersion: saved.data.version
       });
     } catch (error) {
-      this.setData({ saving: false, error: friendlyError(error) });
+      this.setData({ saving: false, error: friendlyError(error),
+        sessionHidden: (this.logoutVersion !== undefined && this.logoutVersion !== store.getLogoutVersion())
+          || (!!this.data.ownerSessionId && this.data.ownerSessionId !== (store.getState().session || {}).sessionId) });
     }
   },
 

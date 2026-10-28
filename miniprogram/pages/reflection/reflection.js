@@ -1,5 +1,5 @@
 const { goHome: goPreviewHome } = require('../../app-store');
-const { store, getApiClient, friendlyError, ensureEntryUnlocked } = require('../../app-store');
+const { store, getSessionBoundClient, ensureGuestSession, friendlyError, ensureEntryUnlocked } = require('../../app-store');
 
 function listFromInput(value) {
   return value.split(/\n/).map((item) => item.trim()).filter(Boolean).slice(0, 5);
@@ -11,6 +11,8 @@ Page({
     loading: false,
     submitting: false,
     taskId: '',
+    ownerSessionId: '',
+    sessionHidden: false,
     error: '',
     round: 1,
     confirmedFacts: '',
@@ -22,16 +24,20 @@ Page({
 
   onLoad(query) {
     if (!ensureEntryUnlocked()) return;
+    this.logoutVersion = store.getLogoutVersion();
     const activeTask = store.getState().activeTask || {};
     const taskId = query.taskId || activeTask.taskId || '';
     this.setData({
       taskId,
+      ownerSessionId: (store.getState().session || {}).sessionId || '',
       error: taskId ? '' : '缺少任务，请先确认镜像'
     });
   },
 
   onShow() {
     ensureEntryUnlocked();
+    this.setData({ sessionHidden: (this.logoutVersion !== undefined && this.logoutVersion !== store.getLogoutVersion())
+      || (!!this.data.ownerSessionId && this.data.ownerSessionId !== (store.getState().session || {}).sessionId) });
   },
 
   onInput(event) {
@@ -50,7 +56,11 @@ Page({
   async reflect() {
     if (!this.data.canSubmit || this.data.submitting) return;
     this.setData({ submitting: true, error: '' });
+    const owner = this.data.ownerSessionId || (store.getState().session || {}).sessionId;
+    const logoutVersion = store.getLogoutVersion();
     try {
+      const sessionId = await ensureGuestSession();
+      if ((owner && owner !== sessionId) || logoutVersion !== store.getLogoutVersion()) throw new Error('登录状态已变化，请重试');
       const activeTask = store.getState().activeTask || {};
       const body = this.data.round === 1
         ? {
@@ -65,7 +75,10 @@ Page({
             priority_need_or_boundary: this.data.priority.trim(),
             self_executable_goal: this.data.goal.trim()
           };
-      const response = await getApiClient().createTaskReflection(this.data.taskId, body);
+      const response = await getSessionBoundClient(sessionId).createTaskReflection(this.data.taskId, body);
+      if ((store.getState().session || {}).sessionId !== sessionId || logoutVersion !== store.getLogoutVersion()) {
+        this.setData({ submitting: false, sessionHidden: true }); return;
+      }
       const data = response.data || {};
       store.patchActiveTask({
         version: data.version,
@@ -78,7 +91,8 @@ Page({
         this.setData({ round: 2, submitting: false, canSubmit: false });
       }
     } catch (error) {
-      this.setData({ submitting: false, error: friendlyError(error) });
+      this.setData({ submitting: false, error: friendlyError(error),
+        sessionHidden: logoutVersion !== store.getLogoutVersion() || (!!owner && owner !== (store.getState().session || {}).sessionId) });
     }
   }
 });

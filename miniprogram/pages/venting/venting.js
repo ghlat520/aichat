@@ -1,6 +1,6 @@
 const {
   store,
-  getApiClient,
+  getSessionBoundClient,
   friendlyError,
   ensureGuestSession,
   syncTabBar,
@@ -22,6 +22,7 @@ Page({
     error: '',
     ventSessionId: '',
     ownerSessionId: '',
+    sessionHidden: false,
     version: 0,
     messages: [],
     input: '',
@@ -43,26 +44,50 @@ Page({
 
   onShow() {
     syncTabBar(this, 2);
+    const sessionId = (store.getState().session || {}).sessionId;
+    this.setData({ sessionHidden: !!this.data.ownerSessionId && this.data.ownerSessionId !== sessionId });
     if (this.isTimeExpired()) this.setData({ limitReached: true });
   },
 
   goHome,
 
   async restart() {
-    this.setData({ loading: true, sending: false, finishing: false, confirming: false, error: '', ventSessionId: '', messages: [], input: '', aiTurnsUsed: 0, aiTurnsRemaining: 8, deadlineAt: '', limitReached: false, summary: null, summaryVersion: '', confirmedTaskId: '' });
+    const restartVersion = (this.restartVersion || 0) + 1;
+    this.restartVersion = restartVersion;
+    const previous = { ...this.data };
+    if (previous.input || previous.messages.length || previous.summary) {
+      if (!this.savedDrafts) this.savedDrafts = new Map();
+      this.savedDrafts.set(`${previous.ownerSessionId}:${previous.ventSessionId}`, previous);
+    }
+    this.setData({ loading: true, sending: false, finishing: false, confirming: false, error: '', ventSessionId: '', ownerSessionId: '', sessionHidden: false, messages: [], input: '', aiTurnsUsed: 0, aiTurnsRemaining: 8, deadlineAt: '', limitReached: false, summary: null, summaryVersion: '', confirmedTaskId: '' });
     await this.start();
+    if (this.restartVersion === restartVersion && !this.data.ventSessionId) {
+      const error = this.data.error;
+      const sessionId = (store.getState().session || {}).sessionId;
+      this.setData({ ...previous, loading: false, sending: false, finishing: false, confirming: false, error,
+        sessionHidden: !!previous.ownerSessionId && previous.ownerSessionId !== sessionId });
+    }
   },
 
   async start() {
     if (this.data.loading === false && this.data.ventSessionId) return;
+    const startVersion = (this.startVersion || 0) + 1;
+    this.startVersion = startVersion;
     this.setData({ loading: true, error: '' });
     try {
-      await ensureGuestSession();
+      const sessionId = await ensureGuestSession();
+      if (this.startVersion !== startVersion) return;
+      this.setData({ ownerSessionId: sessionId });
       const config = store.getState().appConfig || {};
-      const response = await getApiClient().createVentSession({
+      const response = await getSessionBoundClient(sessionId).createVentSession({
         policy_version: config.policy_version,
         confirmed: true
       });
+      if (this.startVersion !== startVersion) return;
+      if ((store.getState().session || {}).sessionId !== sessionId) {
+        this.setData({ loading: false, sessionHidden: true });
+        return;
+      }
       const data = response.data;
       store.setVenting({
         ventSessionId: data.vent_session_id,
@@ -72,7 +97,7 @@ Page({
       this.setData({
         loading: false,
         ventSessionId: data.vent_session_id,
-        ownerSessionId: (store.getState().session || {}).sessionId,
+        ownerSessionId: sessionId,
         version: data.version,
         aiTurnsUsed: data.ai_turns_used,
         aiTurnsRemaining: data.ai_turns_remaining,
@@ -80,7 +105,11 @@ Page({
         deadlineAt: data.deadline_at
       });
     } catch (error) {
-      this.setData({ loading: false, error: friendlyError(error) });
+      if (this.startVersion === startVersion) {
+        const sessionId = (store.getState().session || {}).sessionId;
+        this.setData({ loading: false, error: friendlyError(error),
+          sessionHidden: !!this.data.ownerSessionId && this.data.ownerSessionId !== sessionId });
+      }
     }
   },
 
@@ -100,19 +129,26 @@ Page({
       wx.showToast({ title: '本次倾诉已到停止点', icon: 'none' });
       return;
     }
+    const ventId = this.data.ventSessionId;
+    const owner = this.data.ownerSessionId;
     this.setData({ sending: true, error: '' });
     try {
       const sessionId = await ensureGuestSession();
       if (this.data.ownerSessionId && this.data.ownerSessionId !== sessionId) {
         await this.restart();
+        if (this.data.ownerSessionId !== sessionId || this.data.sessionHidden || !this.data.ventSessionId) return;
         this.setData({ input: text });
-        if (this.data.ventSessionId) await this.send();
+        await this.send();
         return;
       }
-      const response = await getApiClient().createVentTurn(this.data.ventSessionId, {
+      const response = await getSessionBoundClient(sessionId).createVentTurn(ventId, {
         expected_version: this.data.version,
         text
       });
+      if ((store.getState().session || {}).sessionId !== sessionId || this.data.ventSessionId !== ventId) {
+        if (this.data.ventSessionId === ventId) this.setData({ sending: false, sessionHidden: true });
+        return;
+      }
       const data = response.data;
       const messages = this.data.messages.concat([{ role: 'user', text }]);
       if (data.reply) {
@@ -138,21 +174,28 @@ Page({
         }
       });
     } catch (error) {
-      this.setData({ sending: false, error: friendlyError(error) });
+      if (this.data.ventSessionId === ventId && this.data.ownerSessionId === owner) this.setData({ sending: false, error: friendlyError(error) });
     }
   },
 
   async finish() {
     if (this.data.finishing || !this.data.aiTurnsUsed) return;
+    const ventId = this.data.ventSessionId;
+    const owner = this.data.ownerSessionId;
     this.setData({ finishing: true, error: '' });
     try {
-      if (this.data.ownerSessionId !== await ensureGuestSession()) {
+      const sessionId = await ensureGuestSession();
+      if (this.data.ownerSessionId !== sessionId) {
         this.setData({ limitReached: true });
         throw new Error('这次对话已结束，请开始新的倾诉。');
       }
-      const response = await getApiClient().finishVentSession(this.data.ventSessionId, {
+      const response = await getSessionBoundClient(sessionId).finishVentSession(ventId, {
         expected_version: this.data.version
       });
+      if ((store.getState().session || {}).sessionId !== sessionId || this.data.ventSessionId !== ventId) {
+        if (this.data.ventSessionId === ventId) this.setData({ finishing: false, sessionHidden: true });
+        return;
+      }
       const data = response.data;
       const summary = data.summary || {};
       store.patchVenting({
@@ -170,7 +213,7 @@ Page({
         limitReached: true
       });
     } catch (error) {
-      this.setData({ finishing: false, error: friendlyError(error) });
+      if (this.data.ventSessionId === ventId && this.data.ownerSessionId === owner) this.setData({ finishing: false, error: friendlyError(error) });
     }
   },
 
@@ -197,13 +240,16 @@ Page({
 
   async confirmSummary() {
     if (this.data.confirming || !this.data.summary) return;
+    const ventId = this.data.ventSessionId;
+    const owner = this.data.ownerSessionId;
     this.setData({ confirming: true, error: '' });
     try {
-      if (this.data.ownerSessionId !== await ensureGuestSession()) {
+      const sessionId = await ensureGuestSession();
+      if (this.data.ownerSessionId !== sessionId) {
         throw new Error('这次对话已结束，请开始新的倾诉。');
       }
       const summary = this.data.summary;
-      const response = await getApiClient().confirmVentSummary(this.data.ventSessionId, {
+      const response = await getSessionBoundClient(sessionId).confirmVentSummary(ventId, {
         expected_version: this.data.version,
         summary_version: this.data.summaryVersion,
         confirmed: true,
@@ -217,6 +263,10 @@ Page({
           clarity_pre: summary.clarity_pre
         }
       });
+      if ((store.getState().session || {}).sessionId !== sessionId || this.data.ventSessionId !== ventId) {
+        if (this.data.ventSessionId === ventId) this.setData({ confirming: false, sessionHidden: true });
+        return;
+      }
       const data = response.data;
       store.patchVenting({ version: data.version, confirmed: true });
       store.setActiveTask({
@@ -232,7 +282,7 @@ Page({
         confirmedTaskId: data.task_id
       });
     } catch (error) {
-      this.setData({ confirming: false, error: friendlyError(error) });
+      if (this.data.ventSessionId === ventId && this.data.ownerSessionId === owner) this.setData({ confirming: false, error: friendlyError(error) });
     }
   },
 

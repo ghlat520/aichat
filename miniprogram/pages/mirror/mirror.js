@@ -1,5 +1,5 @@
 const { goHome: goPreviewHome } = require('../../app-store');
-const { store, getApiClient, friendlyError, ensureEntryUnlocked } = require('../../app-store');
+const { store, getSessionBoundClient, ensureGuestSession, friendlyError, ensureEntryUnlocked } = require('../../app-store');
 
 const SECTION_LABELS = [
   ['confirmed_event', '已确认事件'],
@@ -19,6 +19,8 @@ Page({
     loading: true,
     submitting: false,
     taskId: '',
+    ownerSessionId: '',
+    sessionHidden: false,
     sections: [],
     evaluations: defaultEvaluations(),
     contentVersion: '',
@@ -27,22 +29,33 @@ Page({
 
   onLoad(query) {
     if (!ensureEntryUnlocked()) return;
+    this.logoutVersion = store.getLogoutVersion();
     const activeTask = store.getState().activeTask || {};
-    this.setData({ taskId: query.taskId || activeTask.taskId || '' });
+    this.setData({ taskId: query.taskId || activeTask.taskId || '', ownerSessionId: (store.getState().session || {}).sessionId || '' });
     if (this.data.taskId) this.loadMirror();
     else this.setData({ loading: false, error: '缺少任务，请先完成六字段' });
   },
 
   onShow() {
     ensureEntryUnlocked();
+    this.setData({ sessionHidden: (this.logoutVersion !== undefined && this.logoutVersion !== store.getLogoutVersion())
+      || (!!this.data.ownerSessionId && this.data.ownerSessionId !== (store.getState().session || {}).sessionId) });
   },
 
   async loadMirror() {
+    const owner = this.data.ownerSessionId || (store.getState().session || {}).sessionId;
+    const logoutVersion = store.getLogoutVersion();
     try {
+      const sessionId = await ensureGuestSession();
+      if ((owner && owner !== sessionId) || logoutVersion !== store.getLogoutVersion()) throw new Error('登录状态已变化，请重试');
+      this.setData({ ownerSessionId: sessionId });
       const activeTask = store.getState().activeTask || {};
-      const response = await getApiClient().createTaskMirror(this.data.taskId, {
+      const response = await getSessionBoundClient(sessionId).createTaskMirror(this.data.taskId, {
         expected_version: activeTask.version
       });
+      if ((store.getState().session || {}).sessionId !== sessionId || logoutVersion !== store.getLogoutVersion()) {
+        this.setData({ sessionHidden: true }); return;
+      }
       const data = response.data || {};
       const mirror = data.mirror || {};
       const sections = SECTION_LABELS.map(([key, label]) => ({
@@ -63,7 +76,8 @@ Page({
         contentVersion: data.content_version
       });
     } catch (error) {
-      this.setData({ loading: false, error: friendlyError(error) });
+      this.setData({ loading: false, error: friendlyError(error),
+        sessionHidden: logoutVersion !== store.getLogoutVersion() || (!!owner && owner !== (store.getState().session || {}).sessionId) });
     }
   },
 
@@ -107,14 +121,21 @@ Page({
         : { accuracy: item.accuracy, correction: item.correction.trim() };
     }
     this.setData({ submitting: true, error: '' });
+    const owner = this.data.ownerSessionId || (store.getState().session || {}).sessionId;
+    const logoutVersion = store.getLogoutVersion();
     try {
+      const sessionId = await ensureGuestSession();
+      if ((owner && owner !== sessionId) || logoutVersion !== store.getLogoutVersion()) throw new Error('登录状态已变化，请重试');
       const activeTask = store.getState().activeTask || {};
-      const response = await getApiClient().confirmTaskMirror(this.data.taskId, {
+      const response = await getSessionBoundClient(sessionId).confirmTaskMirror(this.data.taskId, {
         expected_version: activeTask.version,
         content_version: activeTask.contentVersion || this.data.contentVersion,
         confirmed: true,
         evaluations
       });
+      if ((store.getState().session || {}).sessionId !== sessionId || logoutVersion !== store.getLogoutVersion()) {
+        this.setData({ submitting: false, sessionHidden: true }); return;
+      }
       const data = response.data || {};
       store.patchActiveTask({
         version: data.version,
@@ -122,7 +143,8 @@ Page({
       });
       wx.redirectTo({ url: `/pages/reflection/reflection?taskId=${this.data.taskId}` });
     } catch (error) {
-      this.setData({ submitting: false, error: friendlyError(error) });
+      this.setData({ submitting: false, error: friendlyError(error),
+        sessionHidden: logoutVersion !== store.getLogoutVersion() || (!!owner && owner !== (store.getState().session || {}).sessionId) });
     }
   }
 });

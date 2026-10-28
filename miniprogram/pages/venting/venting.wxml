@@ -6,6 +6,9 @@
     <text class="gk-head-tag">原有入口</text>
   </view>
   <view class="venting-intro"><view class="venting-avatar"><view class="ui-icon ui-icon--chat"></view></view><view><view class="venting-intro-title">一个慢慢说话的地方</view><view class="venting-intro-note">从你愿意说的地方开始</view></view></view>
+  <view wx:if="{{sessionHidden}}" class="aichat-warning">这段对话属于之前的会话，当前身份无法显示。</view>
+  <button wx:if="{{sessionHidden}}" class="gk-quiet" bindtap="restart">开始新的倾诉</button>
+  <block wx:else>
   <view id="venting-loading" wx:if="{{loading}}" class="aichat-muted">正在为你准备一个安静的空间…</view>
   <view id="venting-disabled" wx:if="{{!enabled}}" class="aichat-warning">{{error}}</view>
   <view id="venting-error" wx:if="{{error && enabled}}" class="aichat-warning">{{error}}</view>
@@ -18,7 +21,7 @@
       <button id="venting-restart" wx:if="{{limitReached}}" class="venting-finish" bindtap="restart">开始新的倾诉</button>
     </view>
     <view class="venting-composer">
-      <textarea id="venting-input" class="venting-input" auto-height="true" maxlength="2000" value="{{input}}" bindinput="onInput" disabled="{{limitReached || sending}}" placeholder="从一个具体的小片段开始…" show-confirm-bar="false" aria-label="想说的心事" />
+      <textarea id="venting-input" class="venting-input" auto-height="true" maxlength="2000" value="{{input}}" bindinput="onInput" disabled="{{loading || !ventSessionId || limitReached || sending}}" placeholder="从一个具体的小片段开始…" show-confirm-bar="false" aria-label="想说的心事" />
       <button id="venting-send" class="venting-send" disabled="{{loading || sending || limitReached || !ventSessionId}}" loading="{{sending}}" bindtap="send" aria-label="发送心事">→</button>
     </view>
     <button wx:if="{{error && !ventSessionId}}" class="gk-quiet" bindtap="restart">重新开始</button>
@@ -38,5 +41,6 @@
     <button id="venting-to-mirror" wx:if="{{confirmedTaskId}}" class="aichat-btn" bindtap="goToMirror">继续镜像确认</button>
   </view>
   <button wx:if="{{summary}}" class="aichat-btn aichat-btn--ghost" bindtap="restart">开始新的倾诉</button>
+  </block>
   <view id="venting-bottom"></view>
 </view>

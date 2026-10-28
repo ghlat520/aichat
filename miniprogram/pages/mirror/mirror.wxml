@@ -2,6 +2,8 @@
 <view id="mirror-page" class="container">
   <template is="page-head" data="{{title:'看看这次整理'}}" />
   <view class="ui-page-lede">逐段看看，哪些被理解了，哪些还想修正。</view>
+  <view wx:if="{{sessionHidden}}" class="aichat-warning">这份内容属于之前的会话，当前身份无法显示。</view>
+  <block wx:else>
   <view id="mirror-loading" wx:if="{{loading}}" class="aichat-card aichat-muted">生成镜像中…</view>
   <view id="mirror-error" wx:if="{{error}}" class="aichat-warning">{{error}}</view>
   <view id="mirror-sections" wx:if="{{!loading && sections.length}}" class="aichat-card">
@@ -26,4 +28,5 @@
     </view>
     <button id="mirror-confirm" class="aichat-btn" disabled="{{submitting}}" loading="{{submitting}}" bindtap="confirm">确认五段镜像</button>
   </view>
+  </block>
 </view>

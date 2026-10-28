@@ -1,4 +1,4 @@
-const { store, getApiClient, friendlyError, ensureEntryUnlocked, ensureGuestSession, syncTabBar, goHome } = require('../../app-store');
+const { store, getSessionBoundClient, friendlyError, ensureEntryUnlocked, ensureGuestSession, syncTabBar, goHome } = require('../../app-store');
 const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
 
@@ -37,6 +37,7 @@ Page({
     answeredCount: 0,
     runId: '',
     ownerSessionId: '',
+    sessionHidden: false,
     runVersion: 0,
     result: null,
     mappedTaskId: ''
@@ -55,6 +56,9 @@ Page({
     syncTabBar(this, 1);
     ensureEntryUnlocked();
     if (this.data.mode === 'catalog') this.refreshCatalog();
+    else if (this.data.ownerSessionId) {
+      this.setData({ sessionHidden: this.data.ownerSessionId !== (store.getState().session || {}).sessionId });
+    }
   },
 
   // ===== 自测首页（catalog）=====
@@ -130,9 +134,11 @@ Page({
   },
 
   startRelationship() {
-    this.setData({ mode: 'relationship' });
+    const currentId = (store.getState().session || {}).sessionId;
+    const sessionHidden = !!this.data.ownerSessionId && this.data.ownerSessionId !== currentId;
+    this.setData({ mode: 'relationship', sessionHidden });
     wx.setNavigationBarTitle({ title: '关系清晰卡' });
-    this.enterRelationshipFlow();
+    if (!sessionHidden) this.enterRelationshipFlow();
   },
 
   backToCatalog() {
@@ -152,6 +158,7 @@ Page({
       this.setData({
         loading: false,
         runId: savedAssessment.runId,
+        ownerSessionId: (store.getState().session || {}).sessionId,
         runVersion: savedAssessment.runVersion,
         result: savedAssessment.result,
         mappedTaskId: savedAssessment.mappedTaskId
@@ -173,7 +180,7 @@ Page({
 
   async restart() {
     store.setAssessment(null);
-    this.setData({ loading: true, started: false, submitting: false, error: '', currentIndex: 0, currentAnswer: '', answers: {}, answeredCount: 0, runId: '', result: null, mappedTaskId: '' });
+    this.setData({ loading: true, started: false, submitting: false, sessionHidden: false, ownerSessionId: '', error: '', currentIndex: 0, currentAnswer: '', answers: {}, answeredCount: 0, runId: '', result: null, mappedTaskId: '' });
     await this.loadAssessment();
   },
 
@@ -183,27 +190,35 @@ Page({
   },
 
   async loadAssessment() {
+    const loadVersion = (this.loadVersion || 0) + 1;
+    this.loadVersion = loadVersion;
     try {
-      const client = getApiClient();
+      const sessionId = await ensureGuestSession();
+      if (this.loadVersion !== loadVersion) return;
+      this.setData({ ownerSessionId: sessionId });
+      const client = getSessionBoundClient(sessionId);
       const definition = await client.getCurrentAssessment();
+      if (this.loadVersion !== loadVersion || (store.getState().session || {}).sessionId !== sessionId) return;
       const items = normalizeItems(definition.data && definition.data.items);
       if (items.length < 6 || items.length > 8) {
         throw new Error(`题目数量异常：${items.length}`);
       }
       const definitionVersion = definition.data.definition_version;
       const run = await client.createAssessmentRun({ definition_version: definitionVersion });
+      if (this.loadVersion !== loadVersion || (store.getState().session || {}).sessionId !== sessionId) return;
       this.setData({
         loading: false,
         definitionVersion,
         itemCount: items.length,
         items,
         currentItem: items[0],
-        ownerSessionId: (store.getState().session || {}).sessionId,
+        ownerSessionId: sessionId,
         runId: run.data.run_id,
         runVersion: run.data.version || 1
       });
     } catch (error) {
-      this.setData({ loading: false, error: friendlyError(error) });
+      if (this.loadVersion === loadVersion) this.setData({ loading: false, error: friendlyError(error),
+        sessionHidden: !!this.data.ownerSessionId && this.data.ownerSessionId !== (store.getState().session || {}).sessionId });
     }
   },
 
@@ -227,6 +242,7 @@ Page({
     const optionCode = this.data.currentAnswer;
     if (!item || !optionCode || this.data.submitting) return;
 
+    const runId = this.data.runId;
     this.setData({ submitting: true, error: '' });
     try {
       const sessionId = await ensureGuestSession();
@@ -234,10 +250,11 @@ Page({
         await this.restart();
         return;
       }
-      const answer = await getApiClient().putAssessmentAnswer(this.data.runId, item.item_id, {
+      const answer = await getSessionBoundClient(sessionId).putAssessmentAnswer(runId, item.item_id, {
         expected_version: this.data.runVersion,
         option_code: optionCode
       });
+      if ((store.getState().session || {}).sessionId !== sessionId || this.data.runId !== runId) return;
       const answers = { ...this.data.answers, [item.item_id]: optionCode };
       const runVersion = answer.data.version;
       const isLast = this.data.currentIndex === this.data.items.length - 1;
@@ -258,21 +275,26 @@ Page({
         currentAnswer: answers[nextItem.item_id] || ''
       });
     } catch (error) {
-      this.setData({ submitting: false, error: friendlyError(error) });
+      if (this.data.runId === runId) this.setData({ submitting: false, error: friendlyError(error) });
     }
   },
 
   async completeAndMap(answerVersion, answers) {
+    const owner = this.data.ownerSessionId;
+    const runId = this.data.runId;
+    const isCurrent = () => owner && (store.getState().session || {}).sessionId === owner && this.data.runId === runId;
     try {
-      const client = getApiClient();
-      const completed = await client.completeAssessmentRun(this.data.runId);
+      const client = getSessionBoundClient(owner);
+      const completed = await client.completeAssessmentRun(runId);
+      if (!isCurrent()) return;
       const completedVersion = completed.data.version || answerVersion;
-      const mapped = await client.mapAssessmentToTask(this.data.runId, {
+      const mapped = await client.mapAssessmentToTask(runId, {
         expected_version: completedVersion,
         context: 'family',
         clarity_pre: 3,
         confirmed: true
       });
+      if (!isCurrent()) return;
       const task = mapped.data.task || {};
       store.patchActiveTask({
         taskId: task.task_id,
@@ -296,7 +318,7 @@ Page({
         mappedTaskId: task.task_id || ''
       });
     } catch (error) {
-      this.setData({ submitting: false, error: friendlyError(error) });
+      if (isCurrent()) this.setData({ submitting: false, error: friendlyError(error) });
     }
   },
 

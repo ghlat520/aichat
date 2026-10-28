@@ -7,6 +7,17 @@
     <view class="profile-stat"><view class="profile-stat-value">{{growthStats.reports}}</view><text>个人报告</text></view>
     <view class="profile-stat"><view class="profile-stat-value">{{growthStats.reflections}}</view><text>行动复盘</text></view>
   </view>
+  <view class="gk-card profile-identity-card">
+    <view class="gk-between">
+      <view class="gk-title-sm">微信身份</view>
+      <text class="gk-tag {{identityBound ? '' : 'gk-tag--gray'}}">{{identityLabel}}</text>
+    </view>
+    <view class="gk-small profile-identity-hint">{{identityHint}}</view>
+    <button wx:if="{{!identityBound}}" class="gk-primary" loading="{{identityBusy}}" disabled="{{identityBusy}}" bindtap="bindWechat">微信登录</button>
+    <button wx:else class="gk-quiet" bindtap="logoutWechat">退出登录</button>
+    <view wx:if="{{identityNotice}}" class="gk-notice">{{identityNotice}}</view>
+    <view wx:if="{{identityBound}}" class="ui-quiet-note profile-identity-note">退出仅清除本机登录信息，服务器会话将在到期后自动失效。</view>
+  </view>
   <view class="gk-card profile-growth-card">
     <view class="gk-between">
       <view class="gk-title-sm">我的探索，还在继续</view>

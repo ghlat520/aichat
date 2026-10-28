@@ -125,6 +125,9 @@
   <!-- ===== 原有关系应对轻自测（逻辑不变）===== -->
   <block wx:else>
     <button class="assessment-back-catalog" bindtap="backToCatalog">← 回到自测首页</button>
+    <view wx:if="{{sessionHidden}}" class="aichat-warning">这份结果属于之前的会话，当前身份无法显示。</view>
+    <button wx:if="{{sessionHidden}}" class="gk-quiet" bindtap="restart">开始新的自测</button>
+    <block wx:else>
     <view id="assessment-loading" wx:if="{{loading}}" class="aichat-card aichat-muted">正在准备你的轻自测…</view>
     <view id="assessment-disabled" wx:if="{{!loading && !enabled}}" class="aichat-warning">{{error}}</view>
     <view id="assessment-error" wx:if="{{error && enabled}}" class="aichat-warning">{{error}}</view>
@@ -166,5 +169,6 @@
       <button class="assessment-previous" bindtap="restart">再认识自己一次</button>
       <view wx:if="{{result.boundary_copy}}" class="ui-quiet-note">{{result.boundary_copy}}</view>
     </view>
+    </block>
   </block>
 </view>

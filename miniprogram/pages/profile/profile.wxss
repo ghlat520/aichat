@@ -12,4 +12,8 @@
 .profile-stat-value { display: block; font-size: 44rpx; color: #7984b4; font-weight: 500; margin-bottom: 12rpx; }
 .profile-menu-note { margin-left: auto; font-size: 20rpx; color: var(--ui-muted); }
 .profile-growth-card { margin-top: 24rpx; }
+/* T3：微信身份区 */
+.profile-identity-card { margin-top: 24rpx; }
+.profile-identity-hint { margin: 16rpx 0 8rpx; }
+.profile-identity-note { margin: 8rpx 0 0; }
 .profile-growth-copy { margin: 16rpx 0 8rpx; }

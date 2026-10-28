@@ -2,6 +2,8 @@
 <view id="reflection-page" class="container">
   <template is="page-head" data="{{title:'再靠近自己一点'}}" />
   <view class="ui-page-lede">把事实与未知分开，再留下一步能做的小事。</view>
+  <view wx:if="{{sessionHidden}}" class="aichat-warning">这份内容属于之前的会话，当前身份无法显示。</view>
+  <block wx:else>
 
   <view id="reflection-loading" wx:if="{{loading}}" class="aichat-card aichat-muted">加载中…</view>
   <view id="reflection-round-1" wx:if="{{!loading && !error && round === 1}}" class="aichat-card">
@@ -31,4 +33,5 @@
   </view>
 
   <view id="reflection-error" wx:if="{{error}}" class="aichat-warning">{{error}}</view>
+  </block>
 </view>
