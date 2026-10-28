@@ -6,6 +6,7 @@ import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const core = require('./store-core.js');
+const { createGrowthStore } = require('./growth-store.js');
 const source = readFileSync(new URL('./app-store.js', import.meta.url), 'utf8');
 
 function app({ expired = true, refreshRejected = false, refreshUnavailable = false, fresh = false, noConfig = false } = {}) {
@@ -14,6 +15,7 @@ function app({ expired = true, refreshRejected = false, refreshUnavailable = fal
   const consent = { policyVersion: 'policy-current', adultConfirmed: true, acceptedAt: 1 };
   const storage = new Map(fresh ? [] : [[core.STORAGE_KEY, JSON.stringify({ session, consent })]]);
   const wx = { getStorageSync: k => storage.get(k), setStorageSync: (k, v) => storage.set(k, v), removeStorageSync: k => storage.delete(k) };
+  const growth = createGrowthStore(wx);
   class ApiClientError extends Error {
     constructor(status, code) { super('需要有效身份凭证'); this.status = status; this.apiError = { code, message: this.message }; }
   }
@@ -24,7 +26,7 @@ function app({ expired = true, refreshRejected = false, refreshUnavailable = fal
       calls.push('refresh');
       if (refreshRejected) throw new ApiClientError(401);
       if (refreshUnavailable) throw new ApiClientError(501, 'API_NOT_IMPLEMENTED');
-      return { data: { session_id: 'visitor-old', access_token: 'fresh-access', refresh_token: 'fresh-refresh', auth_level: 'Visitor', expires_at: '2099-01-01T00:00:00Z' } };
+      return { data: { session_id: 'visitor-old', access_token: 'fresh-access', refresh_token: 'fresh-refresh', auth_level: 'Visitor', expires_at: '2099-01-01T00:00:00Z', status: 'ACTIVE' } };
     }
     async createVisitorSession() {
       calls.push('create');
@@ -50,6 +52,7 @@ function app({ expired = true, refreshRejected = false, refreshUnavailable = fal
   }
   const context = { wx, module: { exports: {} }, setTimeout, require(name) {
     if (name === './store-core') return core;
+    if (name === './growth-store') return { getGrowth: () => growth };
     if (name === './services/api/generated/client') return { AiChatApiClient: Client, ApiClientError };
     if (name === './services/api/wx-transport') return { WxTransport: class {} };
     throw new Error('Unexpected dependency: ' + name);
@@ -115,12 +118,12 @@ for (const expired of [false, true]) {
   });
 }
 
-test('当前后端续期接口未实现时，直接进入说一说自动建立新匿名会话', async () => {
+test('续期接口非 401 失败（如 501）时，直接进入说一说展示错误，不静默降级新建匿名会话', async () => {
   const { api, calls, ventingPage } = app({ refreshUnavailable: true, noConfig: true });
   const page = ventingPage();
   await page.start();
-  assert.equal(page.data.error, '');
-  assert.equal(page.data.ventSessionId, 'vent-new');
-  assert.equal(api.store.getState().session.sessionId, 'visitor-new');
-  assert.deepEqual(calls, ['config', 'refresh', 'create', 'consent', 'vent']);
+  assert.equal(page.data.error, '需要有效身份凭证');
+  assert.equal(page.data.ventSessionId, '');
+  assert.equal(api.store.getState().session.sessionId, 'visitor-old');
+  assert.deepEqual(calls, ['config', 'refresh']);
 });

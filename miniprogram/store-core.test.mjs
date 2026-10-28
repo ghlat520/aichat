@@ -72,6 +72,23 @@ test('clearAuth 清空 + storage 清除', () => {
   assert.equal(store.isEntryUnlocked(), true);
 });
 
+test('退出与切换会话隐藏原会话临时内容，但不销毁原草稿', () => {
+  const store = createStore(memWx());
+  const original = { sessionId: 's-old', accessToken: 'old' };
+  store.setSession(original);
+  store.setActiveTask({ taskId: 'private-task', fields: { observed_fact: '原会话的草稿' } });
+  store.setVenting({ ventSessionId: 'private-vent', rawMessages: ['原会话内容'] });
+  store.clearSession();
+  assert.equal(store.getState().activeTask, null);
+  assert.equal(store.getState().venting, null);
+  store.setSession({ sessionId: 's-new', accessToken: 'new' });
+  assert.equal(store.getState().activeTask, null);
+  store.setActiveTask({ taskId: 'new-task' });
+  store.setSession(original);
+  assert.equal(store.getState().activeTask.fields.observed_fact, '原会话的草稿');
+  assert.equal(store.getState().venting.rawMessages[0], '原会话内容');
+});
+
 test('hydrate 恢复 session+consent，但业务临时态不恢复', () => {
   const wx = memWx();
   let store = createStore(wx);

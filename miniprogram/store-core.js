@@ -6,6 +6,8 @@
 const STORAGE_KEY = 'aichat_state_v1';
 
 function createStore(wxLike) {
+  let logoutVersion = 0;
+  const sessionDrafts = new Map();
   let state = {
     session: null,
     consent: null,
@@ -25,6 +27,32 @@ function createStore(wxLike) {
     } catch (e) {
       // 静默失败
     }
+  }
+
+  function persistSession(session) {
+    try {
+      wxLike.setStorageSync(STORAGE_KEY, JSON.stringify({ session, consent: state.consent }));
+    } catch (error) {
+      throw new Error('本机存储不可用，登录状态未保存，请重试');
+    }
+  }
+
+  function sessionKey(session) {
+    return session && session.sessionId ? `session:${session.sessionId}` : `local:${logoutVersion}`;
+  }
+
+  function switchSession(session, logout = false) {
+    const previousKey = sessionKey(state.session);
+    if (logout) logoutVersion++;
+    const nextKey = sessionKey(session);
+    if (previousKey === nextKey) {
+      state = { ...state, session };
+      return;
+    }
+    const { assessment, activeTask, venting, moodCheckin } = state;
+    sessionDrafts.set(previousKey, { assessment, activeTask, venting, moodCheckin });
+    const restored = sessionDrafts.get(nextKey) || { assessment: null, activeTask: null, venting: null, moodCheckin: null };
+    state = { ...state, session, ...restored };
   }
 
   return {
@@ -57,8 +85,13 @@ function createStore(wxLike) {
     },
 
     getState() { return state; },
+    getLogoutVersion() { return logoutVersion; },
 
-    setSession(session) { state = { ...state, session }; persist(); },
+    setSession(session) { persistSession(session); switchSession(session); },
+    clearSession() {
+      persistSession(null);
+      switchSession(null, true);
+    },
     setConsent(consent) { state = { ...state, consent }; persist(); },
     setAppConfig(appConfig) { state = { ...state, appConfig }; },
     setAssessment(assessment) { state = { ...state, assessment }; /* 不 persist */ },

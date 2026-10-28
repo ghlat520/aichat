@@ -25,6 +25,7 @@ const storedTokenProvider = {
 let apiClient = null;
 let sessionClient = null;
 let sessionRecovery = null;
+let apiOptions = null;
 
 function sessionFromResponse(data) {
   return {
@@ -56,31 +57,84 @@ async function ensureAppConfig() {
   return config;
 }
 
+function requireCurrentSession(session) {
+  if (store.getState().session !== session) throw new Error('登录状态已变化，请重试');
+}
+
+function resetIdentityDisplay() {
+  const growth = require('./growth-store').getGrowth();
+  growth.patch({ bound: false, paid: false, careerPaid: false,
+    payment: growth.get().order ? 'pending' : 'none', paymentNotice: '' });
+}
+
+async function finishPendingConsent(session) {
+  const config = await ensureAppConfig();
+  requireCurrentSession(session);
+  let consent = store.getState().consent;
+  if (!consent || !consent.adultConfirmed || !consent.acceptedAt || consent.policyVersion !== config.policy_version) {
+    const confirmed = await new Promise((resolve, reject) => wx.showModal({
+      title: '确认后继续',
+      content: '当前会话尚未完成确认。请确认已年满 18 周岁，并同意当前版本的隐私政策（' + config.policy_version + '）。',
+      confirmText: '同意继续',
+      cancelText: '暂不',
+      success: result => resolve(!!result.confirm),
+      fail: () => reject(new Error('无法打开确认窗口，请重试'))
+    }));
+    requireCurrentSession(session);
+    if (!confirmed) throw new Error('尚未确认当前政策，无法恢复会话');
+    consent = { policyVersion: config.policy_version, adultConfirmed: true, acceptedAt: Date.now() };
+    store.setConsent(consent);
+  }
+  await sessionClient.recordConsent(session.sessionId, {
+    policy_version: consent.policyVersion,
+    adult_confirmed: true,
+    accepted: true
+  });
+  requireCurrentSession(session);
+  store.setSession({ ...session, status: 'ACTIVE' });
+}
+
 async function recoverGuestSession() {
   const previous = store.getState();
+  if (previous.session && previous.session.status === 'PENDING_CONSENT'
+      && Number.isFinite(Date.parse(previous.session.expiresAt)) && Date.parse(previous.session.expiresAt) > Date.now()) {
+    await finishPendingConsent(previous.session);
+    return;
+  }
   if (previous.session && previous.session.refreshToken) {
+    let refreshed;
     try {
-      const refreshed = await sessionClient.refreshSessionToken();
-      store.setSession(sessionFromResponse(refreshed.data));
-      return;
+      refreshed = await sessionClient.refreshSessionToken();
+      requireCurrentSession(previous.session);
     } catch (error) {
-      // 当前服务的续期端点仍是契约占位；使用已接入的匿名会话创建路径。
-      const unsupported = error instanceof ApiClientError && error.status === 501 && error.apiError.code === 'API_NOT_IMPLEMENTED';
-      if (!(error instanceof ApiClientError) || (error.status !== 401 && !unsupported)) throw error;
+      requireCurrentSession(previous.session);
+      // 服务端 refresh 已实装：仅 401（REVOKED/未知 refresh token）降级新建匿名会话，
+      // 其余失败（5xx/网络/未预期状态码）原样上抛，避免把真实故障误吞成身份降级。
+      if (!(error instanceof ApiClientError) || error.status !== 401) throw error;
+    }
+    if (refreshed) {
+      const session = sessionFromResponse(refreshed.data);
+      store.setSession(session);
+      if (session.status === 'PENDING_CONSENT') await finishPendingConsent(session);
+      return;
     }
   }
   const config = await ensureAppConfig();
+  requireCurrentSession(previous.session);
   const created = await sessionClient.createVisitorSession({ client_instance_id: getClientInstanceId() });
+  requireCurrentSession(previous.session);
   const session = sessionFromResponse(created.data);
   store.setSession(session);
+  resetIdentityDisplay();
   try {
     await sessionClient.recordConsent(session.sessionId, {
       policy_version: config.policy_version,
       adult_confirmed: true,
       accepted: true
     });
+    requireCurrentSession(session);
   } catch (error) {
-    store.setSession(previous.session);
+    if (store.getState().session === session) store.setSession(previous.session);
     throw error;
   }
   store.setSession({ ...session, status: 'ACTIVE' });
@@ -94,7 +148,8 @@ const tokenProvider = {
   async getIdentity() {
     if (sessionRecovery) await sessionRecovery;
     const session = store.getState().session;
-    if (!session || !session.accessToken || !Number.isFinite(Date.parse(session.expiresAt)) || Date.parse(session.expiresAt) <= Date.now()) {
+    if (!session || !session.accessToken || session.status === 'PENDING_CONSENT'
+        || !Number.isFinite(Date.parse(session.expiresAt)) || Date.parse(session.expiresAt) <= Date.now()) {
       if (!sessionRecovery) {
         sessionRecovery = recoverGuestSession().finally(() => { sessionRecovery = null; });
       }
@@ -111,6 +166,7 @@ function initApiClient(apiBaseUrl, wxApi) {
     transport: new WxTransport(wxApi),
     idempotencyKeyFactory: () => 'mp-' + Date.now() + '-' + Math.random().toString(36).slice(2, 12)
   };
+  apiOptions = options;
   // 会话恢复自身使用原始 provider，避免确认匿名会话时等待自己。
   sessionClient = new AiChatApiClient({ ...options, tokenProvider: storedTokenProvider });
   apiClient = new AiChatApiClient({ ...options, tokenProvider });
@@ -121,9 +177,33 @@ function getApiClient() {
   return apiClient;
 }
 
+function getSessionBoundClient(sessionId) {
+  const requireOwner = () => {
+    if (!sessionId || (store.getState().session || {}).sessionId !== sessionId) {
+      throw new Error('登录状态已变化，请重试');
+    }
+  };
+  if (!apiOptions) throw new Error('服务尚未初始化');
+  return new AiChatApiClient({ ...apiOptions, tokenProvider: {
+    async getIdentity() {
+      requireOwner();
+      const identity = await tokenProvider.getIdentity();
+      requireOwner();
+      return identity;
+    },
+    async getRefreshToken() {
+      requireOwner();
+      return storedTokenProvider.getRefreshToken();
+    }
+  } });
+}
+
 async function ensureGuestSession() {
+  const logoutVersion = store.getLogoutVersion();
   await ensureAppConfig();
+  if (store.getLogoutVersion() !== logoutVersion) throw new Error('登录状态已变化，请重试');
   await tokenProvider.getIdentity();
+  if (store.getLogoutVersion() !== logoutVersion) throw new Error('登录状态已变化，请重试');
   return (store.getState().session || {}).sessionId;
 }
 
@@ -163,9 +243,11 @@ module.exports = {
   store,
   initApiClient,
   getApiClient,
+  getSessionBoundClient,
   ensureGuestSession,
   getClientInstanceId,
   sessionFromResponse,
+  resetIdentityDisplay,
   syncTabBar,
   goHome,
   ApiClientError,
