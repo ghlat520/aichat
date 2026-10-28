@@ -62,7 +62,8 @@ public final class DatabaseSubjectResolver implements SubjectResolver {
         if (session == null || "REVOKED".equals(session.status())) return Optional.empty();
 
         boolean consentEndpoint = request.getRequestURI().matches("/api/v1/sessions/[^/]+/consents");
-        if (!"ACTIVE".equals(session.status()) && !consentEndpoint) return Optional.empty();
+        // PENDING_CONSENT 会话只允许触达同意录入与令牌续期，其余接口仍要求 ACTIVE。
+        if (!"ACTIVE".equals(session.status()) && !consentEndpoint && !refreshRequest) return Optional.empty();
         AuthLevel level = payments.binding(session.id()) == null ? AuthLevel.VISITOR : AuthLevel.PRINCIPAL;
         return Optional.of(new AuthenticatedSubject(session.id(), level, Set.of(), false));
     }

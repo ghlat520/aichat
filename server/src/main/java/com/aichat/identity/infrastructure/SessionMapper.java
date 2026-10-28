@@ -98,6 +98,18 @@ public interface SessionMapper {
             """)
     int activateSession(@Param("sessionId") String sessionId, @Param("updatedAt") LocalDateTime updatedAt);
 
+    @Update("""
+            UPDATE id_visitor_session
+               SET access_expires_at = #{accessExpiresAt}, updated_at = #{updatedAt}
+             WHERE id = #{sessionId}
+               AND status <> 'REVOKED'
+            """)
+    int extendSessionAccess(
+            @Param("sessionId") String sessionId,
+            @Param("accessExpiresAt") LocalDateTime accessExpiresAt,
+            @Param("updatedAt") LocalDateTime updatedAt
+    );
+
     record SessionRecord(
             String id,
             String clientInstanceHash,

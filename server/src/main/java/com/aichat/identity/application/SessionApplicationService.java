@@ -10,6 +10,7 @@ import com.aichat.kernel.api.ApiCallContext;
 import com.aichat.kernel.api.ApiEnvelope;
 import com.aichat.kernel.api.ApiException;
 import com.aichat.kernel.api.IdempotencyKeys;
+import com.aichat.kernel.auth.AuthLevel;
 import com.aichat.kernel.identity.UlidGenerator;
 import com.aichat.kernel.security.Sha256Fingerprints;
 import com.aichat.payment.application.VirtualPaymentApplicationService;
@@ -29,6 +30,7 @@ import java.util.Objects;
 @Service
 public final class SessionApplicationService implements IdentityApiDelegate {
     private static final String CREATE_SESSION_SCOPE = "identity:create-session";
+    private static final String REFRESH_TOKEN_SCOPE = "identity:refresh-token";
     private static final Duration ACCESS_TTL = Duration.ofHours(2);
     private static final Duration REFRESH_TTL = Duration.ofDays(30);
     private static final Duration IDEMPOTENCY_TTL = Duration.ofHours(24);
@@ -80,10 +82,10 @@ public final class SessionApplicationService implements IdentityApiDelegate {
         try {
             SessionRecord session = transactions.execute(status ->
                     createOrReplaySession(keyHash, requestHash, request.clientInstanceId(), deviceClass));
-            return ApiEnvelope.success(context.requestId(), sessionResponse(session));
+            return ApiEnvelope.success(context.requestId(), sessionResponse(session, "Visitor"));
         } catch (DataIntegrityViolationException concurrentDuplicate) {
             SessionRecord session = transactions.execute(status -> replaySession(keyHash, requestHash));
-            return ApiEnvelope.success(context.requestId(), sessionResponse(session));
+            return ApiEnvelope.success(context.requestId(), sessionResponse(session, "Visitor"));
         }
     }
 
@@ -108,6 +110,23 @@ public final class SessionApplicationService implements IdentityApiDelegate {
         } catch (DataIntegrityViolationException concurrentDuplicate) {
             ConsentRecord consent = transactions.execute(status -> replayConsent(sessionId, keyHash, request));
             return ApiEnvelope.success(context.requestId(), consentResponse(consent));
+        }
+    }
+
+    @Override
+    public ApiEnvelope<Map<String, Object>> refreshSessionToken(ApiCallContext context, String idempotencyKey) {
+        IdempotencyKeys.requireValid(idempotencyKey);
+        String sessionId = context.requireSubject().subjectId();
+        String keyHash = Sha256Fingerprints.hash(idempotencyKey);
+        String requestHash = Sha256Fingerprints.canonicalRequest(REFRESH_TOKEN_SCOPE, sessionId);
+
+        try {
+            SessionRecord session = transactions.execute(status ->
+                    refreshOrReplaySession(sessionId, keyHash, requestHash));
+            return ApiEnvelope.success(context.requestId(), sessionResponse(session, authLevel(context)));
+        } catch (DataIntegrityViolationException concurrentDuplicate) {
+            SessionRecord session = transactions.execute(status -> replayRefresh(sessionId, keyHash, requestHash));
+            return ApiEnvelope.success(context.requestId(), sessionResponse(session, authLevel(context)));
         }
     }
 
@@ -240,13 +259,73 @@ public final class SessionApplicationService implements IdentityApiDelegate {
         return existing;
     }
 
-    private Map<String, Object> sessionResponse(SessionRecord session) {
+    private SessionRecord refreshOrReplaySession(String sessionId, String keyHash, String requestHash) {
+        CommandRecord existing = mapper.findCommand(REFRESH_TOKEN_SCOPE, keyHash);
+        if (existing != null) return replayedRefreshSession(existing, requestHash);
+
+        SessionRecord session = requireRefreshableSession(sessionId);
+        LocalDateTime now = now();
+        if (mapper.extendSessionAccess(sessionId, now.plus(ACCESS_TTL), now) != 1) {
+            throw authenticationRequired();
+        }
+        mapper.insertCommand(new CommandRecord(
+                REFRESH_TOKEN_SCOPE,
+                keyHash,
+                requestHash,
+                sessionId,
+                now,
+                now.plus(IDEMPOTENCY_TTL)
+        ));
+        return requireRefreshableSession(sessionId);
+    }
+
+    private SessionRecord replayRefresh(String sessionId, String keyHash, String requestHash) {
+        CommandRecord command = mapper.findCommand(REFRESH_TOKEN_SCOPE, keyHash);
+        if (command == null) {
+            throw new ApiException(
+                    HttpStatus.CONFLICT,
+                    "IDEMPOTENCY_CONFLICT",
+                    "相同幂等请求正在处理，请安全重试",
+                    true,
+                    Map.of()
+            );
+        }
+        return replayedRefreshSession(command, requestHash);
+    }
+
+    private SessionRecord replayedRefreshSession(CommandRecord command, String requestHash) {
+        if (!Objects.equals(command.requestHash(), requestHash)) {
+            throw new ApiException(HttpStatus.CONFLICT, "IDEMPOTENCY_KEY_REUSED", "幂等键已用于不同请求");
+        }
+        return requireRefreshableSession(command.resourceId());
+    }
+
+    private SessionRecord requireRefreshableSession(String sessionId) {
+        SessionRecord session = mapper.findSessionById(sessionId);
+        if (session == null || "REVOKED".equals(session.status())) {
+            throw authenticationRequired();
+        }
+        return session;
+    }
+
+    private ApiException authenticationRequired() {
+        return new ApiException(HttpStatus.UNAUTHORIZED, "AUTHENTICATION_REQUIRED", "需要有效身份凭证");
+    }
+
+    /**
+     * 复用 DatabaseSubjectResolver 的绑定判定：已绑微信的会话续期后仍保持 Principal。
+     */
+    private String authLevel(ApiCallContext context) {
+        return context.requireSubject().level() == AuthLevel.PRINCIPAL ? "Principal" : "Visitor";
+    }
+
+    private Map<String, Object> sessionResponse(SessionRecord session, String authLevel) {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("session_id", session.id());
         data.put("access_token", tokens.accessToken(session.id()));
         data.put("refresh_token", tokens.refreshToken(session.id()));
         data.put("token_type", "Bearer");
-        data.put("auth_level", "Visitor");
+        data.put("auth_level", authLevel);
         data.put("status", session.status());
         data.put("expires_at", session.accessExpiresAt().atOffset(ZoneOffset.UTC).toString());
         return Map.copyOf(data);
