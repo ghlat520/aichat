@@ -19,8 +19,9 @@
   </view>
 
   <view wx:if="{{notice}}" class="gk-notice">{{notice}}</view>
+  <button wx:if="{{canRestore}}" class="gk-quiet" disabled="{{busy}}" loading="{{busy}}" bindtap="restorePaid">微信登录并恢复</button>
   <button wx:if="{{payment === 'success'}}" class="gk-primary" bindtap="viewReport">查看我的完整报告</button>
-  <button wx:if="{{payment !== 'success'}}" class="gk-primary" disabled="{{busy}}" loading="{{busy}}" bindtap="queryOrder">查询这笔订单</button>
+  <button wx:if="{{payment !== 'success' && hasOrder}}" class="gk-primary" disabled="{{busy}}" loading="{{busy}}" bindtap="queryOrder">查询这笔订单</button>
   <button wx:if="{{canResume}}" class="gk-secondary" bindtap="backToCheckout">返回购买确认</button>
   <button wx:if="{{payment === 'delivery'}}" class="gk-primary" bindtap="goOrder">查看交付与售后进度</button>
   <button wx:if="{{payment === 'cancel' || payment === 'failed'}}" class="gk-primary" bindtap="backToCheckout">返回购买确认</button>

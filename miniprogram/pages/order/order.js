@@ -9,6 +9,7 @@ Page({
   onShow() { syncTabBar(this, 3); this.refresh(); },
   async refresh() {
     const order = getGrowth().get().order;
+    this.setData({ hasGrowthOrder: false, orders: [], statusLabel: '', deliveryText: '', nextCursor: null });
     if (order && order.id) {
       try { await getVirtualPayment().getOrder(order.id); this.render(); }
       catch (error) { this.setData({ notice: friendlyError(error) }); }
@@ -32,12 +33,16 @@ Page({
   },
   async restoreOrders() {
     if (this.data.busy) return;
+    const originalId = (getGrowth().get().order || {}).id || '';
     this.setData({ busy: true });
     try {
-      await getVirtualPayment().bind();
+      await getVirtualPayment().bind('cross_device_recovery');
+      if (((getGrowth().get().order || {}).id || '') !== originalId) throw new Error('订单已变化，请重新选择订单');
       const result = await getVirtualPayment().list();
+      if (((getGrowth().get().order || {}).id || '') !== originalId) throw new Error('订单已变化，请重新选择订单');
       this.setData({ orders: this.rows(result.items), nextCursor: result.next_cursor, notice: '' });
-      if (result.items.length) { getGrowth().applyServerOrder(result.items[0]); this.render(); }
+      if (originalId) { await getVirtualPayment().getOrder(originalId); this.render(); }
+      else if (result.items.length === 1 && !result.next_cursor) { getGrowth().applyServerOrder(result.items[0]); this.render(); }
     } catch (error) { this.setData({ notice: friendlyError(error) }); }
     finally { this.setData({ busy: false }); }
   },
@@ -47,6 +52,7 @@ Page({
     catch (error) { this.setData({ notice: friendlyError(error) }); }
   },
   async selectOrder(event) {
+    if (this.data.busy) return;
     try { await getVirtualPayment().getOrder(event.currentTarget.dataset.id); this.render(); }
     catch (error) { this.setData({ notice: friendlyError(error) }); }
   },

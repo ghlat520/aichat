@@ -5,7 +5,7 @@
   <view wx:if="{{notice}}" class="gk-notice">{{notice}}</view>
   <button class="gk-secondary" loading="{{busy}}" disabled="{{busy}}" bindtap="restoreOrders">微信登录并恢复订单</button>
   <view wx:for="{{orders}}" wx:key="order_id" class="gk-card">
-    <button class="gk-text-link" data-id="{{item.order_id}}" bindtap="selectOrder">{{item.label}} · ¥{{item.amount}} · {{item.order_id}}</button>
+    <button class="gk-text-link" disabled="{{busy}}" data-id="{{item.order_id}}" bindtap="selectOrder">{{item.label}} · ¥{{item.amount}} · {{item.order_id}}</button>
   </view>
   <button wx:if="{{nextCursor}}" class="gk-quiet" bindtap="moreOrders">更多订单</button>
   <block wx:if="{{hasGrowthOrder}}">

@@ -4,12 +4,13 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { createVirtualPayment } = require('./services/virtual-payment.js');
 const { createGrowthStore } = require('./growth-store.js');
+const { createStore } = require('./store-core.js');
 const { maskPiiDeep } = require('./services/api/privacy-mask.js');
 
 function setup(changes = {}) {
   const saved = {};
   const growth = createGrowthStore({ getStorageSync: k => saved[k], setStorageSync: (k, v) => { saved[k] = v; } });
-  let session = { accessToken: 'test', level: 'Visitor' };
+  let session = { sessionId: 'visitor-test', accessToken: 'test', level: 'Visitor' };
   const calls = [];
   const order = { order_id: '01M00000000000000000000000', sku: 'base', price_fen: 2990,
     payment_state: 'PENDING', refund_state: 'NONE', entitlement_state: 'NONE', refunded_fen: 0 };
@@ -32,12 +33,97 @@ function setup(changes = {}) {
     ...changes.wx
   };
   const payment = createVirtualPayment({ wxApi, api, state: { accept: growth.applyServerOrder,
+    selectedOrderId: () => (growth.get().order || {}).id || '',
     bound: () => growth.patch({ bound: true }), notice: message => growth.patch({ paymentNotice: message }),
     pending: message => growth.patch({ payment: 'pending', paymentNotice: message }), preparationKey: growth.paymentPreparationKey },
-    loadEntitlement: id => api.getPurchasedGrowthSnapshot(id), ensureSession: async () => {},
+    loadEntitlement: id => api.getPurchasedGrowthSnapshot(id), ensureSession: async () => (session || {}).sessionId,
     getSession: () => session, setSession: value => { session = value; } });
-  return { payment, growth, order, quote, calls, saved, session: () => session };
+  return { payment, growth, order, quote, calls, saved, session: () => session, replaceSession: value => { session = value; } };
 }
+
+test('退出后迟到的微信绑定响应不会恢复身份或标记已绑定', async () => {
+  let release, markStarted;
+  const pending = new Promise(resolve => { release = resolve; });
+  const started = new Promise(resolve => { markStarted = resolve; });
+  const f = setup({ api: { bindWechatIdentity: async () => { markStarted(); await pending; return { data: { bound: true } }; } } });
+  const binding = f.payment.bind('cross_device_recovery');
+  await started;
+  f.replaceSession(null);
+  release();
+  await assert.rejects(binding, /登录状态已变化/);
+  assert.equal(f.session(), null);
+  assert.equal(f.growth.get().bound, false);
+});
+
+test('退出后迟到的订单读取不会重新显示原身份的权益', async () => {
+  let release, markStarted;
+  const pending = new Promise(resolve => { release = resolve; });
+  const started = new Promise(resolve => { markStarted = resolve; });
+  const f = setup({ api: { getVirtualOrder: async () => {
+    markStarted(); await pending;
+    return { data: { order_id: 'old', sku: 'base', price_fen: 2990, payment_state: 'PAID',
+      entitlement_state: 'ACTIVE', refund_state: 'NONE', refunded_fen: 0 } };
+  } } });
+  const reading = f.payment.getOrder('old');
+  await started;
+  f.replaceSession(null);
+  release();
+  await assert.rejects(reading, /登录状态已变化/);
+  assert.equal(f.growth.canReadBase(), false);
+});
+
+test('在途订单读取不会覆盖后来选择的另一笔订单', async () => {
+  let release, markStarted;
+  const pending = new Promise(resolve => { release = resolve; });
+  const started = new Promise(resolve => { markStarted = resolve; });
+  const f = setup({ api: { getVirtualOrder: async () => { markStarted(); await pending;
+    return { data: { order_id: 'old', sku: 'base', price_fen: 2990, payment_state: 'PENDING',
+      entitlement_state: 'NONE', refund_state: 'NONE', refunded_fen: 0 } }; } } });
+  const reading = f.payment.getOrder('old');
+  await started;
+  f.growth.applyServerOrder({ order_id: 'new', sku: 'base', price_fen: 2990, payment_state: 'PENDING',
+    entitlement_state: 'NONE', refund_state: 'NONE', refunded_fen: 0 });
+  release();
+  await assert.rejects(reading, /订单已变化/);
+  assert.equal(f.growth.get().order.id, 'new');
+});
+
+test('退出期间支付准备返回后不会打开微信支付', async () => {
+  let release, markStarted;
+  const pending = new Promise(resolve => { release = resolve; });
+  const started = new Promise(resolve => { markStarted = resolve; });
+  const f = setup({ api: { prepareVirtualPayment: async () => {
+    markStarted(); await pending;
+    return { data: { mode: 'short_series_goods', signData: '{}', paySig: 'fake', signature: 'fake' } };
+  } } });
+  const purchase = f.payment.purchase({ product: 'base', snapshot: {}, quote: f.quote });
+  await started;
+  f.replaceSession(null);
+  release();
+  await assert.rejects(purchase, /登录状态已变化/);
+  assert.equal(f.calls.some(call => call[0] === 'native'), false);
+});
+
+test('微信绑定后无法保存会话时不报告持久化登录成功', async () => {
+  const data = new Map();
+  let blocked = false;
+  const wxApi = { getStorageSync: key => data.get(key),
+    setStorageSync: (key, value) => { if (blocked) throw new Error('storage unavailable'); data.set(key, value); },
+    login: options => options.success({ code: 'mock-login' }) };
+  const store = createStore(wxApi);
+  store.setSession({ sessionId: 'visitor', accessToken: 'token', level: 'Visitor' });
+  let bound = false;
+  const payment = createVirtualPayment({ wxApi, api: { bindWechatIdentity: async () => ({ data: { bound: true } }) },
+    state: { bound: () => { bound = true; } }, ensureSession: async () => 'visitor',
+    getSession: () => store.getState().session, setSession: session => store.setSession(session) });
+  blocked = true;
+  await assert.rejects(payment.bind('cross_device_recovery'), /本机存储/);
+  const restarted = createStore(wxApi);
+  restarted.hydrate();
+  assert.equal(store.getState().session.level, 'Visitor');
+  assert.equal(restarted.getState().session.level, 'Visitor');
+  assert.equal(bound, false);
+});
 
 test('native success alone keeps the report locked and queries only the original order', async () => {
   const f = setup();
@@ -48,6 +134,29 @@ test('native success alone keeps the report locked and queries only the original
   assert.equal(f.calls.find(c => c[0] === 'query')[1], f.order.order_id);
   assert.equal(f.session().level, 'Principal');
   assert.equal(f.calls.find(c => c[0] === 'bind')[1].login_code, 'code_13800138000_preserve_exact');
+});
+
+test('bind forwards the caller purpose and keeps payment as the default', async () => {
+  const f = setup();
+  await f.payment.bind('cross_device_recovery');
+  await f.payment.bind();
+  assert.deepEqual(f.calls.filter(c => c[0] === 'bind').map(c => c[1].purpose), ['cross_device_recovery', 'payment']);
+});
+
+test('a Principal session skips the redundant internal bind during purchase', async () => {
+  const f = setup();
+  await f.payment.bind();
+  f.calls.length = 0;
+  await f.payment.purchase({ product: 'base', snapshot: {}, quote: f.quote });
+  assert.equal(f.calls.some(c => c[0] === 'bind'), false);
+  assert.equal(f.calls.filter(c => c[0] === 'native').length, 1);
+  assert.equal(f.session().level, 'Principal');
+});
+
+test('a Visitor session still binds exactly once inside purchase', async () => {
+  const f = setup();
+  await f.payment.purchase({ product: 'base', snapshot: {}, quote: f.quote });
+  assert.equal(f.calls.filter(c => c[0] === 'bind').length, 1);
 });
 
 test('query failure keeps the original order and never reports success or retries native payment', async () => {

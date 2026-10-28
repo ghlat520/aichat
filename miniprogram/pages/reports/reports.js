@@ -64,7 +64,7 @@ Page({
   async morePaid() { if (this.data.nextCursor) await this.loadPaid(this.data.nextCursor); },
 
   async restorePaid() {
-    try { await getVirtualPayment().bind(); await this.loadPaid(); }
+    try { await getVirtualPayment().bind('cross_device_recovery'); await this.loadPaid(); }
     catch (error) { this.setData({ notice: friendlyError(error) }); }
   },
 

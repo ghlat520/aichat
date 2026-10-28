@@ -5,29 +5,58 @@ const CONTENT = require('../../growth-content');
 
 Page({
   data: { payment: 'pending', view: CONTENT.PAYMENT_STATES.pending, descLines: [], productLabel: '',
-    upgradeLabel: '本次金额', amount: '--', orderId: '', deliveryText: '付款确认后解锁', notice: '', busy: false, canResume: false },
+    upgradeLabel: '本次金额', amount: '--', orderId: '', deliveryText: '付款确认后解锁', notice: '', busy: false, canResume: false, canRestore: false, hasOrder: false },
   async onShow() {
     const order = getGrowth().get().order;
-    if (!order || !order.id) { wx.redirectTo({ url: '/pages/reports/reports' }); return; }
-    this.setData({ payment: 'pending', view: CONTENT.PAYMENT_STATES.pending, canResume: false });
+    if (!order || !order.id) {
+      this.setData({ payment: 'pending', view: CONTENT.PAYMENT_STATES.pending, canResume: false, canRestore: true, hasOrder: false,
+        orderId: '', productLabel: '', amount: '--',
+        descLines: CONTENT.PAYMENT_STATES.pending.desc.split('\n'), notice: '微信登录后可恢复原订单。' });
+      return;
+    }
+    this.setData({ payment: 'pending', view: CONTENT.PAYMENT_STATES.pending, canResume: false, canRestore: false,
+      hasOrder: true, orderId: order.id, productLabel: '', amount: '--', deliveryText: '订单状态待确认', notice: '' });
     try { await getVirtualPayment().getOrder(order.id); this.refresh(); }
-    catch (error) { this.setData({ notice: friendlyError(error), descLines: CONTENT.PAYMENT_STATES.pending.desc.split('\n') }); }
+    catch (error) { this.setData({ notice: friendlyError(error), descLines: CONTENT.PAYMENT_STATES.pending.desc.split('\n'), canRestore: true }); }
   },
   refresh() {
     const state = getGrowth().get();
     const order = state.order;
+    if (!order) return;
     const view = CONTENT.PAYMENT_STATES[state.payment] || CONTENT.PAYMENT_STATES.pending;
     this.setData({ payment: state.payment, view, descLines: view.desc.split('\n'), notice: state.paymentNotice || '',
-      canResume: order.payment_state === 'PENDING' && order.payment_started === false && order.refund_state === 'NONE',
+      canResume: order.payment_state === 'PENDING' && order.payment_started === false && order.refund_state === 'NONE', canRestore: false, hasOrder: true,
       productLabel: order.product === 'career' ? '职业探索报告' : '个人优势说明书',
       upgradeLabel: order.upgrade ? '本次补差' : '本次金额', amount: (order.price_fen / 100).toFixed(2),
       orderId: order.id, deliveryText: state.payment === 'success' ? '有效权益已确认'
         : order.entitlement_state === 'SUSPENDED' || order.entitlement_state === 'REVOKED' ? '权益暂停或已撤销，请查看售后' : '付款确认后解锁' });
   },
+  async restorePaid() {
+    if (this.data.busy) return;
+    const originalId = (getGrowth().get().order || {}).id || '';
+    this.setData({ busy: true, notice: '' });
+    try {
+      await getVirtualPayment().bind('cross_device_recovery');
+      if (((getGrowth().get().order || {}).id || '') !== originalId) throw new Error('订单已变化，请重新选择订单');
+      if (originalId) {
+        await getVirtualPayment().getOrder(originalId);
+        this.refresh();
+        return;
+      }
+      const result = await getVirtualPayment().list();
+      if (((getGrowth().get().order || {}).id || '') !== originalId) throw new Error('订单已变化，请重新选择订单');
+      if (result.items.length === 1 && !result.next_cursor) { getGrowth().applyServerOrder(result.items[0]); this.refresh(); }
+      else if (result.items.length || result.next_cursor) wx.redirectTo({ url: '/pages/order/order' });
+      else this.setData({ notice: '未找到可恢复的订单' });
+    } catch (error) { this.setData({ notice: friendlyError(error) }); }
+    finally { this.setData({ busy: false }); }
+  },
   async queryOrder() {
     if (this.data.busy) return;
+    const order = getGrowth().get().order;
+    if (!order || !order.id) { this.setData({ notice: '没有可查询的订单，请先恢复订单。' }); return; }
     this.setData({ busy: true, notice: '' });
-    try { await getVirtualPayment().query(getGrowth().get().order.id); this.refresh(); }
+    try { await getVirtualPayment().query(order.id); this.refresh(); }
     catch (error) { this.setData({ notice: friendlyError(error) }); }
     finally { this.setData({ busy: false }); }
   },
