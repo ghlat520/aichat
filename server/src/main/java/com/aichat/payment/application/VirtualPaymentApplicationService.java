@@ -179,8 +179,8 @@ public final class VirtualPaymentApplicationService implements PaymentApiDelegat
             var binding = mapper.binding(context.requireSubject().subjectId());
             if (binding.encryptedSessionKey() == null || binding.authenticatedAt().plus(SESSION_KEY_TTL).isBefore(now()))
                 throw conflict("WECHAT_LOGIN_REQUIRED", "微信登录态已过期，请重新登录");
-            if (!settings.appId().equals(order.appId()) || !settings.offerId().equals(order.offerId())
-                    || !purchases.canSign(order))
+            requireOrderChannel(order);
+            if (!purchases.canSign(order))
                 throw conflict("ORDER_CONFIGURATION_CHANGED", "原订单商品配置已变化，请联系售后");
             String sessionKey = decrypt("wechat-session:" + binding.visitorSessionId(), binding.encryptedSessionKey(), String.class);
             if (order.paymentPreparedAt() != null) {
@@ -227,7 +227,14 @@ public final class VirtualPaymentApplicationService implements PaymentApiDelegat
 
     private record QueryObservation(JsonNode body, long version) { }
 
+    private void requireOrderChannel(Order order) {
+        if (!settings.appId().equals(order.appId()) || !settings.offerId().equals(order.offerId())
+                || settings.environment() != order.environmentNo())
+            throw conflict("ORDER_CONFIGURATION_CHANGED", "原订单支付环境或通道配置已变化，请使用原配置处理");
+    }
+
     private QueryObservation queryPlatform(Order order) {
+        requireOrderChannel(order);
         long version = transactions.execute(status -> {
             Order current = mapper.lockOrder(order.id());
             mapper.advanceQuery(order.id(), now(), now().plusMinutes(5));

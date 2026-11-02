@@ -33,12 +33,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 @ActiveProfiles("virtual-pay-test")
 class VirtualPaymentWebMvcTest {
+    static final int PAYMENT_ENVIRONMENT = Integer.getInteger("aichat.virtual-pay.test-environment", 0);
     static final String APP_ID = "wx1234567890abcdef";
-    static final String APP_KEY = "test_app_key_1234567890";
+    static final String APP_KEY = PAYMENT_ENVIRONMENT == 1 ? "test_sandbox_key_1234567890" : "test_app_key_1234567890";
     static final String SESSION_KEY = "test_session_key_1234567890";
     static final String AES_KEY = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG";
     static final ObjectMapper JSON = new ObjectMapper();
     static final Map<String, JsonNode> PLATFORM = new ConcurrentHashMap<>();
+    static final Map<String, Integer> QUERY_ENVIRONMENTS = new ConcurrentHashMap<>();
+    static final Map<String, Integer> DELIVERY_ENVIRONMENTS = new ConcurrentHashMap<>();
     static final AtomicInteger PROVIDE_COUNT = new AtomicInteger();
     static final Map<String, DelayedQuery> DELAYS = new ConcurrentHashMap<>();
     static final HttpServer WECHAT = fakeWechat();
@@ -54,6 +57,7 @@ class VirtualPaymentWebMvcTest {
             registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
         }
         registry.add("aichat.virtual-pay.enabled", () -> "true");
+        registry.add("aichat.virtual-pay.environment", () -> Integer.toString(PAYMENT_ENVIRONMENT));
         registry.add("aichat.virtual-pay.app-id", () -> APP_ID);
         registry.add("aichat.virtual-pay.app-secret", () -> "test_app_secret_not_real");
         registry.add("aichat.virtual-pay.offer-id", () -> "1234567890");
@@ -97,6 +101,7 @@ class VirtualPaymentWebMvcTest {
         assertThat(signed.path("paySig").asText()).isEqualTo(WechatVirtualPayProtocol.hmac(APP_KEY, "requestVirtualPayment&" + wire));
         assertThat(signed.path("signature").asText()).isEqualTo(WechatVirtualPayProtocol.hmac(SESSION_KEY, wire));
         assertThat(JSON.readTree(wire).path("goodsPrice").asInt()).isEqualTo(2990);
+        assertThat(JSON.readTree(wire).path("env").asInt(-1)).isEqualTo(PAYMENT_ENVIRONMENT);
         call(get("/api/v1/virtual-pay/orders/" + id + "/report"), token, null, 403);
         platformOrder(id, 1, 2990);
         assertThat(call(post("/api/v1/virtual-pay/orders/" + id + "/query"), token, null, 200)
@@ -105,6 +110,8 @@ class VirtualPaymentWebMvcTest {
         JsonNode paid = call(post("/api/v1/virtual-pay/orders/" + id + "/query"), token, null, 200);
         assertThat(paid.path("entitlement_state").asText()).isEqualTo("ACTIVE");
         assertThat(paid.path("delivery_confirmed").asBoolean()).isTrue();
+        assertThat(QUERY_ENVIRONMENTS.get(id)).isEqualTo(PAYMENT_ENVIRONMENT);
+        assertThat(DELIVERY_ENVIRONMENTS.get(id)).isEqualTo(PAYMENT_ENVIRONMENT);
         call(post("/api/v1/virtual-pay/orders/" + id + "/query"), token, null, 200);
         assertThat(db.queryForObject("SELECT COUNT(*) FROM pay_virtual_receipt WHERE order_id=? AND receipt_kind='PAYMENT'", Integer.class, id)).isEqualTo(1);
         String recovered = visitor();
@@ -132,10 +139,25 @@ class VirtualPaymentWebMvcTest {
         platformOrder(id, 2, 2000);
         call(post("/api/v1/virtual-pay/orders/" + id + "/query"), token, null, 409);
         platformOrder(id, 2, 2990);
-        ((com.fasterxml.jackson.databind.node.ObjectNode) PLATFORM.get(id)).put("env_type", 2);
+        ((com.fasterxml.jackson.databind.node.ObjectNode) PLATFORM.get(id)).put("env_type", PAYMENT_ENVIRONMENT == 0 ? 2 : 1);
         call(post("/api/v1/virtual-pay/orders/" + id + "/query"), token, null, 409);
         assertThat(db.queryForMap("SELECT payment_state, paid_fen, entitlement_state FROM pay_virtual_order WHERE id=?", id))
                 .containsEntry("payment_state", "PENDING").containsEntry("paid_fen", null).containsEntry("entitlement_state", "NONE");
+    }
+
+    @Test
+    void anOrderFromAnotherEnvironmentCannotBeSignedOrQueried() throws Exception {
+        String token = visitor();
+        bind(token, "other_environment_" + UUID.randomUUID());
+        String id = create(token, "base", snapshot(false)).path("order_id").asText();
+        db.update("UPDATE pay_virtual_order SET environment_no=? WHERE id=?", PAYMENT_ENVIRONMENT == 0 ? 1 : 0, id);
+        call(post("/api/v1/virtual-pay/orders/" + id + "/payment"), token, null, 409);
+        call(post("/api/v1/virtual-pay/orders/" + id + "/query"), token, null, 409);
+        assertThat(QUERY_ENVIRONMENTS).doesNotContainKey(id);
+        assertThat(db.queryForMap("SELECT payment_state, paid_fen, entitlement_state, payment_prepared_at, query_version FROM pay_virtual_order WHERE id=?", id))
+                .containsEntry("payment_state", "PENDING").containsEntry("paid_fen", null)
+                .containsEntry("entitlement_state", "NONE").containsEntry("payment_prepared_at", null)
+                .containsEntry("query_version", 0L);
     }
 
     @Test
@@ -379,7 +401,7 @@ class VirtualPaymentWebMvcTest {
 
     static Map<String, Object> delivery(String id, String code, String product, int price) {
         return Map.of("MsgType", "event", "Event", "xpay_goods_deliver_notify", "OpenId", "openid_" + code,
-                "OutTradeNo", id, "Env", 0, "GoodsInfo", Map.of("ProductId", product, "Quantity", 1,
+                "OutTradeNo", id, "Env", PAYMENT_ENVIRONMENT, "GoodsInfo", Map.of("ProductId", product, "Quantity", 1,
                         "OrigPrice", price, "ActualPrice", price, "Attach", id));
     }
 
@@ -457,7 +479,7 @@ class VirtualPaymentWebMvcTest {
     static void platformOrder(String id, int status, int price) {
         PLATFORM.put(id, JSON.valueToTree(Map.of("order_id", id, "status", status, "order_type", 0,
                 "order_fee", price, "paid_fee", status == 1 ? 0 : price, "left_fee", price,
-                "paid_time", 1793059200, "env_type", 1, "wx_order_id", "WX_" + id)));
+                "paid_time", 1793059200, "env_type", PAYMENT_ENVIRONMENT + 1, "wx_order_id", "WX_" + id)));
     }
 
     static HttpServer fakeWechat() {
@@ -479,6 +501,7 @@ class VirtualPaymentWebMvcTest {
                     String expected = WechatVirtualPayProtocol.hmac(APP_KEY, path + "&" + wire);
                     if (!query.contains("pay_sig=" + expected)) throw new AssertionError("wrong exact-byte server HMAC");
                     String id = body.path("order_id").asText();
+                    QUERY_ENVIRONMENTS.put(id, body.path("env").asInt(-1));
                     JsonNode observed = PLATFORM.getOrDefault(id, JSON.createObjectNode()).deepCopy();
                     DelayedQuery delayed = DELAYS.remove(id);
                     if (delayed != null) {
@@ -488,6 +511,7 @@ class VirtualPaymentWebMvcTest {
                     }
                     response = Map.of("errcode", 0, "order", observed);
                 } else if (path.equals("/xpay/notify_provide_goods")) {
+                    DELIVERY_ENVIRONMENTS.put(body.path("order_id").asText(), body.path("env").asInt(-1));
                     PROVIDE_COUNT.incrementAndGet();
                     JsonNode order = PLATFORM.get(body.path("order_id").asText());
                     if (order != null) ((com.fasterxml.jackson.databind.node.ObjectNode) order).put("status", 4);

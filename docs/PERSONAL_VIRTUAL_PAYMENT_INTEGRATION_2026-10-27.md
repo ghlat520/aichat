@@ -69,6 +69,44 @@
 
 正式通道变量模板为 [`server/virtual-pay.env.example`](../server/virtual-pay.env.example)，默认 `AICHAT_VIRTUAL_PAY_ENABLED=false`。真实密钥填写到被忽略的环境文件或部署密钥管理，不写入模板。启用时必须同时提供通道身份、安全消息配置与三个独立的已发布报告道具；价格为整数分，补差道具对应的抵扣额须与原基础实付一致。历史实付不匹配时停止新补差报价，已有订单仍按冻结事实读取。
 
+### 2026-11-01：先联调微信沙箱
+
+沙箱使用 `AICHAT_VIRTUAL_PAY_ENV=1` 和同一小程序后台的**沙箱 AppKey**；现网为 `0`，默认值仍为 `0`。不能只替换 AppKey 而让订单继续使用现网环境。新订单冻结环境，签名、查单及发货确认沿用该值；环境或通道切换后，旧订单拒绝重新签名、查单，不自动换单或授予权益。
+
+| 本地变量 | 去哪里配置、填什么 |
+| --- | --- |
+| `AICHAT_VIRTUAL_PAY_OFFER_ID` | 小程序 MP 后台 → 支付与交易 → 虚拟支付 → 基本配置，复制 OfferID。它不是 AppID。 |
+| `AICHAT_VIRTUAL_PAY_APP_KEY` | 同页复制“沙箱 AppKey”，与 `ENV=1` 配套；不要填现网 AppKey。 |
+| `AICHAT_VIRTUAL_PAY_PUSH_TOKEN` | 若后台已有消息推送配置，复用原 Token；尚未配置时，在本机生成一个 3–32 位字母或数字令牌，把同一值填写到后台“开发 → 开发管理 → 消息推送配置”的 Token。 |
+| `AICHAT_VIRTUAL_PAY_ENCODING_AES_KEY` | 若后台已有配置，复用原 EncodingAESKey；尚未配置时，使用 32 个随机字节的 Base64 编码并去除末尾 `=`，得到 43 位密钥。本地和消息推送后台必须一致，它与 AppKey 是不同密钥。 |
+| `AICHAT_VIRTUAL_PAY_BASE_PRODUCT_ID` | 在虚拟支付的道具管理中创建基础报告商品，填其道具 ID，例如自定义 `aichat_base_sb`。 |
+| `AICHAT_VIRTUAL_PAY_CAREER_PRODUCT_ID` | 同处创建职业报告商品，填另一个道具 ID，例如 `aichat_career_sb`。 |
+| `AICHAT_VIRTUAL_PAY_UPGRADE_PRODUCT_ID` | 同处创建基础报告升级到职业报告的补差商品，填第三个道具 ID，例如 `aichat_upgrade_sb`。 |
+
+商品 ID 必须与后台实际配置一致，三个 ID 不能相同。按后台指引使测试用道具配置生效；未发布或同步未完成的道具可能被微信拒绝。默认对应价格为基础报告 29.90 元、职业报告 49.90 元、补差 20.00 元；如果修改后台价格，本地对应的 `*_PRICE_FEN` 必须同步，且补差等于职业价格减基础价格。
+
+保留现有 AppID、AppSecret，在项目根目录被忽略的 `.env.local` 增加以下项。占位项须替换为后台真实配置，不要把示例文字当作值：
+
+```dotenv
+AICHAT_VIRTUAL_PAY_ENABLED=false
+AICHAT_VIRTUAL_PAY_ENV=1
+AICHAT_VIRTUAL_PAY_OFFER_ID=
+AICHAT_VIRTUAL_PAY_APP_KEY=
+AICHAT_VIRTUAL_PAY_PUSH_TOKEN=
+AICHAT_VIRTUAL_PAY_ENCODING_AES_KEY=
+AICHAT_VIRTUAL_PAY_BASE_PRODUCT_ID=
+AICHAT_VIRTUAL_PAY_CAREER_PRODUCT_ID=
+AICHAT_VIRTUAL_PAY_UPGRADE_PRODUCT_ID=
+```
+
+消息推送使用安全模式，数据格式可选 JSON；URL 填 `https://<可公网访问的测试域名>/api/v1/webhooks/wechat-virtual-pay`。微信需要访问此 URL 完成 GET 校验和 POST 通知，`localhost` 不可用于接收平台推送。仅有 Token、EncodingAESKey 并不代表回调已经部署。
+
+这些变量由启动进程读取，保存文件后仍需加载环境并重启。沙箱联调使用独立测试实例和测试数据库，保留现网订单和权益；本轮不连接、迁移或更改业务数据库。确认沙箱密钥、商品和测试库就绪，并部署回调服务后，在该测试实例把 `ENABLED` 改为 `true` 并重启，再向 MP 提交 URL 进行 GET 校验。URL 校验和通知入口同样受支付开关约束，保持 `false` 时会拒绝校验。本机准备阶段仍保持关闭。
+
+微信官方客户端文档规定：现网版本 `env` 只能为 `0`。官方通用接入文档同时明确 **Apple 支付不支持沙箱**，因此本轮不承诺 iOS 沙箱支付。先在开发联调环境验证非 Apple 支付；平台端仍需验证拉起支付、通知/查单、一次发放权益和后台订单一致性。
+
+依据：[客户端 env 参数](https://developers.weixin.qq.com/miniprogram/dev/api/payment/wx.requestVirtualPayment.html)、[环境与 AppKey 对应关系、Apple 支付限制](https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/business-capabilities/virtual-payment)、[消息推送配置](https://developers.weixin.qq.com/miniprogram/dev/framework/server-ability/message-push.html)。
+
 隔离验证入口：
 
 ```bash

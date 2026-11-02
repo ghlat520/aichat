@@ -11,6 +11,7 @@ import java.net.URI;
 @Component
 public final class VirtualPaySettings {
     private final boolean enabled;
+    private final int paymentEnvironment;
     private final String appId;
     private final String appSecret;
     private final String offerId;
@@ -21,6 +22,11 @@ public final class VirtualPaySettings {
 
     public VirtualPaySettings(Environment environment) {
         enabled = Boolean.parseBoolean(value(environment, "enabled", "false"));
+        paymentEnvironment = switch (value(environment, "environment", "0")) {
+            case "0" -> 0;
+            case "1" -> 1;
+            default -> throw new IllegalStateException("虚拟支付环境必须为0（现网）或1（沙箱）");
+        };
         appId = value(environment, "app-id", "");
         appSecret = value(environment, "app-secret", "");
         offerId = value(environment, "offer-id", "");
@@ -69,7 +75,7 @@ public final class VirtualPaySettings {
     public String offerId() { return offerId; }
     public String appKey() { return appKey; }
     public String apiBase() { return apiBase; }
-    public int environment() { return 0; }
+    public int environment() { return paymentEnvironment; }
     public WechatVirtualPayProtocol.PushConfig pushConfig() {
         return new WechatVirtualPayProtocol.PushConfig(pushToken, aesKey, appId);
     }

@@ -12,6 +12,19 @@ import static org.mockito.Mockito.*;
 
 class VirtualPayConfigurationTest {
     @Test
+    void paymentEnvironmentDefaultsToProductionAndOnlyAcceptsZeroOrOne() {
+        assertThat(new VirtualPaySettings(new MockEnvironment()).environment()).isZero();
+        for (String value : new String[]{"0", "1"}) {
+            var environment = new MockEnvironment().withProperty("aichat.virtual-pay.environment", value);
+            assertThat(new VirtualPaySettings(environment).environment()).isEqualTo(Integer.parseInt(value));
+        }
+        for (String value : new String[]{"", "-1", "2", "01", "sandbox"}) {
+            var environment = new MockEnvironment().withProperty("aichat.virtual-pay.environment", value);
+            assertThatThrownBy(() -> new VirtualPaySettings(environment)).isInstanceOf(IllegalStateException.class);
+        }
+    }
+
+    @Test
     void paymentDefaultsOffAndOnlyIsolatedProfilesAllowLoopbackReplacement() {
         assertThatThrownBy(() -> new VirtualPaySettings(new MockEnvironment()).requireEnabled())
                 .isInstanceOfSatisfying(ApiException.class, ex -> assertThat(ex.error().code()).isEqualTo("VIRTUAL_PAY_NOT_CONFIGURED"));
