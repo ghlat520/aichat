@@ -57,7 +57,7 @@ public final class VirtualPaymentApplicationService implements PaymentApiDelegat
 
     public ApiEnvelope<Map<String, Object>> bindWechat(ApiCallContext context, String key,
             ContractRequests.WechatBindRequest request) {
-        settings.requireEnabled();
+        settings.requireWechatIdentity();
         IdempotencyKeys.requireValid(key);
         String visitor = context.requireSubject().subjectId();
         String scope = "virtual-bind:" + visitor;

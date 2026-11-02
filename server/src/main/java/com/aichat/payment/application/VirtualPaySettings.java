@@ -57,6 +57,12 @@ public final class VirtualPaySettings {
                 "VIRTUAL_PAY_NOT_CONFIGURED", "个人虚拟支付尚未开通或配置，请稍后再试");
     }
 
+    /** 登录身份绑定只依赖 code2Session 基础凭据，不受虚拟支付总开关约束。 */
+    public void requireWechatIdentity() {
+        if (!appId.matches("wx[a-zA-Z0-9]{16}") || appSecret.length() < 16) throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE,
+                "WECHAT_IDENTITY_NOT_CONFIGURED", "微信身份凭据未配置，请配置小程序 AppID 与 AppSecret 后重试");
+    }
+
     public boolean enabled() { return enabled; }
     public String appId() { return appId; }
     public String appSecret() { return appSecret; }

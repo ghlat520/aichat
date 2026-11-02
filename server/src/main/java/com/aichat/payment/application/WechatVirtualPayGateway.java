@@ -36,7 +36,7 @@ public final class WechatVirtualPayGateway {
     }
 
     public LoginSession login(String code) {
-        settings.requireEnabled();
+        settings.requireWechatIdentity();
         String path = "/sns/jscode2session?appid=" + encode(settings.appId())
                 + "&secret=" + encode(settings.appSecret()) + "&js_code=" + encode(code)
                 + "&grant_type=authorization_code";
@@ -80,7 +80,7 @@ public final class WechatVirtualPayGateway {
     }
 
     private JsonNode exchange(String path, String wire, boolean rejectApiError) {
-        settings.requireEnabled();
+        settings.requireWechatIdentity();
         try {
             HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(settings.apiBase() + path))
                     .timeout(Duration.ofSeconds(8)).header("Accept", "application/json");
