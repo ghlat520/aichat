@@ -18,35 +18,15 @@
 .growth-hero-copy { font-size: 22rpx; line-height: 1.8; color: #7888a5; margin-top: 16rpx; max-width: 440rpx; position: relative; }
 .growth-hero-copy-br { display: block; height: 0; }
 .growth-hero-mascot { position: absolute; right: -6rpx; bottom: 6rpx; width: 270rpx; height: 270rpx; }
-.growth-warm-start { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14rpx; margin: 30rpx 0 36rpx; }
-.growth-warm-start-btn { width: 100%; min-width: 0; margin: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14rpx; border: 1rpx solid #e9e8f3; border-radius: 24rpx; padding: 24rpx 6rpx; background: #ffffffc7; font-size: 20rpx; min-height: 130rpx; color: #8794ae; line-height: 1.5; }
-.growth-warm-start-btn::after { border: 0; }
-.growth-warm-start-btn .ui-icon--leaf { width: 38rpx; height: 38rpx; }
-.growth-warm-start-btn .ui-icon--heart { width: 38rpx; height: 38rpx; }
-.growth-warm-start-btn .ui-icon--sun { width: 38rpx; height: 38rpx; }
 .growth-continue-card { position: relative; padding: 30rpx; background: #ffffff; border-radius: 30rpx; box-shadow: 0 10rpx 50rpx #667bb212; margin: -12rpx 0 24rpx; }
 .growth-continue-card .gk-progress { margin: 24rpx 0 20rpx; }
 .growth-continue-btn { background: var(--ui-brand); color: #ffffff; border-radius: 14rpx; padding: 12rpx 22rpx; min-height: 60rpx; font-size: 20rpx; line-height: 1.5; margin: 0; }
 .growth-continue-btn::after { border: 0; }
-.growth-warm-companion { display: flex; align-items: center; gap: 22rpx; background: #fff7f7; border: 1rpx solid #f4e9ed; border-radius: 30rpx; padding: 30rpx 26rpx; width: 100%; box-sizing: border-box; text-align: left; margin: 34rpx 0 44rpx; line-height: 1.6; }
-.growth-warm-companion::after { border: 0; }
-.growth-warm-companion-icon { width: 68rpx; height: 76rpx; display: flex; align-items: center; justify-content: center; background: #f9e9ef; border-radius: 22rpx; flex-shrink: 0; }
-.growth-warm-companion-title { font-size: 24rpx; font-weight: 550; color: #9d8196; line-height: 1.8; }
-.growth-warm-companion-copy { font-size: 20rpx; color: #b2a3b1; line-height: 1.8; margin-top: 6rpx; }
 .growth-test-card { width: 100%; box-sizing: border-box; text-align: left; display: flex; gap: 28rpx; padding: 34rpx; border-radius: 36rpx; margin: 0 0 22rpx; background: #ffffff; border: 1rpx solid #e9edf5; align-items: center; line-height: 1.6; }
 .growth-test-card::after { border: 0; }
 .growth-test-card:active { background: #f6f8ff; }
 .growth-test-card-name { font-size: 30rpx; font-weight: 600; line-height: 1.65; margin-bottom: 6rpx; color: var(--ui-ink); }
 .growth-test-card-desc { font-size: 20rpx; line-height: 1.85; color: var(--ui-muted); margin-bottom: 16rpx; }
-.growth-topic-teaser { display: flex; position: relative; text-align: left; width: 100%; box-sizing: border-box; padding: 34rpx 36rpx; border: 1rpx solid #e5e9f7; border-radius: 36rpx; background: linear-gradient(125deg, #ede8fc, #e8f2ff); overflow: hidden; margin: 36rpx 0 44rpx; min-height: 316rpx; line-height: 1.6; }
-.growth-topic-teaser::after { border: 0; }
-.growth-topic-copy { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 18rpx; }
-.growth-topic-title { font-size: 40rpx; line-height: 1.45; font-weight: 550; letter-spacing: -1.2rpx; color: var(--ui-ink); }
-.growth-topic-note { font-size: 20rpx; color: #8a85ac; display: flex; gap: 10rpx; align-items: center; }
-.growth-topic-rocket { position: absolute; right: -10rpx; bottom: -8rpx; width: 266rpx; height: 266rpx; opacity: .8; }
-.growth-relationship-link { background: #fff9fb; border: 1rpx solid #f7eaf0; border-radius: 26rpx; padding: 28rpx; width: 100%; box-sizing: border-box; text-align: left; display: flex; gap: 24rpx; align-items: center; line-height: 1.6; }
-.growth-relationship-link::after { border: 0; }
-.growth-relationship-link .ui-icon--heart { width: 42rpx; height: 42rpx; }
 .growth-recent-row { display: flex; align-items: center; gap: 22rpx; padding: 24rpx 0; border-bottom: 1rpx solid var(--ui-line); text-align: left; width: 100%; background: transparent; line-height: 1.6; font-size: inherit; }
 .growth-recent-row::after { border: 0; }
 .growth-recent-name { font-size: 24rpx; font-weight: 500; margin-bottom: 8rpx; color: var(--ui-ink); }
@@ -56,3 +36,20 @@
 .assessment-result-title { font-size: 33rpx; font-weight: 600; line-height: 1.6; margin: 23rpx 0 27rpx; }
 .assessment-result-field { margin-top: 23rpx; padding-top: 23rpx; border-top: 1rpx solid #edf0f6; }
 .assessment-result-field .aichat-body { margin-top: 11rpx; margin-bottom: 0; }
+
+/* —— V2（2026-11-03 原型）：16 型轻阅读入口与三卡工具位 —— */
+.growth-explore-teaser { width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 30rpx; text-align: left; border: 1rpx solid #e1e7f4; background: #edf1fb; border-radius: 38rpx; padding: 44rpx 40rpx; margin: 44rpx 0 50rpx; overflow: hidden; line-height: 1.6; }
+.growth-explore-teaser::after { border: 0; }
+.growth-explore-copy { position: relative; z-index: 1; min-width: 0; }
+.growth-explore-eyebrow { display: block; font-size: 20rpx; line-height: 1.8; color: #8e9bb6; }
+.growth-explore-title { font-size: 46rpx; font-weight: 550; color: #596d98; line-height: 1.65; margin-top: 10rpx; letter-spacing: -1rpx; }
+.growth-explore-note { display: block; font-size: 20rpx; line-height: 1.9; color: #8495bb; margin-top: 20rpx; }
+.growth-explore-art { width: 150rpx; min-width: 118rpx; position: relative; height: 228rpx; color: #9ca8d2; flex-shrink: 0; }
+.growth-explore-chip { position: absolute; font-size: 24rpx; letter-spacing: 2rpx; line-height: 1; background: #ffffff9c; border: 1rpx solid #e0e6f8; border-radius: 22rpx; padding: 26rpx 20rpx; font-weight: 500; box-shadow: 0 16rpx 40rpx #96a4d00a; }
+.growth-explore-chip:first-child { top: 0; right: -20rpx; transform: rotate(7deg); }
+.growth-explore-chip--mid { top: 72rpx; right: 26rpx; transform: rotate(-7deg); color: #87a4ac; background: #edf8f6; }
+.growth-explore-chip--low { bottom: 0; right: -22rpx; transform: rotate(7deg); color: #b1a1ca; background: #f4f0fa; }
+.gk-test-art--via { background: #e7f3f2; color: #6e9b99; }
+.gk-test-art--via .ui-icon { width: 74rpx; height: 74rpx; }
+.gk-test-art--cross { background: #eeeffb; color: #8c96c4; }
+.gk-test-art--cross .ui-icon { width: 74rpx; height: 74rpx; }

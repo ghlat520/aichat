@@ -86,11 +86,12 @@ try {
   await ui.click(entry.path, '#home-assessment');
   // V1.2：自测 tab 落地为自测首页目录，先进入原有关系轻自测再校验原有冒烟链路
   await poll(
-    () => element({ path: '/pages/assessment/assessment' }, '#growth-relationship-entry'),
+    () => element({ path: '/pages/assessment/assessment' }, '#growth-explore-teaser'),
     12000,
     '等待自测首页目录'
   );
-  await ui.click('/pages/assessment/assessment', '#growth-relationship-entry');
+  // V2：关系轻自测入口迁至“我的”，经 profile 进入
+  await ui.click('/pages/profile/profile', '#profile-relationship-entry');
   await route(
     '/pages/assessment/assessment',
     ['#assessment-intro', '#assessment-ready', '#assessment-error', '#assessment-disabled'],

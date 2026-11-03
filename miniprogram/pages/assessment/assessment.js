@@ -61,27 +61,44 @@ Page({
     }
   },
 
-  // ===== 自测首页（catalog）=====
+  // ===== 自测首页（catalog，2026-11-03 原型 V2 discover 屏）=====
   refreshCatalog() {
     const growth = getGrowth();
     const state = growth.get();
-    const tools = CONTENT.TOOL_ORDER.map((id) => {
-      const answered = id === 'mbti' ? growth.answeredCount(id) : (state.answers[id] || []).length;
-      return {
-        id,
-        name: CONTENT.TOOLS[id].name,
-        short: CONTENT.TOOLS[id].short,
-        desc: CONTENT.TOOLS[id].desc,
-        color: CONTENT.TOOLS[id].color,
-        answered,
-        total: CONTENT.QUESTIONS[id].length,
-        tag: id === 'mbti' ? CONTENT.QUESTIONS[id].length + ' 题 · 示例' : '演示 ' + CONTENT.QUESTIONS[id].length + ' 题',
-        date: (state.sources[id] && state.sources[id].date) || '2026-10-26',
-        status: state.results[id] ? 'done' : answered > 0 ? 'doing' : 'fresh'
-      };
-    });
-    const continueTool = tools.find((tool) => tool.status === 'doing') || null;
-    const recentTools = tools.filter((tool) => tool.status === 'done');
+    const mbtiAnswered = growth.answeredCount('mbti');
+    const mbtiDone = state.results.mbti && mbtiAnswered === CONTENT.QUESTIONS.mbti.length;
+    const viaAnswered = growth.viaAnsweredCount();
+    const viaDone = growth.viaComplete();
+
+    const tools = [
+      {
+        id: 'mbti',
+        name: CONTENT.TOOLS.mbti.name,
+        desc: CONTENT.TOOLS.mbti.desc,
+        tag: '40 题 · 自动切换',
+        statusLabel: mbtiDone ? '已完成问卷 · 查看结果' : mbtiAnswered > 0 ? '进行中' : '免费开始'
+      },
+      {
+        id: 'via',
+        name: CONTENT.TOOLS.via.name,
+        desc: CONTENT.TOOLS.via.desc,
+        tag: '72 题 · 24 项优势',
+        statusLabel: viaDone ? '已完成 · 查看结果' : viaAnswered > 0 ? '继续 ' + viaAnswered + ' / 72 题' : '探索性自评'
+      },
+      {
+        id: 'cross',
+        name: 'VIA × MBTI 对照表',
+        desc: '查看 16 型各自的优势参考，换一个角度认识自己。',
+        tag: '每型 5 项 · 非测评结论',
+        statusLabel: '16 型参考'
+      }
+    ];
+    const continueTool = !mbtiDone && mbtiAnswered > 0
+      ? { short: 'MBTI 性格测试', answered: mbtiAnswered, total: CONTENT.QUESTIONS.mbti.length, current: growth.resumeIndex('mbti') + 1 }
+      : null;
+    const recentTools = [];
+    if (mbtiDone) recentTools.push({ id: 'mbti', name: 'MBTI 性格测试 · 结果样例', note: '免费查看' });
+    if (viaDone) recentTools.push({ id: 'via', name: 'VIA 性格优势 · 我的排序', note: '已完成 72 题 · 本轮自评' });
     wx.setNavigationBarTitle({ title: '自测' });
     this.setData({
       mode: 'catalog',
@@ -94,36 +111,41 @@ Page({
   },
 
   focusExplore() {
-    wx.pageScrollTo({ selector: '#self-tools', offsetY: -20, duration: 300 });
-  },
-
-  openGentleVoices() {
-    getGrowth().patch({ voiceMood: '全部' });
-    wx.navigateTo({ url: '/pages/voices/voices' });
-  },
-
-  openDecisionVoices() {
-    getGrowth().patch({ voiceMood: '在做选择' });
-    wx.navigateTo({ url: '/pages/voices/voices' });
+    // V2：轻阅读入口改为 16 型优缺点参考页
+    wx.navigateTo({ url: '/pages/mbti-types/mbti-types' });
   },
 
   tapTool(event) {
     const id = event.currentTarget.dataset.id;
-    const status = event.currentTarget.dataset.status;
-    if (status === 'done') {
-      wx.navigateTo({ url: '/pages/growth-result/growth-result?tool=' + id });
+    if (id === 'mbti') {
+      const growth = getGrowth();
+      const done = growth.get().results.mbti && growth.answeredCount('mbti') === CONTENT.QUESTIONS.mbti.length;
+      wx.navigateTo({ url: done ? '/pages/growth-result/growth-result?tool=mbti' : '/pages/growth-intro/growth-intro?tool=mbti' });
       return;
     }
-    wx.navigateTo({ url: '/pages/growth-intro/growth-intro?tool=' + id });
+    if (id === 'via') {
+      const growth = getGrowth();
+      wx.navigateTo({ url: growth.viaComplete() ? '/pages/via-result/via-result' : '/pages/via-intro/via-intro' });
+      return;
+    }
+    if (id === 'cross') {
+      wx.navigateTo({ url: '/pages/via-mbti/via-mbti' });
+    }
   },
 
   resumeTool() {
     if (!this.data.continueTool) return;
-    wx.navigateTo({ url: '/pages/growth-question/growth-question?tool=' + this.data.continueTool.id });
+    wx.navigateTo({ url: '/pages/growth-question/growth-question?tool=mbti' });
   },
 
-  goCelebrity() {
-    wx.navigateTo({ url: '/pages/celebrity/celebrity' });
+  tapRecent(event) {
+    const id = event.currentTarget.dataset.id;
+    if (id === 'via') {
+      getGrowth().viaPatch({ preview: false });
+      wx.navigateTo({ url: '/pages/via-result/via-result' });
+      return;
+    }
+    wx.navigateTo({ url: '/pages/growth-result/growth-result?tool=mbti' });
   },
 
   goReports() {

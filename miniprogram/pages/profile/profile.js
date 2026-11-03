@@ -91,5 +91,6 @@ Page({
   },
   goOrder() { wx.navigateTo({ url: '/pages/order/order' }); },
   goCards() { wx.navigateTo({ url: '/pages/report/report' }); },
+  goRelationshipTest() { wx.reLaunch({ url: '/pages/assessment/assessment?relationship=1' }); },
   goPrivacy() { wx.navigateTo({ url: '/pages/data-control/data-control' }); }
 });

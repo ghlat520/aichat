@@ -201,15 +201,17 @@ async function main() {
     await requiredElement(entry, '#home-assessment');
     await activate(entry, '#home-assessment');
     await currentPage('pages/assessment/assessment');
-    await requiredElement({ path: 'pages/assessment/assessment' }, '#growth-voices-teaser');
-    return 'V1.2：边界闸移除，首页直达（严格对齐原型结构）；点击自测进入自测首页目录';
+    await requiredElement({ path: 'pages/assessment/assessment' }, '#growth-explore-teaser');
+    return 'V2：边界闸移除，首页直达；点击自测进入 V2 自测首页目录（16 型轻阅读 + MBTI/VIA/对照三卡）';
   });
 
   await runCase('E2E-02', '同意后完成自测并命中 task', async () => {
     let assessment = await currentPage('pages/assessment/assessment');
-    // V1.2：自测 tab 落地为自测首页目录，先进入原有关系轻自测
-    await requiredElement(assessment, '#growth-relationship-entry', 15000);
-    await activate(assessment, '#growth-relationship-entry');
+    // V2：关系轻自测入口迁至“我的”；经 profile 进入
+    const profile = await currentPage('pages/profile/profile');
+    await requiredElement(profile, '#profile-relationship-entry', 15000);
+    await activate(profile, '#profile-relationship-entry');
+    assessment = await currentPage('pages/assessment/assessment');
     await waitAny(assessment, ['#assessment-intro', '#assessment-ready', '#assessment-error', '#assessment-disabled'], 15000);
     if (await maybeElement(assessment, '#assessment-intro')) {
       await activate(assessment, '#assessment-start');
