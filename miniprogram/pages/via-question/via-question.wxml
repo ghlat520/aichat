@@ -1,0 +1,63 @@
+<view class="container vq-screen">
+  <view class="vq-head">
+    <view class="vq-top">
+      <button class="ui-back" bindtap="goIntro" aria-label="返回 VIA 介绍"><view class="ui-icon ui-icon--back"></view></button>
+      <view class="vq-top-title">VIA 性格优势</view>
+      <button class="vq-pause" bindtap="pause" aria-label="暂停作答">暂停</button>
+    </view>
+    <view class="vq-group-row">
+      <text class="vq-group-label">当前维度</text>
+      <picker class="vq-group-picker" range="{{groupOptions}}" range-key="label" value="{{groupIndex}}" bindchange="changeGroup" aria-label="切换美德维度">
+        <view class="vq-group-value">{{groupOptions[groupIndex].label}}<text class="vq-group-arrow">▾</text></view>
+      </picker>
+    </view>
+    <view class="vq-progress-text">
+      <text>已答 {{answeredCount}} / {{total}} 题</text>
+      <text>第 {{index + 1}} 题</text>
+    </view>
+    <view class="vq-progress-track"><view class="vq-progress-fill" style="width: {{progressPercent}}%;"></view></view>
+  </view>
+
+  <scroll-view class="vq-stage" scroll-y>
+    <view class="vq-card">
+      <view class="vq-caption">
+        <view class="vq-caption-strength">{{strength.zh}}<text class="vq-caption-en">{{strength.en}}</text></view>
+        <text class="vq-caption-no">{{index + 1 < 10 ? '0' + (index + 1) : index + 1}} / {{total}}</text>
+      </view>
+      <view class="vq-question">{{question}}</view>
+      <view class="vq-hint">这句话，与你平时的样子有多接近？</view>
+      <view class="vq-options">
+        <view
+          wx:for="{{options}}"
+          wx:key="value"
+          class="vq-option vq-option--{{item.side}} vq-option--{{item.size}} {{selected === item.value ? 'vq-option--checked' : ''}}"
+          role="radio"
+          aria-checked="{{selected === item.value}}"
+          aria-label="{{item.label}}，{{item.value}}分"
+          data-value="{{item.value}}"
+          bindtap="choose"
+        >
+          <view class="vq-circle"><text class="vq-check">✓</text></view>
+          <text class="vq-option-label">{{item.label}}</text>
+        </view>
+      </view>
+      <view class="vq-status" aria-live="polite">{{message}}</view>
+    </view>
+    <view class="vq-footnote">题目与选项保持原文；没有好坏之分。</view>
+  </scroll-view>
+
+  <view class="vq-footer">
+    <button class="vq-btn vq-btn--secondary" bindtap="previous">{{previousLabel}}</button>
+    <button class="vq-btn vq-btn--primary" bindtap="next" disabled="{{nextDisabled}}">{{nextLabel}}</button>
+  </view>
+
+  <view wx:if="{{sheet}}" class="vq-overlay" catchtouchmove="preventScroll" bindtap="closeSheet">
+    <view class="vq-sheet" catchtap="preventScroll">
+      <view class="vq-sheet-grip"></view>
+      <view class="vq-sheet-title">本轮选择已保留</view>
+      <view class="vq-sheet-copy">已作答 {{answeredCount}} / 72 题，稍后可以继续。作答进度保存在本机，换时间回来都在。</view>
+      <button class="gk-primary" bindtap="keepProgress">返回自测，稍后继续</button>
+      <button class="gk-quiet" bindtap="closeSheet">继续作答</button>
+    </view>
+  </view>
+</view>

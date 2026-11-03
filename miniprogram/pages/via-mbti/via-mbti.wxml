@@ -1,0 +1,37 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">VIA × MBTI 对照</view>
+    <text class="gk-head-tag">参考对照</text>
+  </view>
+
+  <view class="vc-title">从另一种视角，</view>
+  <view class="vc-title">看看你的优势。</view>
+  <view class="vc-lead">16 型各自的 5 项优势参考，适合找共鸣、做自我对照。</view>
+  <view class="vc-note">沿用所提供整合工具中的探索性映射，基于类型取向推断，非官方交叉验证，也不是你的 VIA 实测结果。</view>
+
+  <view class="vc-filter-label">选择想看的 MBTI 类型
+    <picker range="{{filterOptions}}" range-key="label" value="{{filter}}" bindchange="changeFilter" aria-label="选择 MBTI 类型">
+      <view class="vc-filter-value">{{filter === 'all' ? '全部 16 型' : filter + ' 型'}}<text class="vc-filter-arrow">▾</text></view>
+    </picker>
+  </view>
+  <view class="vc-small-note">原表中的“责任”“适应”为补充描述词，不属于这份问卷的 24 项计分维度，以下单独标注。</view>
+
+  <view class="vc-list">
+    <view wx:for="{{cards}}" wx:key="code" class="vc-card">
+      <view class="vc-card-head">
+        <view class="vc-card-code">{{item.code}}</view>
+        <text class="vc-card-name">{{item.name}}</text>
+      </view>
+      <view class="vc-tags">
+        <text wx:for="{{item.strengths}}" wx:for-item="tag" wx:key="name" class="vc-tag {{tag.supplement ? 'vc-tag--supplement' : ''}}">{{tag.name}}{{tag.supplement ? ' · 补充描述' : ''}}</text>
+      </view>
+      <view class="vc-card-desc">{{item.description}}</view>
+      <button class="vc-type-link" data-code="{{item.code}}" bindtap="goTypes">看看 {{item.code}} 的优点与盲点</button>
+    </view>
+  </view>
+  <view class="vc-count">当前展示 {{visibleCount}} 型</view>
+
+  <button class="gk-primary" bindtap="goIntro">开始 VIA 性格优势自评</button>
+  <button class="gk-secondary" bindtap="goDiscover">返回自测首页</button>
+</view>

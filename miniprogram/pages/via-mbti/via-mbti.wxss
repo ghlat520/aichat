@@ -1,0 +1,20 @@
+/* VIA × MBTI 对照（2026-11-03 原型 V2 via-mbti 屏，px×2→rpx）*/
+.vc-title { font-size: 50rpx; font-weight: 550; line-height: 1.7; letter-spacing: -1rpx; margin-top: 12rpx; }
+.vc-lead { font-size: 24rpx; line-height: 1.9; color: var(--ui-muted); margin-top: 16rpx; }
+.vc-note { background: #ffffff; border: 1rpx solid var(--ui-line, #e9edf5); border-radius: 26rpx; padding: 28rpx; font-size: 22rpx; color: #7c89a2; line-height: 1.95; margin: 36rpx 0; }
+.vc-filter-label { display: block; font-size: 24rpx; color: #7d8ca7; line-height: 1.9; margin: 48rpx 0 24rpx; }
+.vc-filter-value { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 86rpx; margin-top: 18rpx; border: 1rpx solid #dfe6f2; background: #ffffff; border-radius: 20rpx; padding: 18rpx 24rpx; color: #6a7ca2; font-size: 24rpx; box-sizing: border-box; }
+.vc-filter-arrow { color: #a5afc0; margin-left: 12rpx; }
+.vc-small-note { font-size: 20rpx; color: #98a4b7; line-height: 1.95; margin: 30rpx 0 40rpx; }
+.vc-list { display: grid; gap: 28rpx; margin: 0 0 20rpx; }
+.vc-card { padding: 42rpx 36rpx; background: #ffffff; border: 1rpx solid var(--ui-line, #e9edf5); border-radius: 32rpx; }
+.vc-card-head { display: flex; align-items: baseline; justify-content: space-between; }
+.vc-card-code { font-size: 48rpx; letter-spacing: 3rpx; color: #778ac0; font-weight: 550; }
+.vc-card-name { font-size: 24rpx; color: #8795ad; }
+.vc-tags { display: flex; flex-wrap: wrap; gap: 14rpx; margin: 34rpx 0 26rpx; }
+.vc-tag { font-size: 22rpx; line-height: 1.8; padding: 8rpx 16rpx; background: #eef1fc; color: #7d8db6; border-radius: 14rpx; }
+.vc-tag--supplement { color: #91a0af; background: #f0f3f6; }
+.vc-card-desc { font-size: 24rpx; color: #8d99ae; line-height: 1.9; }
+.vc-type-link { font-size: 22rpx; line-height: 1.8; color: #6577dc; background: transparent; padding: 24rpx 0 0; margin: 16rpx 0 0; text-align: left; width: 100%; }
+.vc-type-link::after { border: 0; }
+.vc-count { font-size: 20rpx; color: #9aa7bb; margin: 24rpx 0 36rpx; }

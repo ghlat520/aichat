@@ -29,17 +29,47 @@ function readyStore(storage) {
   return g;
 }
 
-test('初始状态：与原型演示态一致（特质/优势已完成、MBTI 进行中），经历为两段空表单', () => {
+test('初始状态：与原型 V2 演示态一致（特质/优势 results 保留、MBTI/VIA 从零开始），经历为两段空表单', () => {
   const g = createGrowthStore(memWx());
   const s = g.get();
   assert.equal(s.results.mbti, false);
   assert.equal(s.results.traits, true);
   assert.equal(s.results.strengths, true);
-  assert.equal(s.answers.mbti.length, 2);
-  assert.equal(g.resumeIndex('mbti'), 2);
+  assert.equal(s.answers.mbti.length, 0); // V2：不再预置 MBTI 演示进度
+  assert.equal(g.resumeIndex('mbti'), 0);
+  assert.equal(Object.keys(s.sources).length, 0); // V2：不再预置免费来源记录
+  assert.equal(g.viaAnsweredCount(), 0);
+  assert.equal(g.viaComplete(), false);
   assert.equal(s.experiences.length, 2);
   assert.equal(g.hasExperiences(), false);
   assert.equal(g.ready(), false);
+});
+
+test('VIA：72 题计分排序——三题均分、同分按原顺序、样例与实际独立', () => {
+  const g = createGrowthStore(memWx());
+  assert.equal(g.viaTotal(), 72);
+  // 样例排序：sampleTotals 最高 15 分在索引 3（热爱学习）与 10（公平），同分按原顺序 → 热爱学习居首
+  const demo = g.viaRanked(true);
+  assert.equal(demo[0].zh, '热爱学习');
+  assert.equal(demo[0].score, 5);
+  // 实际作答：第 1 项三题全 5 分 → 均分 5；其余空（计 0）
+  g.viaSaveAnswer(0, 5);
+  g.viaSaveAnswer(1, 5);
+  g.viaSaveAnswer(2, 5);
+  assert.equal(g.viaAnsweredCount(), 3);
+  assert.equal(g.viaFirstMissing(), 3);
+  const real = g.viaRanked(false);
+  assert.equal(real[0].zh, '创造力'); // 15 分与毅力样例不同源，实际模式中最高
+  assert.equal(real[0].score, 5);
+  // 维度进度：第 1 组（智慧与知识 5 项 15 题）已答 3
+  const gp = g.viaGroupProgress(0);
+  assert.equal(gp.total, 15);
+  assert.equal(gp.answered, 3);
+  // 补全后完成
+  for (let i = 3; i < 72; i += 1) g.viaSaveAnswer(i, 3);
+  assert.equal(g.viaComplete(), true);
+  g.viaReset();
+  assert.equal(g.viaAnsweredCount(), 0);
 });
 
 test('作答：saveAnswer 逐题保存，末题 finished=true，resumeIndex 跳到未答处', () => {

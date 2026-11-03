@@ -1,0 +1,38 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">VIA 性格优势</view>
+    <text class="gk-head-tag">探索自评</text>
+  </view>
+
+  <view class="via-hero">
+    <view class="via-hero-icon"><view class="ui-icon ui-icon--leaf"></view></view>
+    <view class="via-hero-title">发现那些，</view>
+    <view class="via-hero-title">你自然会用的力量。</view>
+    <view class="via-hero-sub">性格偏好之外，也看看你如何把事情做好。</view>
+  </view>
+
+  <view class="via-facts">
+    <view class="via-facts-item"><view class="via-facts-value">72 题</view><text>每项优势 3 题</text></view>
+    <view class="via-facts-item"><view class="via-facts-value">24 项</view><text>完整优势排序</text></view>
+    <view class="via-facts-item"><view class="via-facts-value">6 类</view><text>美德框架</text></view>
+  </view>
+
+  <view class="via-note">{{note}} 请按平时的自己作答，1 分代表“非常不像我”，5 分代表“非常像我”。</view>
+
+  <button class="gk-primary" bindtap="start">{{startLabel}}</button>
+  <button wx:if="{{complete}}" class="gk-secondary" bindtap="viewPersonal">查看我的优势排序</button>
+  <button class="gk-secondary" bindtap="viewSample">先看结果排版样例</button>
+
+  <view class="via-section-heading">
+    <view class="via-section-title">从六个角度，看见你的优势</view>
+  </view>
+  <view class="via-virtues">
+    <view wx:for="{{virtues}}" wx:key="name" class="via-virtue-card">
+      <view class="via-virtue-name">{{item.name}}</view>
+      <text class="via-virtue-note">{{item.count}} 项优势 · {{item.count * 3}} 题</text>
+    </view>
+  </view>
+
+  <view class="gk-footer-note">题目采用提供的 72 题版本；每项 3 题取均分后排序。<text class="via-br"></text>选中即保留本轮答案，随后自动进入下一题。<text class="via-br"></text>作答进度保存在本机，可随时暂停续答。</view>
+</view>

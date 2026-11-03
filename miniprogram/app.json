@@ -36,7 +36,12 @@
     "pages/career/career",
     "pages/career-report/career-report",
     "pages/reports/reports",
-    "pages/growth-share/growth-share"
+    "pages/growth-share/growth-share",
+    "pages/mbti-types/mbti-types",
+    "pages/via-intro/via-intro",
+    "pages/via-question/via-question",
+    "pages/via-result/via-result",
+    "pages/via-mbti/via-mbti"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -1,0 +1,17 @@
+/* VIA 介绍（2026-11-03 原型 V2 via-intro 屏，px×2→rpx）*/
+.via-hero { text-align: center; margin: 32rpx 0 48rpx; }
+.via-hero-icon { display: flex; align-items: center; justify-content: center; width: 120rpx; height: 120rpx; margin: 0 auto 36rpx; border-radius: 40rpx; background: #e7f3f2; color: #83a8a3; }
+.via-hero-icon .ui-icon { width: 58rpx; height: 58rpx; }
+.via-hero-title { font-size: 52rpx; line-height: 1.65; letter-spacing: -1rpx; font-weight: 550; color: #3f506c; }
+.via-hero-sub { font-size: 22rpx; line-height: 1.9; color: #95a1b7; margin-top: 22rpx; }
+.via-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16rpx; text-align: center; margin: 40rpx 0; }
+.via-facts-item text { font-size: 20rpx; line-height: 1.9; color: var(--ui-muted); }
+.via-facts-value { font-size: 38rpx; font-weight: 550; color: #6a7da2; margin-bottom: 10rpx; }
+.via-note { background: #ffffff; border: 1rpx solid var(--ui-line, #e9edf5); border-radius: 26rpx; padding: 28rpx; font-size: 22rpx; color: #7c89a2; line-height: 1.95; margin: 36rpx 0; }
+.via-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 20rpx; margin: 56rpx 0 32rpx; }
+.via-section-title { font-size: 30rpx; font-weight: 550; line-height: 1.8; }
+.via-virtues { display: grid; grid-template-columns: 1fr 1fr; gap: 20rpx; }
+.via-virtue-card { padding: 32rpx 26rpx; background: #ffffff; border: 1rpx solid var(--ui-line, #e9edf5); border-radius: 26rpx; }
+.via-virtue-name { font-size: 26rpx; font-weight: 500; }
+.via-virtue-note { display: block; font-size: 20rpx; color: #97a3b7; line-height: 1.8; margin-top: 10rpx; }
+.via-br { display: block; height: 0; }

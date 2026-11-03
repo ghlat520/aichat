@@ -10,15 +10,14 @@ function emptyExperience() {
 }
 
 function defaults() {
-  // 与原型 defaults() 演示态一致：特质/优势已完成、MBTI 进行到第 3 题（严格对齐 UI 首屏）
+  // 对齐 2026-11-03 原型 V2 defaults：MBTI 初始为空、不再预置免费来源记录；
+  // traits/strengths 的 results 保留 true 供历史报告页兼容，但退出当前自测流程。
   return {
     currentTool: 'mbti',
-    answers: { mbti: [3, 4], traits: [], strengths: [] },
+    answers: { mbti: [], traits: [], strengths: [] },
     results: { mbti: false, traits: true, strengths: true },
-    sources: {
-      traits: { kind: 'native', name: '原型样例版本 v1', date: '2026-10-26' },
-      strengths: { kind: 'native', name: '原型样例版本 v1', date: '2026-10-26' }
-    },
+    sources: {},
+    via: { answers: [], index: 0, preview: false, filter: 'all' },
     autoNext: true,
     experiences: [emptyExperience(), emptyExperience()],
     confirmed: false,
@@ -100,6 +99,9 @@ function createGrowthStore(storage) {
         state = Object.assign(defaults(), saved, {
           answers: Object.assign({ mbti: [], traits: [], strengths: [] }, saved.answers),
           results: Object.assign({ mbti: false, traits: false, strengths: false }, saved.results),
+          via: Object.assign({ answers: [], index: 0, preview: false, filter: 'all' }, saved.via, {
+            answers: Object.assign([], (saved.via || {}).answers || [])
+          }),
           experiences: (saved.experiences && saved.experiences.length >= 2)
             ? saved.experiences.slice(0, 2)
             : [emptyExperience(), emptyExperience()],
@@ -185,6 +187,80 @@ function createGrowthStore(storage) {
 
   function setAutoNext(enabled) {
     state.autoNext = !!enabled;
+    persist();
+  }
+
+  // —— VIA 性格优势（2026-11-03 原型 V2：72 题 / 24 项，三题均分排序）——
+  function via() {
+    if (!state.via) state.via = { answers: [], index: 0, preview: false, filter: 'all' };
+    return state.via;
+  }
+
+  function viaValid(value) {
+    return Number.isInteger(value) && value >= 1 && value <= 5;
+  }
+
+  function viaAnsweredCount() {
+    return (via().answers || []).filter(viaValid).length;
+  }
+
+  function viaTotal() {
+    return CONTENT.VIA_GROUPS.reduce((sum, group) => sum + group.items.length * 3, 0);
+  }
+
+  function viaComplete() {
+    return viaAnsweredCount() === viaTotal();
+  }
+
+  function viaFirstMissing() {
+    const answers = via().answers || [];
+    for (let i = 0; i < viaTotal(); i += 1) {
+      if (!viaValid(answers[i])) return i;
+    }
+    return -1;
+  }
+
+  // 某美德维度的题序号列表与已答数（题头 picker 展示用）
+  function viaGroupProgress(groupIndex) {
+    const indices = [];
+    let cursor = 0;
+    for (let gi = 0; gi < CONTENT.VIA_GROUPS.length; gi += 1) {
+      const count = CONTENT.VIA_GROUPS[gi].items.length * 3;
+      if (gi === groupIndex) {
+        for (let n = 0; n < count; n += 1) indices.push(cursor + n);
+        break;
+      }
+      cursor += count;
+    }
+    const answers = via().answers || [];
+    const answered = indices.filter((n) => viaValid(answers[n])).length;
+    return { indices, answered, total: indices.length };
+  }
+
+  function viaSaveAnswer(index, value) {
+    const v = via();
+    v.answers[index] = value;
+    persist();
+  }
+
+  function viaPatch(part) {
+    Object.assign(via(), part);
+    persist();
+  }
+
+  // 三题均分排序：高到低，同分按原顺序（demo 用固定样例总分）
+  function viaRanked(demo) {
+    const strengths = CONTENT.VIA_GROUPS.reduce((all, group) => all.concat(group.items), []);
+    return strengths.map((item, index) => {
+      const total = demo
+        ? CONTENT.VIA_SAMPLE_TOTALS[index]
+        : item.q.reduce((sum, _, n) => sum + ((via().answers || [])[index * 3 + n] || 0), 0);
+      return Object.assign({}, item, { index, total, score: Math.round(total / 3 * 100) / 100 });
+    }).sort((a, b) => b.total - a.total || a.index - b.index);
+  }
+
+  function viaReset() {
+    state.via = { answers: [], index: 0, preview: false, filter: 'all' };
     persist();
   }
 
@@ -411,6 +487,15 @@ function createGrowthStore(storage) {
     completeTool,
     resetTool,
     setAutoNext,
+    viaAnsweredCount,
+    viaComplete,
+    viaFirstMissing,
+    viaTotal,
+    viaGroupProgress,
+    viaSaveAnswer,
+    viaPatch,
+    viaRanked,
+    viaReset,
     setExperience,
     toggleExperienceEnergy,
     fillExamples,

@@ -1,0 +1,63 @@
+<view class="container gk-screen">
+  <view class="gk-head">
+    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+    <view class="gk-head-title">MBTI 16 型优缺点</view>
+    <text class="gk-head-tag">先看看</text>
+  </view>
+
+  <view class="te-intro">
+    <text class="gk-tag">不用先答题</text>
+    <view class="te-intro-title">从一段熟悉的描述，</view>
+    <view class="te-intro-title">认识自己，也理解别人。</view>
+    <view class="te-intro-copy">每种倾向都有两面。先找共鸣，再带着好奇去探索。</view>
+  </view>
+
+  <view class="te-modes">
+    <button class="te-mode {{mode === 'self' ? 'te-mode--selected' : ''}}" data-mode="self" bindtap="setMode">先看看自己</button>
+    <button class="te-mode {{mode === 'other' ? 'te-mode--selected' : ''}}" data-mode="other" bindtap="setMode">也看看 TA</button>
+  </view>
+  <view class="te-guidance">{{guidance}}</view>
+
+  <view class="te-select">想先了解哪一型？
+    <picker range="{{filterOptions}}" range-key="label" value="{{filter}}" bindchange="changeFilter" aria-label="选择 MBTI 类型">
+      <view class="te-select-value">{{filter === 'all' ? '全部 16 型' : filter + ' 型'}}<text class="te-select-arrow">▾</text></view>
+    </picker>
+  </view>
+
+  <view class="te-groups">
+    <button wx:for="{{groupChips}}" wx:key="code" class="te-chip {{group === item.code ? 'te-chip--selected' : ''}}" data-group="{{item.code}}" bindtap="setGroup">{{item.label}}</button>
+  </view>
+
+  <view class="te-note">以下为提供资料中的通行解读，不等于你的测评结果。优点与盲点会随情境、经历和成长而变化，不用于心理诊断或给别人下定论。</view>
+  <view class="te-count">当前展示 {{visibleCount}} 型</view>
+
+  <view class="te-list">
+    <view wx:for="{{cards}}" wx:key="code" class="te-card">
+      <view class="te-card-head">
+        <view>
+          <view class="te-card-code">{{item.code}} <text class="te-card-name">{{item.name}}</text></view>
+          <view class="te-card-alias">{{item.alias}}</view>
+        </view>
+        <text class="gk-tag te-card-badge">{{item.groupLabel}}</text>
+      </view>
+      <view class="te-up">
+        <view class="te-sub-title te-sub-title--up">自然发挥的优点</view>
+        <view wx:for="{{item.up}}" wx:for-item="point" wx:key="*this" class="te-point te-point--up">{{point}}</view>
+      </view>
+      <view class="te-dn">
+        <view class="te-sub-title te-sub-title--dn">需要留意的盲点</view>
+        <view wx:for="{{item.dn}}" wx:for-item="point" wx:key="*this" class="te-point te-point--dn">{{point}}</view>
+      </view>
+      <view class="te-card-foot">
+        <button class="te-link" bindtap="goTest">做 MBTI 性格测试</button>
+        <button class="te-link" data-code="{{item.code}}" bindtap="goCross">对照 VIA 优势</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="te-note">有共鸣，不代表被一种类型定义。你也可以通过自评，看看日常偏好和性格优势是否呼应。</view>
+
+  <button class="gk-primary" bindtap="goTest">开始 MBTI 性格测试</button>
+  <button class="gk-secondary" bindtap="goViaIntro">了解 VIA 性格优势</button>
+  <button class="gk-secondary" bindtap="goDiscover">返回自测首页</button>
+</view>
