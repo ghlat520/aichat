@@ -69,7 +69,7 @@
           <view class="growth-test-card-desc">{{item.desc}}</view>
           <view class="gk-tags">
             <text class="gk-tag {{item.color ? 'gk-tag--' + item.color : ''}}">{{item.status === 'done' ? '已完成 · 查看结果' : item.status === 'doing' ? '进行中' : '免费开始'}}</text>
-            <text class="gk-tag gk-tag--gray">演示 6 题</text>
+            <text class="gk-tag gk-tag--gray">{{item.tag}}</text>
           </view>
         </view>
         <view class="gk-chevron"></view>

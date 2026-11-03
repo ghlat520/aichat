@@ -9,3 +9,23 @@
 .intro-meta-item text { font-size: 18rpx; color: var(--ui-muted); }
 .intro-card-copy { margin-top: 16rpx; }
 .intro-note-br { display: block; height: 0; }
+
+/* —— MBTI 介绍（2026-11-02 原型 introPage；原型外链 https://openpsychometrics.org/tests/OEJTS/ 小程序降级为纯文本）—— */
+.mbti-hero { text-align: center; margin: 24rpx 0 40rpx; }
+.mbti-type-mark { display: inline-flex; flex-direction: column; align-items: center; gap: 4rpx; font-size: 28rpx; letter-spacing: 8rpx; line-height: 2; color: #7d88bd; background: #eef0fb; border-radius: 38rpx; padding: 24rpx 36rpx; margin-bottom: 30rpx; }
+.mbti-type-mark-row { display: flex; align-items: center; }
+.mbti-type-mark-gap { width: 36rpx; }
+.mbti-hero-title { font-size: 52rpx; line-height: 1.55; font-weight: 600; letter-spacing: -1.4rpx; }
+.mbti-hero-sub { font-size: 24rpx; color: var(--ui-muted); margin-top: 14rpx; }
+.mbti-description { font-size: 26rpx; line-height: 1.95; color: #61708a; background: #ffffff; border: 1rpx solid var(--ui-line, #e7ebf3); border-radius: 28rpx; padding: 32rpx; }
+.mbti-facts { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; gap: 16rpx; margin: 44rpx 0; }
+.mbti-facts-item text { font-size: 20rpx; color: var(--ui-muted); line-height: 1.8; }
+.mbti-facts-value { font-size: 36rpx; font-weight: 550; color: #5d6d97; margin-bottom: 8rpx; }
+.mbti-dim-list { border-top: 1rpx solid var(--ui-line, #e7ebf3); }
+.mbti-dim-row { display: flex; align-items: center; gap: 24rpx; padding: 28rpx 0; border-bottom: 1rpx solid var(--ui-line, #e7ebf3); }
+.mbti-dim-index { width: 50rpx; height: 50rpx; border-radius: 16rpx; background: #e9eefb; color: #7e8cc2; display: flex; align-items: center; justify-content: center; font-size: 22rpx; flex-shrink: 0; }
+.mbti-dim-copy { flex: 1; }
+.mbti-dim-title { font-size: 26rpx; font-weight: 550; }
+.mbti-dim-note { display: block; font-size: 20rpx; color: var(--ui-muted); margin-top: 8rpx; }
+.mbti-dim-code { font-size: 28rpx; font-weight: 500; color: #8d94b1; }
+.mbti-simple-note { font-size: 22rpx; line-height: 1.9; color: var(--ui-muted); margin: 36rpx 0; }

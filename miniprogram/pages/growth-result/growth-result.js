@@ -1,14 +1,10 @@
-// pages/growth-result/growth-result.js — 免费基础结果（V1.2 原型 result 屏）
+// pages/growth-result/growth-result.js — 免费基础结果
+// MBTI 分支：2026-11-02 原型 resultPage——固定 ENTP 排版样例（不计分），
+// 十二章节 + 可折叠目录；traits / strengths 保持 V1.2 通用结果。
 const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
 
-function buildCover(toolId, typeCode) {
-  if (toolId === 'mbti') {
-    return {
-      heading: typeCode === 'INFP' ? '细腻地理解，认真地回应。' : '你的偏好，有自己的模样。',
-      sub: '偏好不是边界，类型也不是能力结论。'
-    };
-  }
+function buildCover(toolId) {
   if (toolId === 'traits') {
     return {
       headingFirst: '你的性格，',
@@ -16,19 +12,21 @@ function buildCover(toolId, typeCode) {
       sub: '用连续维度，看见程度差异。'
     };
   }
-  return {
-    headingFirst: '值得发展的优势，',
-    headingSecond: '藏在你做过的事里。',
-    sub: '从测评倾向出发，再回到真实经历。'
-  };
+  if (toolId === 'strengths') {
+    return {
+      headingFirst: '值得发展的优势，',
+      headingSecond: '藏在你做过的事里。',
+      sub: '从测评倾向出发，再回到真实经历。'
+    };
+  }
+  return {}; // MBTI 分支使用固定 ENTP 封面，不渲染通用封面
 }
 
 Page({
   data: {
     toolId: 'mbti',
-    toolShort: '16 型人格',
-    isMbti: false,
-    typeCode: 'INFP',
+    toolShort: CONTENT.TOOLS.mbti.short,
+    isMbti: true,
     cover: {},
     statement: '',
     sourceLabel: '',
@@ -37,7 +35,14 @@ Page({
     sourceNote: '',
     dimensions: [],
     strengths: [],
-    sectionTitle: ''
+    sectionTitle: '',
+    mbtiNotice: CONTENT.MBTI_RESULT_NOTICE,
+    mbtiCover: CONTENT.MBTI_RESULT_COVER,
+    mbtiBoundary: CONTENT.MBTI_RESULT_BOUNDARY,
+    radar: CONTENT.MBTI_RESULT_RADAR,
+    brief: CONTENT.MBTI_REPORT_SECTIONS[0].paragraphs[0],
+    sections: CONTENT.MBTI_REPORT_SECTIONS,
+    directoryOpen: false
   },
 
   onLoad(query) {
@@ -46,7 +51,6 @@ Page({
     const state = growth.get();
     const tool = CONTENT.TOOLS[toolId];
     const source = state.sources[toolId] || {};
-    const typeCode = growth.typeCode();
     const isMbti = toolId === 'mbti';
     const sourceLabel = source.kind === 'import' ? '本人录入 · 已确认' : '原型作答 · 演示结果';
 
@@ -54,8 +58,7 @@ Page({
     let strengths = [];
     let sectionTitle = '';
     if (isMbti) {
-      sectionTitle = '四个维度的倾向';
-      dimensions = CONTENT.MBTI_DIMENSIONS.map(([left, right, percent, note]) => ({ left, right, percent, note }));
+      // MBTI 结果按原型固定 ENTP 样例展示，不再渲染四维样例条
     } else if (toolId === 'traits') {
       sectionTitle = '五个连续维度';
       dimensions = CONTENT.TRAIT_DIMENSIONS.map(([label, score, note]) => ({ label, score, note }));
@@ -68,11 +71,8 @@ Page({
       toolId,
       toolShort: tool.short,
       isMbti,
-      typeCode,
-      cover: buildCover(toolId, typeCode),
-      statement: isMbti && typeCode !== 'INFP'
-        ? '已保留你录入的类型；以下维度为原型样例，仅展示页面结构，不代表已导入实际分数。'
-        : tool.summary,
+      cover: buildCover(toolId),
+      statement: tool.summary,
       sourceLabel,
       sourceName: source.name || '原型样例版本 v1',
       sourceDate: source.date || '2026-10-26',
@@ -82,6 +82,29 @@ Page({
       sectionTitle
     });
     wx.setNavigationBarTitle({ title: tool.short + '结果' });
+  },
+
+  toggleDirectory() {
+    this.setData({ directoryOpen: !this.data.directoryOpen });
+  },
+
+  jumpSection(event) {
+    const id = event.currentTarget.dataset.id;
+    wx.pageScrollTo({
+      selector: '#mbti-sec-' + id,
+      offsetTop: -20,
+      duration: 300,
+      fail: () => {}
+    });
+  },
+
+  backToQuestion() {
+    // redirectTo 替换当前层：答题→结果反复往返不叠加页面栈（避免 10 层上限）
+    wx.redirectTo({ url: '/pages/growth-question/growth-question?tool=mbti' });
+  },
+
+  goHome() {
+    wx.switchTab({ url: '/pages/assessment/assessment' });
   },
 
   goBack() {

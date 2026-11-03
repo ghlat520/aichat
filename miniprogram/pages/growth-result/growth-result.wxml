@@ -2,80 +2,122 @@
   <view class="gk-head">
     <button class="ui-back" bindtap="goBack" aria-label="返回自测首页"><view class="ui-icon ui-icon--back"></view></button>
     <view class="gk-head-title">{{toolShort}}结果</view>
-    <text class="gk-head-tag">基础免费</text>
+    <text class="gk-head-tag">{{isMbti ? '免费结果' : '基础免费'}}</text>
   </view>
 
-  <view class="result-cover">
-    <text class="gk-tag gk-tag--white">{{sourceLabel}}</text>
-    <block wx:if="{{isMbti}}">
-      <view class="result-petals">
-        <view class="gk-test-art gk-test-art--mbti result-petals-art">
-          <view class="gk-petal"></view><view class="gk-petal gk-petal-2"></view><view class="gk-petal gk-petal-3"></view><view class="gk-petal gk-petal-4"></view>
+  <block wx:if="{{isMbti}}">
+    <view class="mbti-r-demo">{{mbtiNotice}}</view>
+
+    <view class="mbti-r-cover">
+      <view class="mbti-r-ribbon">{{mbtiCover.ribbon}}</view>
+      <view class="mbti-r-leaf"><view class="mbti-r-leaf-icon"></view></view>
+      <view class="mbti-r-code">{{mbtiCover.code}}</view>
+      <view class="mbti-r-name">{{mbtiCover.name}}</view>
+      <view class="mbti-r-alias">{{mbtiCover.alias}}</view>
+      <view class="mbti-r-keywords">{{mbtiCover.keywords}}</view>
+    </view>
+
+    <view class="mbti-r-radar">
+      <view class="mbti-r-radar-head">
+        <view class="mbti-r-radar-title">八维人格倾向</view>
+        <text class="mbti-r-badge">{{radar.badge}}</text>
+      </view>
+      <view class="mbti-r-radar-img" role="img" aria-label="{{radar.aria}}"></view>
+      <view class="mbti-r-radar-note">{{radar.note[0]}}<text class="mbti-r-note-br"></text>{{radar.note[1]}}</view>
+    </view>
+
+    <view class="mbti-r-card mbti-r-brief">
+      <view class="mbti-r-card-title">性格分析</view>
+      <view class="mbti-r-para">{{brief}}</view>
+    </view>
+
+    <view class="mbti-r-boundary">{{mbtiBoundary}}</view>
+
+    <view class="mbti-r-directory">
+      <button class="mbti-r-dir-toggle" bindtap="toggleDirectory" aria-expanded="{{directoryOpen}}">
+        <text>报告目录</text>
+        <text class="mbti-r-dir-count">{{sections.length}} 个章节</text>
+      </button>
+      <view wx:if="{{directoryOpen}}" class="mbti-r-dir-nav" aria-label="ENTP 报告章节">
+        <text
+          wx:for="{{sections}}"
+          wx:key="id"
+          class="mbti-r-dir-link"
+          data-id="{{item.id}}"
+          bindtap="jumpSection"
+        >{{item.title}}</text>
+      </view>
+    </view>
+
+    <view class="mbti-r-body">
+      <view wx:for="{{sections}}" wx:key="id" id="mbti-sec-{{item.id}}" class="mbti-r-card mbti-r-section">
+        <view class="mbti-r-card-title">{{item.title}}</view>
+        <view wx:for="{{item.paragraphs}}" wx:for-item="para" wx:key="*this" class="mbti-r-para">{{para}}</view>
+        <view wx:if="{{item.bullets}}" class="mbti-r-list">
+          <view wx:for="{{item.bullets}}" wx:for-item="bullet" wx:key="*this" class="mbti-r-bullet">{{bullet}}</view>
         </view>
       </view>
-      <view class="result-type-code">{{typeCode}}</view>
-      <view class="result-cover-heading">{{cover.heading}}</view>
-      <view class="result-cover-sub">偏好不是边界，类型也不是能力结论。</view>
-    </block>
-    <block wx:else>
+    </view>
+
+    <view class="mbti-r-end">以上内容用于展示所提供的 ENTP 文案模板。<text class="mbti-r-end-br"></text>此页不根据本轮作答生成个人分析。</view>
+
+    <button class="gk-primary" bindtap="backToQuestion">返回答题</button>
+    <button class="gk-secondary" bindtap="goHome">回到自测首页</button>
+  </block>
+
+  <block wx:else>
+    <view class="result-cover">
+      <text class="gk-tag gk-tag--white">{{sourceLabel}}</text>
       <view class="result-cover-heading-lg">{{cover.headingFirst}}</view>
       <view class="result-cover-heading-lg">{{cover.headingSecond}}</view>
       <view class="result-cover-sub">{{cover.sub}}</view>
-    </block>
-  </view>
+    </view>
 
-  <view class="result-statement">{{statement}}</view>
+    <view class="result-statement">{{statement}}</view>
 
-  <view class="gk-card">
-    <view class="gk-title-sm">{{sectionTitle}}</view>
+    <view class="gk-card">
+      <view class="gk-title-sm">{{sectionTitle}}</view>
 
-    <block wx:if="{{isMbti}}">
-      <view wx:for="{{dimensions}}" wx:key="left" class="gk-dimension">
-        <view class="gk-dimension-label"><text>{{item.left}} {{item.percent}}%</text><text>{{item.right}} {{100 - item.percent}}%</text></view>
-        <view class="gk-dimension-track"><view class="gk-dimension-fill" style="width: {{item.percent}}%;"></view><view class="gk-dimension-rest"></view></view>
-        <view class="gk-dimension-note">{{item.note}}</view>
-      </view>
-    </block>
+      <block wx:if="{{toolId === 'traits'}}">
+        <view wx:for="{{dimensions}}" wx:key="label" class="gk-dimension">
+          <view class="gk-dimension-label"><text class="gk-strong">{{item.label}}</text><text>{{item.score}} / 100</text></view>
+          <view class="gk-dimension-track"><view class="gk-dimension-fill gk-dimension-fill--teal" style="width: {{item.score}}%;"></view><view class="gk-dimension-rest"></view></view>
+          <view class="gk-dimension-note">{{item.note}}</view>
+        </view>
+      </block>
 
-    <block wx:if="{{toolId === 'traits'}}">
-      <view wx:for="{{dimensions}}" wx:key="label" class="gk-dimension">
-        <view class="gk-dimension-label"><text class="gk-strong">{{item.label}}</text><text>{{item.score}} / 100</text></view>
-        <view class="gk-dimension-track"><view class="gk-dimension-fill gk-dimension-fill--teal" style="width: {{item.score}}%;"></view><view class="gk-dimension-rest"></view></view>
-        <view class="gk-dimension-note">{{item.note}}</view>
-      </view>
-    </block>
+      <block wx:if="{{toolId === 'strengths'}}">
+        <view wx:for="{{strengths}}" wx:key="index" class="gk-strength-summary">
+          <text class="gk-strength-number">{{item.index}}</text>
+          <view>
+            <view class="gk-title-sm">{{item.name}}</view>
+            <view class="gk-small">{{item.desc}}</view>
+          </view>
+        </view>
+      </block>
 
-    <block wx:if="{{toolId === 'strengths'}}">
-      <view wx:for="{{strengths}}" wx:key="index" class="gk-strength-summary">
-        <text class="gk-strength-number">{{item.index}}</text>
-        <view>
-          <view class="gk-title-sm">{{item.name}}</view>
-          <view class="gk-small">{{item.desc}}</view>
+      <view class="gk-source-row">
+        <view class="ui-icon ui-icon--test result-source-icon"></view>
+        <view class="result-source-text">
+          <view>{{sourceLabel}} · {{sourceName}}</view>
+          <view>{{sourceDate}} · {{sourceNote}}</view>
         </view>
       </view>
-    </block>
-
-    <view class="gk-source-row">
-      <view class="ui-icon ui-icon--test result-source-icon"></view>
-      <view class="result-source-text">
-        <view>{{sourceLabel}} · {{sourceName}}</view>
-        <view>{{sourceDate}} · {{sourceNote}}</view>
-      </view>
     </view>
-  </view>
 
-  <view class="gk-card">
-    <view class="gk-title-sm">带回日常的一点提示</view>
-    <view class="gk-small result-tip-copy">沟通前给自己一点整理时间。先说清"我在意什么"，再听听对方在意的部分，留意这样做是否让交流更顺畅。</view>
-    <view class="gk-tiny result-tip-note">这是基础练习，不要求你改变成某一种性格。结果会受情境与作答时状态影响。</view>
-  </view>
+    <view class="gk-card">
+      <view class="gk-title-sm">带回日常的一点提示</view>
+      <view class="gk-small result-tip-copy">沟通前给自己一点整理时间。先说清"我在意什么"，再听听对方在意的部分，留意这样做是否让交流更顺畅。</view>
+      <view class="gk-tiny result-tip-note">这是基础练习，不要求你改变成某一种性格。结果会受情境与作答时状态影响。</view>
+    </view>
 
-  <view class="result-free-banner">这份基础结果可以完整查看、保存和分享，继续免费使用也没关系。</view>
+    <view class="result-free-banner">这份基础结果可以完整查看、保存和分享，继续免费使用也没关系。</view>
 
-  <button class="gk-primary" bindtap="exploreExperiences">结合我的经历，继续探索优势</button>
-  <button class="gk-secondary" bindtap="otherTests">先看看其他测评</button>
-  <view class="gk-button-pair">
-    <button class="gk-text-link" bindtap="shareResult">分享基础结果</button>
-    <button class="gk-text-link" bindtap="retest">重新测评</button>
-  </view>
+    <button class="gk-primary" bindtap="exploreExperiences">结合我的经历，继续探索优势</button>
+    <button class="gk-secondary" bindtap="otherTests">先看看其他测评</button>
+    <view class="gk-button-pair">
+      <button class="gk-text-link" bindtap="shareResult">分享基础结果</button>
+      <button class="gk-text-link" bindtap="retest">重新测评</button>
+    </view>
+  </block>
 </view>

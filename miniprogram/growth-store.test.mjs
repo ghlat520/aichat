@@ -53,6 +53,30 @@ test('作答：saveAnswer 逐题保存，末题 finished=true，resumeIndex 跳�
   assert.equal(g.saveAnswer('mbti', last, 4).finished, true);
 });
 
+test('MBTI 40 题：维度跳答产生稀疏作答，resumeIndex 落在首个未答处', () => {
+  const g = createGrowthStore(memWx());
+  g.resetTool('mbti');
+  assert.equal(CONTENT.QUESTIONS.mbti.length, 40);
+  assert.equal(CONTENT.MBTI_GROUPS.length, 4);
+  assert.equal(CONTENT.MBTI_REPORT_SECTIONS.length, 12);
+  // 模拟跳答：第 1 题与第 11 题已答，中间留洞
+  g.saveAnswer('mbti', 0, 2);
+  g.saveAnswer('mbti', 10, 4);
+  assert.equal(g.answeredCount('mbti'), 2);
+  assert.equal(g.resumeIndex('mbti'), 1); // 首个未答是第 2 题，而不是数组末端
+  assert.equal(g.savedChoice('mbti', 10), 4);
+  // 逐题补齐后停在末题
+  g.saveAnswer('mbti', 1, 3);
+  assert.equal(g.resumeIndex('mbti'), 2);
+});
+
+test('MBTI 原生完成：来源标注为 40 题示例', () => {
+  const g = createGrowthStore(memWx());
+  g.completeTool('mbti', 'native', { name: CONTENT.MBTI_DEMO_SOURCE_NAME, date: '2026-11-02' });
+  assert.equal(g.get().sources.mbti.name, '40 题中文 UI 示例 · 未进行正式计分');
+  assert.equal(g.typeCode(), 'INFP'); // 固定样例不写入 type，报告/海报消费方不受影响
+});
+
 test('完成测评后 results/sources 记录来源；resetTool 清空进度', () => {
   const g = createGrowthStore(memWx());
   g.completeTool('mbti', 'import', { kind: 'import', name: '我的已有测评 · 未知', date: '2026-10-26', type: 'INTJ' });

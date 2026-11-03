@@ -138,9 +138,21 @@ function createGrowthStore(storage) {
   }
 
   // —— 测评作答 ——
+  // MBTI 支持维度跳转后产生稀疏作答：续答定位到首个未答（连续作答时与旧的“已完成数量”语义一致）。
+  function isValidAnswer(value) {
+    return Number.isInteger(value) && value >= 1 && value <= 5;
+  }
+
   function resumeIndex(tool) {
     const answers = state.answers[tool] || [];
-    return Math.min(CONTENT.QUESTIONS[tool].length - 1, answers.length);
+    const total = CONTENT.QUESTIONS[tool].length;
+    const missing = answers.findIndex((value) => !isValidAnswer(value));
+    if (missing === -1) return Math.min(total - 1, answers.length);
+    return Math.min(total - 1, missing);
+  }
+
+  function answeredCount(tool) {
+    return (state.answers[tool] || []).filter(isValidAnswer).length;
   }
 
   function savedChoice(tool, index) {
@@ -393,6 +405,7 @@ function createGrowthStore(storage) {
     reset,
     resetAll,
     resumeIndex,
+    answeredCount,
     savedChoice,
     saveAnswer,
     completeTool,

@@ -1,66 +1,142 @@
-<view class="container gk-screen">
-  <view class="gk-head">
-    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
-    <view class="gk-head-title">{{toolShort}}</view>
-    <text class="gk-head-tag">{{isClassic ? '经典条目' : '演示题'}}</text>
-  </view>
+<view class="container {{isMbti ? 'mbti-q-screen' : 'gk-screen'}}">
+  <block wx:if="{{isMbti}}">
+    <view class="mbti-q-head">
+      <view class="mbti-q-top">
+        <button class="ui-back" bindtap="goIntro" aria-label="返回 MBTI 测试介绍"><view class="ui-icon ui-icon--back"></view></button>
+        <view class="mbti-q-top-title">MBTI 性格测试</view>
+        <button class="mbti-q-pause" bindtap="pauseMbti" aria-label="暂停作答">暂停</button>
+      </view>
+      <view class="mbti-q-between">
+        <view class="mbti-q-dim">{{group.title}} <text class="mbti-q-dim-code">{{group.code}}</text></view>
+        <text class="mbti-q-count">第 {{index + 1}} 题 / 共 {{total}} 题</text>
+      </view>
+      <view class="mbti-q-tabs" aria-label="四个测试维度">
+        <button
+          wx:for="{{steps}}"
+          wx:for-index="stepIdx"
+          wx:key="code"
+          class="mbti-q-step {{item.current ? 'mbti-q-step--selected' : ''}} {{item.complete ? 'mbti-q-step--complete' : ''}}"
+          data-step="{{stepIdx}}"
+          aria-label="{{item.title}}，第{{stepIdx + 1}}页{{item.complete ? '，已完成' : ''}}"
+          aria-current="{{item.current ? 'step' : ''}}"
+          bindtap="stepTap"
+        >
+          <text class="mbti-q-step-code">{{item.code}}</text>
+          <text class="mbti-q-step-title">{{item.title}}</text>
+        </button>
+      </view>
+      <view class="mbti-q-hint">{{group.hint}}</view>
+      <view class="mbti-q-progress">
+        <text class="mbti-q-progress-count">已答 {{answeredCount}} / {{total}} 题</text>
+        <text>选择后自动进入下一题</text>
+      </view>
+    </view>
 
-  <view class="gk-between question-meta-row">
-    <text class="gk-tiny">{{isClassic ? 'IPIP-50 条目体验' : '按最近一段时间的自己来选'}}</text>
-    <text class="gk-tag gk-tag--gray">{{index + 1}} / {{total}}</text>
-  </view>
-  <view class="gk-progress question-progress"><view class="gk-progress-fill" style="width: {{index / total * 100}}%;"></view></view>
+    <scroll-view class="mbti-q-scroll" scroll-y aria-label="当前题目">
+      <view class="mbti-q-item">
+        <view class="mbti-q-legend">
+          <text class="mbti-q-no">{{index + 1 < 10 ? '0' + (index + 1) : index + 1}}</text>
+          <text class="mbti-q-legend-text">{{question}}</text>
+        </view>
+        <view class="mbti-q-ends">
+          <text class="mbti-q-ends-left">{{ends.left}}</text>
+          <text class="mbti-q-ends-right">{{ends.right}}</text>
+        </view>
+        <view class="mbti-q-circles" role="radiogroup" aria-label="{{group.title}}选择">
+          <view
+            wx:for="{{circleOptions}}"
+            wx:key="value"
+            class="mbti-circle-btn mbti-circle-btn--{{item.side}} mbti-circle-btn--{{item.size}} {{selected === item.value ? 'mbti-circle-btn--checked' : ''}}"
+            role="radio"
+            aria-checked="{{selected === item.value}}"
+            aria-label="{{item.ariaLabel}}"
+            data-value="{{item.value}}"
+            bindtap="chooseMbti"
+          >
+            <view class="mbti-circle"><text class="mbti-circle-check">✓</text></view>
+          </view>
+        </view>
+      </view>
+      <view class="mbti-q-footnote">中文 UI 示例题 · 答案没有好坏之分。</view>
+    </scroll-view>
 
-  <view class="question-hint">不必选更理想的自己，选更接近真实的那个。</view>
-  <view class="question-title">{{question}}</view>
-
-  <view class="question-options" role="group" aria-label="{{isClassic ? '与自己的符合程度' : '认同程度'}}">
-    <button
-      wx:for="{{options}}"
-      wx:key="value"
-      class="gk-tap-answer {{selected === item.value ? 'gk-tap-answer--selected' : ''}}"
-      data-value="{{item.value}}"
-      aria-label="{{item.value}}分，{{item.label}}"
-      aria-pressed="{{selected === item.value}}"
-      bindtap="choose"
-    >
-      <view class="gk-tap-answer-key">{{item.value}}</view>
-      <text class="question-option-label">{{item.label}}</text>
-      <text class="gk-tap-answer-check">{{selected === item.value ? '✓' : ''}}</text>
-    </button>
-  </view>
-
-  <block wx:if="{{!autoNext}}">
-    <button class="gk-primary question-manual-save" bindtap="save" disabled="{{!selected}}">{{index === total - 1 ? '保存并查看结果' : '保存并继续'}}</button>
+    <view class="mbti-q-footer">
+      <view class="mbti-q-footer-meta">
+        <text class="mbti-q-foot-progress">{{footProgress}}</text>
+        <text class="mbti-q-message" aria-live="polite">{{message}}</text>
+      </view>
+      <view class="mbti-q-buttons">
+        <button class="mbti-q-btn mbti-q-btn--secondary" bindtap="previousMbti">{{previousLabel}}</button>
+        <button class="mbti-q-btn mbti-q-btn--primary" bindtap="saveMbti" disabled="{{nextDisabled}}" aria-label="{{nextLabel}}">{{nextLabel}}</button>
+      </view>
+    </view>
   </block>
-  <view wx:else class="question-auto-hint">点选后自动保存，进入下一题</view>
 
-  <view class="question-toolbar">
-    <button class="question-tool-btn" bindtap="previous" disabled="{{index === 0}}">上一题，修改答案</button>
-    <button class="question-tool-btn" bindtap="pause">先暂停，稍后继续</button>
-  </view>
+  <block wx:else>
+    <view class="gk-head">
+      <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
+      <view class="gk-head-title">{{toolShort}}</view>
+      <text class="gk-head-tag">{{isClassic ? '经典条目' : '演示题'}}</text>
+    </view>
 
-  <checkbox-group bindchange="toggleAutoNext">
-    <label class="gk-check-row question-auto-control">
-      <checkbox value="auto" checked="{{autoNext}}" color="#6577dc" />
-      <text>选择后自动下一题</text>
-    </label>
-  </checkbox-group>
+    <view class="gk-between question-meta-row">
+      <text class="gk-tiny">{{isClassic ? 'IPIP-50 条目体验' : '按最近一段时间的自己来选'}}</text>
+      <text class="gk-tag gk-tag--gray">{{index + 1}} / {{total}}</text>
+    </view>
+    <view class="gk-progress question-progress"><view class="gk-progress-fill" style="width: {{index / total * 100}}%;"></view></view>
 
-  <button wx:if="{{isClassic}}" class="question-source" bindtap="classicSource">
-    <view class="ui-icon ui-icon--test question-source-icon"></view>
-    <text>经典题目从哪里来？</text>
-    <view class="gk-chevron"></view>
-  </button>
-  <view class="gk-footer-note">{{isClassic ? '本轮选取 6 道经典条目做中文交互演示。' : '这是 6 道交互演示题。'}}<text class="question-note-br"></text>{{isClassic ? '完整版与中文适配需按正式测评版本确认。' : '正式题目采用确认后的测评工具版本。'}}</view>
+    <view class="question-hint">不必选更理想的自己，选更接近真实的那个。</view>
+    <view class="question-title">{{question}}</view>
+
+    <view class="question-options" role="group" aria-label="{{isClassic ? '与自己的符合程度' : '认同程度'}}">
+      <button
+        wx:for="{{options}}"
+        wx:key="value"
+        class="gk-tap-answer {{selected === item.value ? 'gk-tap-answer--selected' : ''}}"
+        data-value="{{item.value}}"
+        aria-label="{{item.value}}分，{{item.label}}"
+        aria-pressed="{{selected === item.value}}"
+        bindtap="choose"
+      >
+        <view class="gk-tap-answer-key">{{item.value}}</view>
+        <text class="question-option-label">{{item.label}}</text>
+        <text class="gk-tap-answer-check">{{selected === item.value ? '✓' : ''}}</text>
+      </button>
+    </view>
+
+    <block wx:if="{{!autoNext}}">
+      <button class="gk-primary question-manual-save" bindtap="save" disabled="{{!selected}}">{{index === total - 1 ? '保存并查看结果' : '保存并继续'}}</button>
+    </block>
+    <view wx:else class="question-auto-hint">点选后自动保存，进入下一题</view>
+
+    <view class="question-toolbar">
+      <button class="question-tool-btn" bindtap="previous" disabled="{{index === 0}}">上一题，修改答案</button>
+      <button class="question-tool-btn" bindtap="pause">先暂停，稍后继续</button>
+    </view>
+
+    <checkbox-group bindchange="toggleAutoNext">
+      <label class="gk-check-row question-auto-control">
+        <checkbox value="auto" checked="{{autoNext}}" color="#6577dc" />
+        <text>选择后自动下一题</text>
+      </label>
+    </checkbox-group>
+
+    <button wx:if="{{isClassic}}" class="question-source" bindtap="classicSource">
+      <view class="ui-icon ui-icon--test question-source-icon"></view>
+      <text>经典题目从哪里来？</text>
+      <view class="gk-chevron"></view>
+    </button>
+    <view class="gk-footer-note">{{isClassic ? '本轮选取 6 道经典条目做中文交互演示。' : '这是 6 道交互演示题。'}}<text class="question-note-br"></text>{{isClassic ? '完整版与中文适配需按正式测评版本确认。' : '正式题目采用确认后的测评工具版本。'}}</view>
+  </block>
+
   <view wx:if="{{sheet}}" class="question-overlay" catchtouchmove="preventScroll" bindtap="closeSheet">
     <view class="question-sheet" catchtap="preventScroll">
       <view class="question-sheet-grip"></view>
       <block wx:if="{{sheet === 'pause'}}">
-        <view class="question-sheet-title">先停在这里，也可以。</view>
-        <view class="question-sheet-copy">已保存 {{savedCount}} / {{total}} 道演示题。下次从自测首页继续，已保存的选择都还在。</view>
-        <button class="gk-primary" bindtap="keepProgress">保留进度，回到自测</button>
-        <button class="gk-quiet" bindtap="closeSheet">继续这道题</button>
+        <view class="question-sheet-title">{{isMbti ? '作答进度已保留' : '先停在这里，也可以。'}}</view>
+        <view class="question-sheet-copy">{{isMbti ? '本轮已选择 ' + savedCount + ' / ' + total + ' 题。返回自测后可以继续，已保存的选择都还在。' : '已保存 ' + savedCount + ' / ' + total + ' 道演示题。下次从自测首页继续，已保存的选择都还在。'}}</view>
+        <button class="gk-primary" bindtap="keepProgress">{{isMbti ? '返回自测，稍后继续' : '保留进度，回到自测'}}</button>
+        <button class="gk-quiet" bindtap="closeSheet">{{isMbti ? '继续作答' : '继续这道题'}}</button>
       </block>
       <block wx:else>
         <view class="question-sheet-title">经典题目，从哪里来？</view>

@@ -25,3 +25,55 @@
 .question-sheet-grip { width: 70rpx; height: 8rpx; border-radius: 8rpx; background: #dce2ec; margin: 0 auto 46rpx; }
 .question-sheet-title { font-size: 42rpx; font-weight: 550; letter-spacing: -1rpx; line-height: 1.6; margin: 14rpx 0 24rpx; }
 .question-sheet-copy { font-size: 24rpx; line-height: 1.9; color: var(--ui-muted); margin-bottom: 34rpx; }
+
+/* —— MBTI 答题（2026-11-02 原型 questionPage）—— */
+.mbti-q-screen { height: 100vh; display: flex; flex-direction: column; overflow: hidden; padding: 0; }
+.mbti-q-head { padding: 0 36rpx 24rpx; border-bottom: 1rpx solid var(--ui-line, #e7ebf3); flex-shrink: 0; background: var(--ui-canvas, #f5f6fa); }
+.mbti-q-top { height: 114rpx; display: flex; align-items: center; gap: 22rpx; }
+.mbti-q-top-title { font-size: 28rpx; font-weight: 550; flex: 1; }
+.mbti-q-pause { font-size: 24rpx; color: var(--ui-muted); background: transparent; padding: 0; margin: 0; line-height: 1.6; }
+.mbti-q-pause::after { border: 0; }
+.mbti-q-between { display: flex; justify-content: space-between; align-items: flex-end; }
+.mbti-q-dim { font-size: 42rpx; font-weight: 550; line-height: 1.6; }
+.mbti-q-dim-code { font-size: 26rpx; color: #8190b3; font-weight: 400; margin-left: 10rpx; }
+.mbti-q-count { font-size: 20rpx; color: var(--ui-muted); }
+.mbti-q-tabs { display: flex; gap: 14rpx; margin: 26rpx 0; }
+.mbti-q-step { flex: 1; padding: 14rpx 6rpx; background: #edf0f7; border: 1rpx solid transparent; border-radius: 18rpx; font-size: 20rpx; color: #8d98ad; margin: 0; line-height: 1.5; display: block; }
+.mbti-q-step::after { border: 0; }
+.mbti-q-step-code { display: block; font-size: 24rpx; font-weight: 550; margin-bottom: 6rpx; }
+.mbti-q-step-title { display: block; }
+.mbti-q-step--selected { background: #e8edff; border-color: #c2cdec; color: #6577dc; }
+.mbti-q-step--complete:not(.mbti-q-step--selected) { color: #267c75; background: #e5f4f0; border-color: #c4e2d9; }
+.mbti-q-hint { font-size: 22rpx; line-height: 1.8; color: #6d7e98; }
+.mbti-q-progress { display: flex; justify-content: space-between; gap: 12rpx; margin-top: 20rpx; font-size: 18rpx; color: #929db1; }
+.mbti-q-scroll { flex: 1; min-height: 0; padding: 40rpx 36rpx 0; box-sizing: border-box; }
+.mbti-q-item { border: 1rpx solid #e0e6f0; border-radius: 34rpx; background: #ffffff; padding: 50rpx 40rpx 50rpx; min-height: 560rpx; box-sizing: border-box; }
+.mbti-q-legend { font-size: 42rpx; line-height: 1.8; margin-bottom: 48rpx; font-weight: 500; }
+.mbti-q-no { font-size: 20rpx; font-weight: 500; color: #9ba7bc; display: inline-block; min-width: 44rpx; margin-right: 10rpx; }
+.mbti-q-legend-text { display: inline; }
+.mbti-q-ends { display: flex; justify-content: space-between; align-items: flex-start; gap: 34rpx; font-size: 26rpx; line-height: 1.9; margin-bottom: 40rpx; }
+.mbti-q-ends-left { max-width: 48%; color: #267c75; }
+.mbti-q-ends-right { max-width: 48%; text-align: right; color: #7d60a3; }
+.mbti-q-circles { display: flex; justify-content: space-between; align-items: center; gap: 12rpx; margin: 28rpx 0 20rpx; }
+.mbti-circle-btn { flex: 1; min-height: 112rpx; display: flex; align-items: center; justify-content: center; }
+.mbti-circle { width: 68rpx; height: 68rpx; border: 4rpx solid #99a3b5; border-radius: 50%; background: #f1f3f7; display: flex; align-items: center; justify-content: center; transition: background .15s, box-shadow .15s; }
+.mbti-circle-btn--left .mbti-circle { border-color: #267c75; background: #e5f4f0; }
+.mbti-circle-btn--right .mbti-circle { border-color: #7d60a3; background: #f0eafa; }
+.mbti-circle-btn--large .mbti-circle { width: 96rpx; height: 96rpx; }
+.mbti-circle-btn--small .mbti-circle { width: 40rpx; height: 40rpx; }
+.mbti-circle-check { color: #ffffff; font-size: 36rpx; line-height: 1; opacity: 0; }
+.mbti-circle-btn--small .mbti-circle-check { font-size: 22rpx; }
+.mbti-circle-btn--checked .mbti-circle { background: #99a3b5; box-shadow: 0 0 0 8rpx #f1f3f7; }
+.mbti-circle-btn--left.mbti-circle-btn--checked .mbti-circle { background: #267c75; box-shadow: 0 0 0 8rpx #e5f4f0; }
+.mbti-circle-btn--right.mbti-circle-btn--checked .mbti-circle { background: #7d60a3; box-shadow: 0 0 0 8rpx #f0eafa; }
+.mbti-circle-btn--checked .mbti-circle-check { opacity: 1; }
+.mbti-q-footnote { font-size: 20rpx; color: var(--ui-muted); line-height: 1.8; text-align: center; padding: 36rpx 0; }
+.mbti-q-footer { flex-shrink: 0; padding: 20rpx 36rpx calc(34rpx + env(safe-area-inset-bottom)); border-top: 1rpx solid #e2e7f1; background: #ffffff; }
+.mbti-q-footer-meta { display: flex; justify-content: space-between; gap: 12rpx; font-size: 20rpx; color: var(--ui-muted); margin-bottom: 20rpx; }
+.mbti-q-foot-progress { color: #6577dc; }
+.mbti-q-buttons { display: flex; gap: 20rpx; }
+.mbti-q-btn { flex: 1; min-height: 86rpx; margin: 0; border-radius: 22rpx; font-size: 28rpx; line-height: 86rpx; padding: 0; }
+.mbti-q-btn::after { border: 0; }
+.mbti-q-btn--primary { background: #6577dc; color: #ffffff; }
+.mbti-q-btn--primary[disabled] { background: #dce2f1; color: #8d99b2; }
+.mbti-q-btn--secondary { background: #ffffff; color: #6577dc; border: 1rpx solid #c2cdec; }

@@ -66,7 +66,7 @@ Page({
     const growth = getGrowth();
     const state = growth.get();
     const tools = CONTENT.TOOL_ORDER.map((id) => {
-      const answered = (state.answers[id] || []).length;
+      const answered = id === 'mbti' ? growth.answeredCount(id) : (state.answers[id] || []).length;
       return {
         id,
         name: CONTENT.TOOLS[id].name,
@@ -75,6 +75,7 @@ Page({
         color: CONTENT.TOOLS[id].color,
         answered,
         total: CONTENT.QUESTIONS[id].length,
+        tag: id === 'mbti' ? CONTENT.QUESTIONS[id].length + ' 题 · 示例' : '演示 ' + CONTENT.QUESTIONS[id].length + ' 题',
         date: (state.sources[id] && state.sources[id].date) || '2026-10-26',
         status: state.results[id] ? 'done' : answered > 0 ? 'doing' : 'fresh'
       };
