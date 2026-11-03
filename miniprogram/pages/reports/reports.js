@@ -29,14 +29,26 @@ Page({
     const growth = getGrowth();
     const state = growth.get();
     const filter = state.reportFilter;
-    const freeItems = CONTENT.TOOL_ORDER
-      .filter((id) => state.results[id])
-      .map((id) => ({
-        id,
-        name: CONTENT.TOOLS[id].short,
-        source: state.sources[id] && state.sources[id].kind === 'import' ? '本人录入' : '原型样例版本 v1',
-        color: CONTENT.TOOLS[id].color
-      }));
+    // V2（2026-11-03 原型）：免费分类只列完成问卷的 MBTI 与 VIA 记录；浏览样例不计入。
+    const freeItems = [];
+    if (state.results.mbti && growth.answeredCount('mbti') === CONTENT.QUESTIONS.mbti.length) {
+      freeItems.push({
+        id: 'mbti',
+        name: 'MBTI 性格测试 · 免费基础结果',
+        note: '本轮 40 题作答 · 结果为 ENTP 排版样例',
+        source: '40 题中文 UI 示例',
+        color: ''
+      });
+    }
+    if (growth.viaComplete()) {
+      freeItems.push({
+        id: 'via',
+        name: 'VIA 性格优势 · 免费基础结果',
+        note: '本轮 72 题自评 · 三题均分排序',
+        source: '24 项完整查看',
+        color: 'aqua'
+      });
+    }
     this.setData({
       filter,
       freeItems,
@@ -79,7 +91,13 @@ Page({
   },
 
   openFree(event) {
-    wx.navigateTo({ url: '/pages/growth-result/growth-result?tool=' + event.currentTarget.dataset.id });
+    const id = event.currentTarget.dataset.id;
+    if (id === 'via') {
+      getGrowth().viaPatch({ preview: false });
+      wx.navigateTo({ url: '/pages/via-result/via-result' });
+      return;
+    }
+    wx.navigateTo({ url: '/pages/growth-result/growth-result?tool=' + id });
   },
 
   openPaid(event) {

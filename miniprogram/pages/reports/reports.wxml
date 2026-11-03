@@ -42,9 +42,9 @@
       <button class="reports-item-main" data-id="{{item.id}}" bindtap="openFree">
         <view class="gk-feature-icon gk-feature-icon--sm {{item.color ? 'gk-feature-icon--' + item.color : ''}}"><view class="ui-icon ui-icon--test"></view></view>
         <view class="gk-grow">
-          <view class="reports-item-title">{{item.name}} · 基础结果</view>
-          <view class="gk-tiny">2026.10.26 · {{item.source}}</view>
-          <text class="gk-tag gk-tag--gray reports-free-tag">免费完整查看</text>
+          <view class="reports-item-title">{{item.name}}</view>
+          <view class="gk-tiny">{{item.note}}</view>
+          <text class="gk-tag gk-tag--gray reports-free-tag">{{item.source}}</text>
         </view>
         <view class="gk-chevron"></view>
       </button>

@@ -93,3 +93,7 @@ VIA × MBTI 使用 `优势测评整合工具.html` 第三部分的 16 型映射�
 `docs/prototypes` 为本目录的兼容链接。历史产品说明见 `docs/AICHAT_SELF_ASSESSMENT_PRODUCT_SPEC_2026-10-26.md`；原生对照见 `docs/NATIVE_GROWTH_IMPLEMENTATION_REVIEW_2026-10-26.md`。`cece-preview.html` 和 `native-ui-gallery.html` 作为历史资料保留，不属于当前自测主流程。
 
 本轮仅调整原型 UI、目录和交互连接；不修改原生小程序、后端、真实支付或全局 Skill/Hook。
+
+## 原生接入（2026-11-03 V2 对齐）
+
+V2 自测九页已按 1:1 接入原生：新增 `via-intro` / `via-question` / `via-result` / `via-mbti` / `mbti-types` 五页（VIA 72 题与 24 优势数据、16 型优缺点、对照映射逐字移植进 `growth-content.js`）；`growth-store` 增加 VIA 作答状态与三题均分排序；`assessment` 对齐 V2 目录（16 型轻阅读 teaser、MBTI/VIA/对照三卡、退休旧入口，关系轻自测入口迁至“我的”）；MBTI 结果页补两条探索链接；“我的报告”免费分类只列已完成问卷的 MBTI 与 VIA。VIA 作答进度本地持久化（优于原型内存态）。E2E 选择器同步更新；135/135 单测通过。

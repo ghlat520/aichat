@@ -98,6 +98,14 @@ Page({
     });
   },
 
+  goTypeExplore() {
+    wx.navigateTo({ url: '/pages/mbti-types/mbti-types?code=ENTP' });
+  },
+
+  goViaCross() {
+    wx.navigateTo({ url: '/pages/via-mbti/via-mbti?code=ENTP' });
+  },
+
   backToQuestion() {
     // redirectTo 替换当前层：答题→结果反复往返不叠加页面栈（避免 10 层上限）
     wx.redirectTo({ url: '/pages/growth-question/growth-question?tool=mbti' });

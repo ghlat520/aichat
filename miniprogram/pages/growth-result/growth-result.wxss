@@ -42,3 +42,7 @@
 .mbti-r-bullet::before { content: '·'; color: #a3afd0; margin-right: 8rpx; }
 .mbti-r-bullet:last-child { margin-bottom: 0; }
 .mbti-r-end { font-size: 18rpx; line-height: 1.9; color: var(--ui-muted, #778298); text-align: center; margin: 0 0 44rpx; }
+/* V2：结果页探索双链接（原型 .assessment-result-links）*/
+.mbti-r-links { display: grid; grid-template-columns: 1fr 1fr; gap: 16rpx; margin: 38rpx 0; }
+.mbti-r-link { font-size: 22rpx; line-height: 1.8; padding: 22rpx 14rpx; border: 1rpx solid var(--ui-line, #e9edf5); border-radius: 18rpx; background: #ffffff; color: #8797bb; margin: 0; }
+.mbti-r-link::after { border: 0; }
