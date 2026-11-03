@@ -1,5 +1,5 @@
 <import src="../../templates/preview.wxml" />
-<view id="report-page" class="container ui-tab-page">
+<view id="report-page" class="container">
   <template is="page-head" data="{{title:'我的清晰卡'}}" />
   <view id="report-loading" wx:if="{{loading}}" class="aichat-card aichat-muted">正在整理你的清晰卡…</view>
   <view id="report-error" wx:if="{{error}}" class="aichat-warning">{{error}}</view>

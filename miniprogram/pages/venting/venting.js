@@ -43,7 +43,7 @@ Page({
   },
 
   onShow() {
-    syncTabBar(this, 2);
+    syncTabBar(this, 3);
     const sessionId = (store.getState().session || {}).sessionId;
     this.setData({ sessionHidden: !!this.data.ownerSessionId && this.data.ownerSessionId !== sessionId });
     if (this.isTimeExpired()) this.setData({ limitReached: true });

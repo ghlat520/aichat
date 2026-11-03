@@ -2,6 +2,7 @@
   "pages": [
     "pages/entry/entry",
     "pages/assessment/assessment",
+    "pages/diary/diary",
     "pages/share-card/share-card",
     "pages/clarity-edit/clarity-edit",
     "pages/mirror/mirror",
@@ -63,12 +64,12 @@
         "text": "自测"
       },
       {
-        "pagePath": "pages/venting/venting",
-        "text": "说一说"
+        "pagePath": "pages/diary/diary",
+        "text": "觉察日记"
       },
       {
-        "pagePath": "pages/report/report",
-        "text": "清晰卡"
+        "pagePath": "pages/venting/venting",
+        "text": "说一说"
       },
       {
         "pagePath": "pages/profile/profile",

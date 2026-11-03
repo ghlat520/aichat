@@ -86,7 +86,7 @@ Page({
       });
 
       if (this.data.round === 2) {
-        wx.switchTab({ url: '/pages/report/report' });
+        wx.redirectTo({ url: '/pages/report/report' });
       } else {
         this.setData({ round: 2, submitting: false, canSubmit: false });
       }

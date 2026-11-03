@@ -1,8 +1,8 @@
 const tabs = [
   { path: '/pages/entry/entry', label: '首页', icon: 'home' },
   { path: '/pages/assessment/assessment', label: '自测', icon: 'test' },
+  { path: '/pages/diary/diary', label: '觉察日记', icon: 'leaf' },
   { path: '/pages/venting/venting', label: '说一说', icon: 'chat-light' },
-  { path: '/pages/report/report', label: '清晰卡', icon: 'cards' },
   { path: '/pages/profile/profile', label: '我的', icon: 'user' }
 ];
 Component({

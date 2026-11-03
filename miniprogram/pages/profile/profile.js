@@ -90,6 +90,6 @@ Page({
     wx.navigateTo({ url: '/pages/voices/voices' });
   },
   goOrder() { wx.navigateTo({ url: '/pages/order/order' }); },
-  goCards() { wx.switchTab({ url: '/pages/report/report' }); },
+  goCards() { wx.navigateTo({ url: '/pages/report/report' }); },
   goPrivacy() { wx.navigateTo({ url: '/pages/data-control/data-control' }); }
 });

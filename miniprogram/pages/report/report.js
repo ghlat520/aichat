@@ -1,10 +1,9 @@
-const { store, getSessionBoundClient, friendlyError, syncTabBar, goHome } = require('../../app-store');
+const { store, getSessionBoundClient, friendlyError, goHome } = require('../../app-store');
 const emotionLabels = { anxious: '焦虑', hurt: '受伤', angry: '生气', confused: '困惑', sad: '难过', hopeful: '期待', calm: '平静', other: '还说不清' };
 Page({
   data: { loading: false, taskId: '', reportId: '', summary: null, demo: true, emotions: [], needs: [], emotionText: '', needText: '', error: '' },
   onLoad(query = {}) { this.loadCurrentCard(query.taskId); },
   onShow() {
-    syncTabBar(this, 3);
     const task = store.getState().activeTask || {};
     if (task.taskId !== this.data.taskId || (!this.data.loading && this.data.demo && task.reflectionVersionR1 && task.reflectionVersionR2)) this.loadCurrentCard();
   },
