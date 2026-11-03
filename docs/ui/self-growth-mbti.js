@@ -58,6 +58,7 @@
   const pageAnswered = index => Array.from({ length: 10 }, (_, i) => state.answers.mbti[index * 10 + i]).filter(valid).length;
   const missingQuestion = () => Array.from({ length: 40 }, (_, index) => index).find(index => !valid(state.answers.mbti[index]));
   globalThis.mbtiAnsweredCount = answered;
+  globalThis.mbtiHasResult = () => answered() === 40;
   globalThis.mbtiPageIndex = pageIndex;
   globalThis.mbtiQuestionIndex = questionIndex;
   Object.assign(tools.mbti, { name: 'MBTI 性格测试', short: 'MBTI 性格测试', desc: '从精力来源、信息获取、决策方式和生活节奏四个维度了解自己。' });
@@ -148,7 +149,7 @@
     return `<svg class="mbti-result-radar" viewBox="0 0 360 330" role="img" aria-labelledby="mbti-radar-title mbti-radar-desc"><title id="mbti-radar-title">ENTP 八维人格倾向多边形图，展示样例</title><desc id="mbti-radar-desc">${resultAxes.map(([name, code, value]) => `${name}${code} ${value}分`).join('，')}。每轴以25分为显示上限，非本轮测试计分。</desc><g class="mbti-radar-grid">${rings}${axes}</g><polygon class="mbti-radar-shape" points="${coordinates(values)}"/>${values.map(([x, y]) => `<circle class="mbti-radar-point" cx="${x}" cy="${y}" r="2.8"/>`).join('')}${labels}</svg>`;
   }
   function resultPage() {
-    return `<section class="mbti-ui mbti-report">${head('MBTI 性格测试结果', 'discover', '免费结果')}<p class="mbti-result-demo">ENTP 固定排版样例 · 图中分数为展示数据，未接入真实计分</p><header class="mbti-report-cover"><span class="mbti-result-ribbon">我的测试结果</span><span class="mbti-report-leaf">${icon('leaf')}</span><h1>ENTP</h1><h2>发明家型人格</h2><span class="mbti-result-alias">别称：辩论家</span><p class="mbti-result-keywords">关键词：好奇、灵活、创新</p></header><section class="mbti-radar-card" aria-labelledby="mbti-radar-heading"><div class="between"><h2 id="mbti-radar-heading">八维人格倾向</h2><span>示例分数</span></div>${resultRadar()}<p class="mbti-radar-note">外向与内向、感觉与直觉、思考与情感、判断与知觉<br>以多边形直观看见八项倾向的分布。</p></section><section class="mbti-brief-card"><h2>性格分析</h2><p>${esc(reportSections[0].paragraphs[0])}</p></section><p class="mbti-report-boundary">自我探索与社交娱乐工具，不是心理诊断，没有好坏之分。</p><details class="mbti-report-directory"><summary>报告目录 <span>12 个章节</span></summary><nav aria-label="ENTP 报告章节">${reportSections.map(item => `<a href="#mbti-report-${item.id}" data-mbti-section="${item.id}">${item.title}</a>`).join('')}</nav></details><article>${reportSections.map(item => `<section class="mbti-report-section" id="mbti-report-${item.id}"><h2>${item.title}</h2>${(item.paragraphs || []).map(text => `<p>${esc(text)}</p>`).join('')}${item.bullets ? `<ul>${item.bullets.map(text => `<li>${esc(text)}</li>`).join('')}</ul>` : ''}</section>`).join('')}</article><p class="mbti-report-end">以上内容用于展示所提供的 ENTP 文案模板。<br>此页不根据本轮作答生成个人分析。</p>${actionButton('返回答题', 'resume')}${goButton('回到自测首页', 'discover', 'secondary')}</section>`;
+    return `<section class="mbti-ui mbti-report">${head('MBTI 性格测试结果', 'discover', '免费结果')}<p class="mbti-result-demo">ENTP 固定排版样例 · 图中分数为展示数据，未接入真实计分</p><header class="mbti-report-cover"><span class="mbti-result-ribbon">我的测试结果</span><span class="mbti-report-leaf">${icon('leaf')}</span><h1>ENTP</h1><h2>发明家型人格</h2><span class="mbti-result-alias">别称：辩论家</span><p class="mbti-result-keywords">关键词：好奇、灵活、创新</p></header><section class="mbti-radar-card" aria-labelledby="mbti-radar-heading"><div class="between"><h2 id="mbti-radar-heading">八维人格倾向</h2><span>示例分数</span></div>${resultRadar()}<p class="mbti-radar-note">外向与内向、感觉与直觉、思考与情感、判断与知觉<br>以多边形直观看见八项倾向的分布。</p></section><section class="mbti-brief-card"><h2>性格分析</h2><p>${esc(reportSections[0].paragraphs[0])}</p></section><div class="assessment-result-links"><button data-explore-action="type" data-code="ENTP">看看 ENTP 优点与盲点</button><button data-explore-action="cross" data-code="ENTP">对照 ENTP 的 VIA 优势</button></div><p class="mbti-report-boundary">自我探索与社交娱乐工具，不是心理诊断，没有好坏之分。</p><details class="mbti-report-directory"><summary>报告目录 <span>12 个章节</span></summary><nav aria-label="ENTP 报告章节">${reportSections.map(item => `<a href="#mbti-report-${item.id}" data-mbti-section="${item.id}">${item.title}</a>`).join('')}</nav></details><article>${reportSections.map(item => `<section class="mbti-report-section" id="mbti-report-${item.id}"><h2>${item.title}</h2>${(item.paragraphs || []).map(text => `<p>${esc(text)}</p>`).join('')}${item.bullets ? `<ul>${item.bullets.map(text => `<li>${esc(text)}</li>`).join('')}</ul>` : ''}</section>`).join('')}</article><p class="mbti-report-end">以上内容用于展示所提供的 ENTP 文案模板。<br>此页不根据本轮作答生成个人分析。</p>${actionButton('返回答题', 'resume')}${goButton('回到自测首页', 'discover', 'secondary')}</section>`;
   }
 
   renderers.intro = () => state.tool === 'mbti' ? introPage() : originalIntro();
@@ -156,9 +157,9 @@
   renderers.result = () => state.tool === 'mbti' ? resultPage() : originalResult();
   globalThis.mbtiReviewState = () => {
     const meta = {
-      intro: ['MBTI 性格测试', '直接说明用途、四个维度与作答方式，先看清楚再开始。', ['按用户给定的说明展示，不使用含糊名称。', '40 道中文 UI 示例，四个维度各 10 题，选择后自动进入下一题。']],
-      question: ['MBTI 四维答题', '保留原有题目和左右描述，只调整五档选择控件。', ['五圈按大中小中大排列，左侧青绿、右侧紫色，与两侧描述对应。', '选中后着色并打勾，再自动进入下一题；上一题、暂停与续答保留选择。']],
-      result: ['ENTP 结果样例', '参考提供的图片：人格摘要、八维多边形、性格简析、目录和十二张详细卡片。', ['原有 12 个章节的文字与顺序保持一致，仅调整卡片排版。', '摘要、分数与长报告统一使用 ENTP 固定样例，非真实计分。']]
+      intro: ['MBTI 测评介绍', '直接说明用途、四个维度与作答方式，先看清楚再开始。', ['按用户给定的说明展示，不使用含糊名称。', '40 道中文 UI 示例，四个维度各 10 题，选择后自动进入下一题。']],
+      question: ['MBTI 答题与续答', '保留原有题目和左右描述，五档圆圈选中后自动继续。', ['五圈按大中小中大排列，左侧青绿、右侧紫色，与两侧描述对应。', '选中后着色并打勾，再自动进入下一题；上一题、暂停与续答保留选择。']],
+      result: ['MBTI 免费基础结果', '人格摘要、八维多边形、性格简析、目录和十二张详细卡片。', ['原有 12 个章节的文字与顺序保持一致。', '摘要、分数与长报告统一使用 ENTP 固定样例；浏览样例不记作完成问卷。']]
     }[page];
     if (meta) { $('#inspector-title').textContent = meta[0]; $('#inspector-desc').textContent = meta[1]; $('#review-points').innerHTML = meta[2].map(text => `<li>${text}</li>`).join(''); }
     $('#scenarios').innerHTML = groups.map((item, index) => actionButton(`${item.title} ${item.code}`, 'step', 'scenario', `data-step="${index}"`)).join('') + actionButton('ENTP 结果样例', 'sample', 'scenario');
