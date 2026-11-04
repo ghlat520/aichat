@@ -131,7 +131,7 @@ flowchart TB
 |---|---|---|---|---|
 | 用户与访问 | 用户身份 `Identity` | Visitor、Principal、WechatBinding | 免费匿名进入；支付/提醒时最小绑定微信身份 | 关系文本、会员等级、订单金额 |
 | 用户与访问 | 同意与会话 `Access` | Consent、PolicyAcceptance、Session、TokenFamily | 18+、政策版本和会话可追溯 | 用户画像、业务任务 |
-| 核心产品 | 自测入口 `Assessment` | Definition、Run、Answer、Score | 6–8 题确定性当前倾向 | 临床结论、长期人格档案 |
+| 核心产品 | 自测入口 `Assessment` | Definition、Run、Answer、Score | 6–8 题确定性当前倾向（服务端承载，关系轻自测）；另含 V2 自测区（2026-11）：MBTI 40 题、VIA 72 题探索性自评、16 型优缺点参考阅读与 VIA×MBTI 对照，现为**前端本地实现**（本地存储、固定样例结果），后端化时复用 ct_assessment_* 通用结构 | 临床结论、长期人格档案 |
 | 核心产品 | 倾诉入口 `Venting` | VentSession、VentTurn、ConfirmedSummary | 限时限轮、随时结束、确认后才映射 | 长期陪伴、主动召回 |
 | 核心产品 | 关系清晰任务 `Clarity` | Task、FieldVersion、Mirror、Reflection | 一件关系事件、事实/解释分离、用户确认 | 第三人真相、支付状态 |
 | 核心产品 | 安全治理 `Safety` | SafetyAssessment、Route、ReviewCase、Resource | 商业前置、免费分流、Fail-Closed | 诊断、急救承诺、资金事实 |
@@ -400,6 +400,11 @@ miniprogram/                      # 微信原生 TypeScript 小程序
 miniprogram/
   pages/boundary home assessment vent task mirror reflection summary
   pages/pay report action review tasks privacy support safety
+  # 自测 V2（2026-11，前端本地实现）：
+  pages/growth-intro growth-question growth-result     # MBTI 40 题流程
+  pages/via-intro via-question via-result via-mbti     # VIA 72 题流程与 16 型对照
+  pages/mbti-types                                      # 16 型优缺点参考阅读
+  pages/diary                                           # 觉察日记（V2 体验版）
   components/ai-badge field-editor safety-banner version-chip state-view
   services/api auth payment telemetry local-draft
   stores/session task experiment
@@ -671,9 +676,9 @@ MVP 可在同一托管 MySQL 实例内使用五个逻辑库和独立用户；这
 |---|---|---|
 | `ct_clarity_task` | id、visitor/principal、entry、context、state、clarity_pre/post | 无原文任务聚合 |
 | `ct_content_version` | task_id、version、ciphertext、confirmation_state、expires_at | 六字段/倾诉等加密对象版本 |
-| `ct_assessment_definition` | version、items_json、score_rules_hash、license | 不可变题库版本 |
-| `ct_assessment_run` | task_id、definition_version、score_vector、result_code | 当前任务自测 |
-| `ct_assessment_answer` | run_id、ciphertext、expires_at | 临时答案，24h TTL |
+| `ct_assessment_definition` | version、items_json、score_rules_hash、license | 不可变题库版本。V2 自测区（MBTI 40/VIA 72）现为前端本地实现，后端化时以新 definition 版本（如 mbti_40_ui_v1 / via_72_ui_v1）复用本表，不新增表结构 |
+| `ct_assessment_run` | task_id、definition_version、score_vector、result_code | 当前任务自测。VIA 后端化时 score_vector 存 24 项均分排序快照，MBTI 存四维计数（正式计分接入后） |
+| `ct_assessment_answer` | run_id、ciphertext、expires_at | 临时答案，24h TTL。V2 前端问卷作答暂存小程序本地（`aichat_growth_state_v1`），不入库 |
 | `ct_vent_session` | task_id、state、ai_turns、started/deadline | 限时限轮状态 |
 | `ct_vent_turn` | session_id、role、ciphertext、safety_id、expires_at | 临时加密回合 |
 | `ct_safety_assessment` | task_id、checkpoint、route、decision、rule_version | 无原文安全结果 |
@@ -1066,7 +1071,7 @@ Controller 只负责协议、鉴权、Schema 和错误映射；每条 API 必须
 | Method/Path | Auth | 幂等 | 说明 |
 |---|---|---|---|
 | `GET /assessments/current` | Visitor | 否 | 取已发布题库版本，不返回内部权重以外敏感配置 |
-| `POST /assessment-runs` | Visitor | 是 | 创建自测运行 |
+| `POST /assessment-runs` | Visitor | 是 | 创建自测运行（当前仅关系轻自测使用；V2 自测区 MBTI/VIA 为前端本地实现，不经本端点，后端化时以 tool/definition_version 参数扩展复用） |
 | `PUT /assessment-runs/{id}/answers/{item}` | Visitor | 是 | 保存/覆盖临时答案，带 expected_version |
 | `POST /assessment-runs/{id}/complete` | Visitor | 是 | 确定性计分和结果 |
 | `POST /assessment-runs/{id}/map-to-task` | Visitor | 是 | 用户确认后映射候选字段 |

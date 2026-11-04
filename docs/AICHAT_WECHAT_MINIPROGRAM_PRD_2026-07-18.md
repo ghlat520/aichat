@@ -363,8 +363,8 @@ flowchart TB
 
 | CAP ID | 功能 | 对用户的产品化输出 | 阶段 | 风险 |
 |---|---|---|---|---|
-| TEST-01 | 关系应对模式自测 | 6–8 题、来源和计分可追溯的当前倾向结果；非诊断、非永久人格 | P0 Approved | Yellow |
-| TEST-02 | MBTI 风格偏好测试 | 仅在商标、题库和解释授权清晰时使用 | Separate PRD | Yellow |
+| TEST-01 | 关系应对模式自测 | 6–8 题、来源和计分可追溯的当前倾向结果；非诊断、非永久人格 | P0 Approved（V2 起入口移至「我的」，流程不变） | Yellow |
+| TEST-02 | MBTI 风格偏好测试 | 仅在商标、题库和解释授权清晰时使用（2026-11 V2：已内建 40 题 UI 示例 + 固定 ENTP 样例结果，明确标注未接正式题库与计分；授权接入前不生成个人类型结论。另含 VIA 72 题探索性自评、16 型优缺点参考阅读与 VIA×MBTI 对照，见自测 SPEC V2 章节） | Separate PRD（UI 演示已落地，正式授权待确认） | Yellow |
 | TEST-03 | 关系/双人测试 | 经双方主动参与的差异与沟通题 | Separate PRD | Yellow |
 | TEST-04 | 压力/情绪自查 | 非诊断性筛查、风险提示与专业资源 | Separate PRD | Yellow |
 | TEST-05 | 结果比较与复测 | 说明测量误差，不给永久人格标签 | Separate PRD | Yellow |
