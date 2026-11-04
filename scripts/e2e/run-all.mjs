@@ -395,13 +395,13 @@ async function main() {
       'pages/order/order',
       { navigation: 'redirectTo' }
     );
-    await requiredElement(order, '#order-stub');
-    const text = String(await ui.text(order.path, '#order-stub'));
-    if (!text.includes('功能开发中') || !text.includes('不会发起支付')) {
-      throw new Error(`stub 文案不完整：${text}`);
+    await requiredElement(order, '#order-page');
+    const text = String(await ui.text(order.path, '#order-page'));
+    if (!text.includes('微信登录并恢复订单') || !text.includes('暂未读取到购买记录')) {
+      throw new Error(`订单页 Visitor 空态文案不完整：${text.slice(0, 120)}`);
     }
-    await capture('E2E-07', 'E2E-07-order', 'pages/order/order', '#order-stub');
-    return 'Visitor UI 显式 STUB_BY_SCOPE；Principal 501 由后端契约测试覆盖';
+    await capture('E2E-07', 'E2E-07-order', 'pages/order/order', '#order-page');
+    return '订单页 Visitor 空态：恢复订单入口与提示完整，无支付动作（Principal 501 由后端契约测试覆盖）';
   });
 
   await runCase('E2E-08', 'PII 不出现在最终网络请求体', async () => {

@@ -88,7 +88,9 @@ export class CdpUi {
     if (!response.ok) throw new Error(`CDP target list HTTP ${response.status}`);
     const targets = await response.json();
     const target = targets.find(
-      (item) => item.type === 'page' && String(item.url || '').includes('/html/index.html')
+      // 工具 2.x 主窗口为 electron-project.html（旧版为 index.html）；项目窗口 URL 携带 projectpath
+      (item) => item.type === 'page'
+        && (String(item.url || '').includes('/html/electron-project.html') || String(item.url || '').includes('/html/index.html'))
     );
     if (!target || !target.webSocketDebuggerUrl) throw new Error('未找到微信开发者工具主窗口 CDP target');
     return target;
