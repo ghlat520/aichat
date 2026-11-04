@@ -57,9 +57,10 @@ via: {
   answers: number[72]   // 稀疏数组，元素 1..5；缺项/0 视为未答
   index:   number       // 当前题号 0..71（续答位置）
   preview: boolean      // true=正在看排版样例（不写入完成记录）
-  filter:  string       // via-mbti 页类型筛选：'all' | 16 型 code
 }
 ```
+
+（对照表的类型筛选是 `via-mbti` 页内状态，不进全局存储。）
 
 **defaults 变更（对齐原型 V2 defaults）：**
 - `answers.mbti`：`[3,4]`（演示进行中）→ `[]`（从零开始）

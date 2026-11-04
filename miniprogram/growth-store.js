@@ -17,7 +17,7 @@ function defaults() {
     answers: { mbti: [], traits: [], strengths: [] },
     results: { mbti: false, traits: true, strengths: true },
     sources: {},
-    via: { answers: [], index: 0, preview: false, filter: 'all' },
+    via: { answers: [], index: 0, preview: false },
     autoNext: true,
     experiences: [emptyExperience(), emptyExperience()],
     confirmed: false,
@@ -99,7 +99,7 @@ function createGrowthStore(storage) {
         state = Object.assign(defaults(), saved, {
           answers: Object.assign({ mbti: [], traits: [], strengths: [] }, saved.answers),
           results: Object.assign({ mbti: false, traits: false, strengths: false }, saved.results),
-          via: Object.assign({ answers: [], index: 0, preview: false, filter: 'all' }, saved.via, {
+          via: Object.assign({ answers: [], index: 0, preview: false }, saved.via, {
             answers: Object.assign([], (saved.via || {}).answers || [])
           }),
           experiences: (saved.experiences && saved.experiences.length >= 2)
@@ -192,7 +192,7 @@ function createGrowthStore(storage) {
 
   // —— VIA 性格优势（2026-11-03 原型 V2：72 题 / 24 项，三题均分排序）——
   function via() {
-    if (!state.via) state.via = { answers: [], index: 0, preview: false, filter: 'all' };
+    if (!state.via) state.via = { answers: [], index: 0, preview: false };
     return state.via;
   }
 
@@ -260,7 +260,7 @@ function createGrowthStore(storage) {
   }
 
   function viaReset() {
-    state.via = { answers: [], index: 0, preview: false, filter: 'all' };
+    state.via = { answers: [], index: 0, preview: false };
     persist();
   }
 

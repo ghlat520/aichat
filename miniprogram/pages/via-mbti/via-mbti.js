@@ -1,6 +1,5 @@
 // pages/via-mbti/via-mbti.js — VIA × MBTI 对照表（2026-11-03 原型 V2 via-mbti 屏）
 // 16 型 × 5 项优势参考；探索性映射非官方交叉验证；“责任/适应”标为补充描述不计分。
-const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
 
 const STRENGTH_NAMES = new Set(CONTENT.VIA_GROUPS.reduce((all, group) => all.concat(group.items.map((item) => item.zh)), []));
@@ -15,9 +14,7 @@ Page({
 
   onLoad(query) {
     const code = query && query.code;
-    const filter = CONTENT.VIA_CROSS.some((row) => row.code === code) ? code : 'all';
-    getGrowth().viaPatch({ filter });
-    this.applyFilter(filter);
+    this.applyFilter(CONTENT.VIA_CROSS.some((row) => row.code === code) ? code : 'all');
   },
 
   applyFilter(filter) {
@@ -41,9 +38,7 @@ Page({
   },
 
   changeFilter(event) {
-    const filter = event.detail.value;
-    getGrowth().viaPatch({ filter });
-    this.applyFilter(filter);
+    this.applyFilter(event.detail.value);
   },
 
   goTypes(event) {
