@@ -206,8 +206,9 @@ async function main() {
   });
 
   await runCase('E2E-02', '同意后完成自测并命中 task', async () => {
-    let assessment = await currentPage('pages/assessment/assessment');
-    // V2：关系轻自测入口迁至“我的”；经 profile 进入
+    // V2：关系轻自测入口迁至“我的”；主动切到 profile 再进入（currentPage 仅被动轮询）
+    await reLaunch('/pages/profile/profile');
+    let assessment = null;
     const profile = await currentPage('pages/profile/profile');
     await requiredElement(profile, '#profile-relationship-entry', 15000);
     await activate(profile, '#profile-relationship-entry');

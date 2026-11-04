@@ -90,7 +90,8 @@ try {
     12000,
     '等待自测首页目录'
   );
-  // V2：关系轻自测入口迁至“我的”，经 profile 进入
+  // V2：关系轻自测入口迁至“我的”；先切到 profile 再点击
+  await route('/pages/profile/profile', ['#profile-relationship-entry']);
   await ui.click('/pages/profile/profile', '#profile-relationship-entry');
   await route(
     '/pages/assessment/assessment',
