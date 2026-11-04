@@ -31,6 +31,13 @@
       <view class="mbti-r-para">{{brief}}</view>
     </view>
 
+    <view class="mbti-r-celebrity">
+      <view class="mbti-r-celebrity-names">
+        <text wx:for="{{celebrity.names}}" wx:key="*this" class="mbti-r-celebrity-name">{{item}}</text>
+      </view>
+      <view class="mbti-r-celebrity-prompt">{{celebrity.prompt}}</view>
+    </view>
+
     <view class="mbti-r-links">
       <button class="mbti-r-link" bindtap="goTypeExplore">看看 ENTP 优点与盲点</button>
       <button class="mbti-r-link" bindtap="goViaCross">对照 ENTP 的 VIA 优势</button>

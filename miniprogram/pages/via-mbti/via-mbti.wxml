@@ -27,6 +27,12 @@
         <text wx:for="{{item.strengths}}" wx:for-item="tag" wx:key="name" class="vc-tag {{tag.supplement ? 'vc-tag--supplement' : ''}}">{{tag.name}}{{tag.supplement ? ' · 补充描述' : ''}}</text>
       </view>
       <view class="vc-card-desc">{{item.description}}</view>
+      <view class="vc-celebrity">
+        <view class="vc-celebrity-names">
+          <text wx:for="{{item.celebrity.names}}" wx:for-item="name" wx:key="*this" class="vc-celebrity-name">{{name}}</text>
+        </view>
+        <view class="vc-celebrity-prompt">{{item.celebrity.prompt}}</view>
+      </view>
       <button class="vc-type-link" data-code="{{item.code}}" bindtap="goTypes">看看 {{item.code}} 的优点与盲点</button>
     </view>
   </view>

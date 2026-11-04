@@ -41,6 +41,7 @@ Page({
     mbtiBoundary: CONTENT.MBTI_RESULT_BOUNDARY,
     radar: CONTENT.MBTI_RESULT_RADAR,
     brief: CONTENT.MBTI_REPORT_SECTIONS[0].paragraphs[0],
+    celebrity: CONTENT.MBTI_CELEBRITY_REFERENCES.ENTP,
     sections: CONTENT.MBTI_REPORT_SECTIONS,
     directoryOpen: false
   },

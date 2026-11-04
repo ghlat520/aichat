@@ -46,3 +46,8 @@
 .mbti-r-links { display: grid; grid-template-columns: 1fr 1fr; gap: 16rpx; margin: 38rpx 0; }
 .mbti-r-link { font-size: 22rpx; line-height: 1.8; padding: 22rpx 14rpx; border: 1rpx solid var(--ui-line, #e9edf5); border-radius: 18rpx; background: #ffffff; color: #8797bb; margin: 0; }
 .mbti-r-link::after { border: 0; }
+/* V2（2026-11-04）：ENTP 名人共鸣卡（原型 .mbti-celebrity-card，只显示名字与一句文案）*/
+.mbti-r-celebrity { background: #ffffff; border: 1rpx solid var(--ui-line, #e9edf5); border-radius: 34rpx; padding: 42rpx 36rpx; margin: 32rpx 0; min-width: 0; }
+.mbti-r-celebrity-names { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16rpx; }
+.mbti-r-celebrity-name { font-size: 26rpx; line-height: 1.8; color: var(--ui-ink, #28334b); }
+.mbti-r-celebrity-prompt { font-size: 24rpx; line-height: 1.95; color: var(--ui-muted); border-left: 4rpx solid #d6ddf5; padding-left: 22rpx; margin-top: 34rpx; }

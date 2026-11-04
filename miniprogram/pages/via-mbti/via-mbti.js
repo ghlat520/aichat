@@ -29,6 +29,7 @@ Page({
         code: row.code,
         name: row.name,
         description: row.description,
+        celebrity: CONTENT.MBTI_CELEBRITY_REFERENCES[row.code],
         strengths: row.strengths.map((name) => ({
           name,
           supplement: !STRENGTH_NAMES.has(name)
