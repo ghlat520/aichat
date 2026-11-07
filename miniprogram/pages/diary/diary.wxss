@@ -81,3 +81,23 @@
 .diary-letter-paragraph { color: #536079; font-size: 27rpx; line-height: 2.1; margin-bottom: 27rpx; }
 .diary-letter-signature { text-align: right; color: #6b7e96; font-size: 24rpx; line-height: 1.9; margin-top: 38rpx; }
 .diary-letter-signature > text:last-child { color: #9aa5b5; font-size: 19rpx; }
+
+/* Three lines remain the shortest path; the existing tree and private editor lifecycle are shared. */
+.awareness-editor { padding-top: 20rpx; }
+.awareness-eyebrow { color: #317b72; font-size: 23rpx; letter-spacing: 2rpx; margin-bottom: 16rpx; }
+.awareness-editor .diary-editor-intro { font-size: 48rpx; font-weight: 600; line-height: 1.35; letter-spacing: -1rpx; color: #25354b; margin-bottom: 18rpx; }
+.awareness-helper { color: #667487; font-size: 26rpx; line-height: 1.65; margin-bottom: 32rpx; }
+.awareness-line { border: 1rpx solid #dce9e4; border-left: 5rpx solid #72aaa0; border-radius: 20rpx; padding: 24rpx; margin: 0 0 20rpx; background: #f3faf7; }
+.awareness-line--feeling { background: #fdf5ef; border-color: #f0e1d4; border-left-color: #dfae85; }
+.awareness-line--insight { background: #f2f6fd; border-color: #dfe7f3; border-left-color: #8fa9d9; }
+.awareness-line-title { display: flex; align-items: flex-start; font-size: 28rpx; line-height: 1.55; color: #304258; font-weight: 500; }
+.awareness-number { margin-right: 18rpx; color: #728a91; font-size: 21rpx; line-height: 42rpx; }
+.awareness-line-input { display: block; width: 100%; min-height: 148rpx; height: 148rpx; margin-top: 20rpx; color: #304258; font-size: 28rpx; line-height: 1.8; }
+.awareness-inspiration { background: #fff8ee; border-left: 4rpx solid #d6aa7c; border-radius: 12rpx; padding: 22rpx 24rpx; margin: 24rpx 0; font-size: 28rpx; line-height: 1.7; color: #735c46; }
+.awareness-inspiration > text { display: block; font-size: 22rpx; color: #8a7156; margin-bottom: 8rpx; }
+.awareness-expand { display: flex; align-items: center; justify-content: space-between; min-height: 96rpx; margin: 12rpx 0 0; padding: 12rpx 0; background: transparent; border-radius: 0; border-bottom: 1rpx solid #e4e9ef; color: #51637b; font-size: 26rpx; text-align: left; }
+.awareness-expand > text + text { font-size: 23rpx; color: #6b7d95; }
+.awareness-expand::after { border: 0; }
+.awareness-more { padding: 22rpx 0; }
+.awareness-free { min-height: 240rpx; }
+.awareness-editor .gk-primary { margin-top: 30rpx; }

@@ -5,9 +5,8 @@
     <text class="gk-head-tag">自我探索</text>
   </view>
 
-  <view class="gk-page-title">从一件小事说起，</view>
-  <view class="gk-page-title">就已经很好。</view>
-  <view class="gk-lead">不是简历，也不需要漂亮的成就。<text class="exp-br"></text>回想一次你帮到了人、学会了什么或把事情理清的片段。</view>
+  <view class="gk-page-title">记录真实经历</view>
+  <view class="gk-lead">想不出耀眼的成就，也没有关系。<text class="exp-br"></text>一次帮到别人、一件坚持做完的事，都可能让你认出自己的长处。</view>
 
   <view class="exp-tabs">
     <button class="exp-tab {{mode === 'guided' ? 'exp-tab--selected' : ''}}" data-mode="guided" bindtap="setMode">一次写一段</button>

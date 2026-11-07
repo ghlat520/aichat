@@ -1,0 +1,81 @@
+/* Hallmark · shape: app screen · scope: app · built: project prototype · signature: one event through fact, feeling and next step */
+/* Critique: keep the product's working card as the focal object; the brand direction awaits user review. */
+:root {
+  --ch-ground: #f5f6f3;
+  --ch-paper: #fcfdfb;
+  --ch-surface: #eef0eb;
+  --ch-ink: #252d28;
+  --ch-muted: #626960;
+  --ch-accent: #1b6e66;
+  --ch-line: #dfe4dc;
+  --ch-focus: #1b6e66;
+  --ch-on-ink: #fcfdfb;
+  --ch-selected: #e8ece6;
+  --ch-clear: transparent;
+  --ch-radius-card: 22px;
+  --ch-radius-control: 999px;
+  --ch-font: "PingFang SC", -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif;
+}
+.phone.clarity-home-preview {
+  background: var(--ch-ground);
+  color: var(--ch-ink);
+  font-family: var(--ch-font);
+}
+.phone.clarity-home-preview .status,
+.phone.clarity-home-preview .mini-nav,
+.phone.clarity-home-preview .bottom-nav { background: var(--ch-ground); color: var(--ch-ink); }
+.phone.clarity-home-preview .mini-nav { border-bottom: 0; }
+.phone.clarity-home-preview .mini-brand { font-size: 13px; font-weight: 600; gap: 8px; }
+.phone.clarity-home-preview .mini-brand b { width: 26px; height: 26px; color: var(--ch-accent); }
+.phone.clarity-home-preview .screen { padding: 0 21px 24px; }
+.phone.clarity-home-preview .clarity-home { font-size: 14px; line-height: 1.6; }
+.phone.clarity-home-preview .clarity-opening { padding: 20px 1px 18px; }
+.phone.clarity-home-preview .clarity-opening h1 { font-size: 28px; line-height: 1.35; font-weight: 550; letter-spacing: -.8px; min-width: 0; overflow-wrap: break-word; }
+.phone.clarity-home-preview .clarity-opening p { color: var(--ch-muted); font-size: 14px; line-height: 1.75; margin-top: 11px; }
+.phone.clarity-home-preview .clarity-sheet { background: var(--ch-paper); border-radius: var(--ch-radius-card); overflow: clip; }
+.phone.clarity-home-preview .clarity-stage-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0 18px; }
+.phone.clarity-home-preview .clarity-stage-tabs > button { min-width: 0; min-height: 53px; position: relative; color: var(--ch-muted); font-size: 14px; font-weight: 400; }
+.phone.clarity-home-preview .clarity-stage-tabs > button[aria-selected="true"] { color: var(--ch-ink); font-weight: 600; }
+.phone.clarity-home-preview .clarity-stage-tabs > button[aria-selected="true"]::after { content: ""; position: absolute; left: 24%; right: 24%; bottom: 0; height: 2px; background: var(--ch-accent); }
+.phone.clarity-home-preview .clarity-demo-panel { min-height: 168px; padding: 18px 23px 8px; box-sizing: border-box; }
+.phone.clarity-home-preview .clarity-scene { font-size: 19px; line-height: 1.7; font-weight: 500; letter-spacing: -.3px; }
+.phone.clarity-home-preview .clarity-insight { font-size: 13px; color: var(--ch-muted); line-height: 1.8; margin-top: 14px; }
+.phone.clarity-home-preview .clarity-panel-title { font-size: 15px; line-height: 1.65; }
+.phone.clarity-home-preview .clarity-feelings { display: flex; gap: 8px; margin-top: 17px; }
+.phone.clarity-home-preview .clarity-feelings > button { min-height: 44px; flex: 1; min-width: 0; padding: 8px 5px; border: 1px solid var(--ch-clear); border-radius: var(--ch-radius-control); font-size: 13px; color: var(--ch-muted); background: var(--ch-surface); }
+.phone.clarity-home-preview .clarity-feelings > button[aria-pressed="true"] { color: var(--ch-ink); background: var(--ch-selected); border-color: var(--ch-ink); }
+.phone.clarity-home-preview .clarity-next-options { display: grid; gap: 4px; margin-top: 10px; }
+.phone.clarity-home-preview .clarity-next-options > button { display: flex; align-items: center; gap: 10px; min-height: 48px; text-align: left; padding: 6px 0; color: var(--ch-muted); font-size: 13px; line-height: 1.6; }
+.phone.clarity-home-preview .clarity-next-options > button[aria-pressed="true"] { color: var(--ch-ink); }
+.phone.clarity-home-preview .clarity-choice-mark { width: 15px; height: 15px; box-sizing: border-box; border-radius: 50%; border: 1px solid var(--ch-muted); flex-shrink: 0; }
+.phone.clarity-home-preview [aria-pressed="true"] > .clarity-choice-mark { border: 5px solid var(--ch-accent); }
+.phone.clarity-home-preview .clarity-sheet-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 13px 5px 23px; min-height: 44px; color: var(--ch-muted); font-size: 12px; }
+.phone.clarity-home-preview .clarity-cycle { width: 44px; height: 44px; display: grid; place-items: center; color: var(--ch-ink); }
+.phone.clarity-home-preview .clarity-cycle .icon { width: 18px; height: 18px; }
+.phone.clarity-home-preview .clarity-start { display: block; width: 100%; min-height: 49px; margin-top: 18px; border-radius: var(--ch-radius-control); font-size: 15px; font-weight: 500; color: var(--ch-on-ink); background: var(--ch-ink); }
+.phone.clarity-home-preview .clarity-talk { display: block; width: 100%; min-height: 48px; color: var(--ch-muted); font-size: 13px; }
+.phone.clarity-home-preview .clarity-other-ways { margin-top: 12px; }
+.phone.clarity-home-preview .clarity-other-ways > button { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; min-height: 75px; border-top: 1px solid var(--ch-line); }
+.phone.clarity-home-preview .clarity-other-ways strong { display: block; font-size: 14px; font-weight: 500; line-height: 1.6; }
+.phone.clarity-home-preview .clarity-other-ways small { display: block; font-size: 12px; color: var(--ch-muted); line-height: 1.6; margin-top: 3px; }
+.phone.clarity-home-preview .clarity-other-ways .icon { width: 17px; height: 17px; color: var(--ch-muted); }
+.phone.clarity-home-preview .bottom-nav { border-color: var(--ch-line); }
+.phone.clarity-home-preview .tab { font-size: 12px; color: var(--ch-muted); min-height: 54px; }
+.phone.clarity-home-preview .tab.active { color: var(--ch-ink); }
+.phone.clarity-home-preview .tab.active > .icon,
+.phone.clarity-home-preview .tab.active .talk-orb { background: var(--ch-selected); }
+.phone.clarity-home-preview .home-indicator { background: var(--ch-ink); }
+.phone.clarity-home-preview button:focus-visible,
+.phone.clarity-home-preview [tabindex]:focus-visible { outline: 2px solid var(--ch-focus); outline-offset: 3px; }
+.phone.clarity-home-preview .clarity-demo-panel:focus-visible { outline-offset: -3px; }
+.phone.clarity-home-preview button:active { transform: none; opacity: .76; }
+@media (max-width: 350px) {
+  .phone.clarity-home-preview .screen { padding-left: 18px; padding-right: 18px; }
+  .phone.clarity-home-preview .clarity-opening h1 { font-size: 27px; }
+  .phone.clarity-home-preview .clarity-demo-panel { padding-left: 18px; padding-right: 18px; }
+  .phone.clarity-home-preview .clarity-scene { font-size: 18px; }
+  .phone.clarity-home-preview .clarity-feelings { gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .phone.clarity-home-preview * { scroll-behavior: auto; }
+}

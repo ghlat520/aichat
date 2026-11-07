@@ -1,0 +1,288 @@
+/* Hallmark · scope: app · shape: eight assessment screens · style: user-approved A · signature: illustrated personality deck with touch-driven depth */
+.phone.assessment-design {
+  --as-ink: #192a43;
+  --as-muted: #596b85;
+  --as-blue: #3155d9;
+  --as-blue-wash: #e8eeff;
+  --as-teal: #247b70;
+  --as-teal-wash: #e2f3ed;
+  --as-line: #dce4f0;
+  --as-line-strong: #bfcee0;
+  --as-paper: #fff;
+  --as-ground: #f6f8fc;
+  --as-peach: #fbe9df;
+  --as-violet: #7454ad;
+  --as-violet-wash: #eee5fa;
+  --as-fast: 160ms;
+  --as-travel: 340ms;
+  --as-ease: cubic-bezier(.22,.7,.24,1);
+  color: var(--as-ink);
+  font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif;
+  background: var(--as-ground);
+}
+.phone.assessment-design .screen { padding: 0 20px 28px; }
+.phone.assessment-design .page-head { height: 55px; grid-template-columns: 44px 1fr 62px; }
+.phone.assessment-design .page-head h1 { font-size: 16px; font-weight: 600; color: var(--as-ink); }
+.phone.assessment-design .page-head .back { width: 44px; height: 44px; padding: 10px; background: transparent; border: 0; }
+.phone.assessment-design .page-head .back .icon { width: 20px; height: 20px; }
+.phone.assessment-design #screen :is(small,.footer-note,.head-note,.tiny) { font-size: 12px; line-height: 1.65; color: var(--as-muted); }
+.phone.assessment-design :is(p,li) { font-size: 14px; line-height: 1.75; }
+.phone.assessment-design :is(.primary,.secondary) { min-height: 48px; font-size: 14px; font-weight: 550; border-radius: 13px; padding: 12px 15px; }
+.phone.assessment-design .primary { background: var(--as-blue); color: var(--as-paper); }
+.phone.assessment-design .secondary { border-color: var(--as-line); color: var(--as-blue); background: var(--as-paper); }
+.phone.assessment-design button:not(.type-deck-card):active { transform: none; opacity: .78; }
+.phone.assessment-design :is(button,summary,select,a):focus-visible { outline: 2px solid var(--as-blue); outline-offset: 3px; }
+.phone.assessment-design .bottom-nav { background: var(--as-paper); border-color: var(--as-line); }
+.phone.assessment-design .tab { font-size: 12px; color: var(--as-muted); }
+.phone.assessment-design .tab.active { color: var(--as-blue); }
+.phone.assessment-design .assessment-illustration { display: block; width: 155px; height: 160px; flex-shrink: 0; }
+.phone.assessment-design .assessment-about { border-bottom: 1px solid var(--as-line); margin: 18px 0; }
+.phone.assessment-design .assessment-about summary { min-height: 48px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 550; cursor: pointer; list-style: none; }
+.phone.assessment-design .assessment-about summary::after { content: "+"; font-size: 22px; font-weight: 400; color: var(--as-blue); }
+.phone.assessment-design .assessment-about[open] summary::after { content: "−"; }
+.phone.assessment-design .assessment-about p { color: var(--as-muted); padding-bottom: 16px; margin: 0; }
+.phone.assessment-design summary::-webkit-details-marker { display: none; }
+
+/* 02: a deck that makes the selected character feel tangible. */
+.phone.assessment-design .type-explore-heading { padding: 12px 1px 0; }
+.phone.assessment-design .type-explore-heading h2 { font-size: 24px; font-weight: 650; letter-spacing: -.6px; line-height: 1.4; }
+.phone.assessment-design .type-explore-heading p { color: var(--as-muted); font-size: 13px; margin-top: 7px; }
+.phone.assessment-design .type-explore-groups { flex-wrap: nowrap; overflow-x: auto; gap: 2px; margin: 0 -3px 5px; scrollbar-width: none; }
+.phone.assessment-design .type-explore-groups > button { flex: 1 0 auto; min-height: 44px; padding: 7px 8px; font-size: 12px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--as-muted); white-space: nowrap; }
+.phone.assessment-design .type-explore-groups > button.selected { color: var(--as-blue); font-weight: 600; border-bottom-color: var(--as-blue); }
+.phone.assessment-design .type-family-NT { --type-accent: #3155d9; --type-wash: #e8eeff; }
+.phone.assessment-design .type-family-NF { --type-accent: #247b70; --type-wash: #e2f3ed; }
+.phone.assessment-design .type-family-SJ { --type-accent: #9b5b34; --type-wash: #f8eadc; }
+.phone.assessment-design .type-family-SP { --type-accent: #7454ad; --type-wash: #eee5fa; }
+.phone.assessment-design .type-deck { position: relative; height: 312px; margin: 0 -20px; perspective: 1000px; overflow: clip; touch-action: pan-y pinch-zoom; user-select: none; --drag: 0px; }
+.phone.assessment-design .type-deck-card { position: absolute; top: 12px; left: 50%; width: calc(100% - 94px); height: 282px; padding: 14px 12px; border-radius: 24px; background: var(--type-wash); border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; transform: translate3d(calc(-50% + var(--shift) + var(--drag)),var(--lift),0) rotateY(var(--yaw)) rotate(var(--roll)) scale(var(--scale)); transform-origin: 50% 70%; opacity: .58; transition: transform var(--as-travel) var(--as-ease),opacity var(--as-travel),border-color var(--as-fast),box-shadow var(--as-travel); color: var(--as-ink); overflow: hidden; cursor: grab; }
+.phone.assessment-design .type-deck-card.is-selected { opacity: 1; border-color: var(--type-accent); box-shadow: 0 10px 24px #28496b1c; }
+.phone.assessment-design .type-deck-card.is-away { opacity: 0; visibility: hidden; pointer-events: none; }
+.phone.assessment-design .type-deck.is-dragging .type-deck-card { transition: none; cursor: grabbing; }
+.phone.assessment-design .type-card-group { display: flex; align-items: center; gap: 8px; color: var(--type-accent); font-size: 12px; font-weight: 550; }
+.phone.assessment-design .type-card-group > span { font-size: 12px; font-weight: 400; opacity: .85; }
+.phone.assessment-design .type-card-code { position: relative; display: block; font-family: "Avenir Next", -apple-system, sans-serif; font-size: 40px; font-weight: 650; line-height: 1.05; letter-spacing: 1px; margin-top: 6px; color: var(--type-accent); z-index: 1; }
+.phone.assessment-design .type-card-name { position: relative; display: block; font-size: 17px; font-weight: 500; line-height: 1.4; margin-top: 3px; z-index: 1; }
+.phone.assessment-design .type-card-alias { position: relative; display: block; max-width: 100%; margin-top: 6px; font-size: 13px; line-height: 1.5; color: var(--as-ink); text-wrap: balance; z-index: 1; }
+.phone.assessment-design .type-card-alias small { display: block; margin-top: 2px; font-size: 10px; line-height: 1.4; color: var(--type-accent); }
+.phone.assessment-design .type-card-portrait { position: relative; width: 112px; height: 108px; flex-shrink: 0; margin-top: 6px; border-radius: 17px; object-fit: cover; background: white; }
+.phone.assessment-design .type-photo-source { margin: 16px 0; font-size: 11px; line-height: 1.8; color: var(--as-muted); }
+.phone.assessment-design .type-photo-source summary { min-height: 44px; cursor: pointer; color: var(--as-blue); }
+.phone.assessment-design .type-photo-source p { margin-bottom: 8px; }
+.phone.assessment-design .type-photo-source a { text-decoration: underline; }
+.phone.assessment-design .type-deck-card .assessment-person { position: absolute; width: 180px; height: 180px; right: -1px; bottom: 28px; }
+.phone.assessment-design .type-card-selection { position: absolute; left: 23px; bottom: 15px; display: flex; gap: 5px; align-items: center; color: var(--type-accent); font-size: 12px; opacity: 0; }
+.phone.assessment-design .type-card-selection .icon { width: 16px; height: 16px; }
+.phone.assessment-design .is-selected .type-card-selection { opacity: 1; }
+.phone.assessment-design .type-deck-controls { display: flex; align-items: center; justify-content: center; gap: 22px; margin: 0 0 16px; }
+.phone.assessment-design .type-deck-arrow { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--as-line); background: var(--as-paper); color: var(--as-blue); }
+.phone.assessment-design .type-deck-arrow .icon { width: 19px; height: 19px; }
+.phone.assessment-design #type-deck-status { min-width: 165px; text-align: center; line-height: 1.5; }
+.phone.assessment-design #type-deck-status strong { display: block; font-size: 14px; font-weight: 600; }
+.phone.assessment-design #type-deck-status > span { display: block; font-size: 12px; margin-top: 3px; color: var(--as-muted); }
+.phone.assessment-design .type-quick-index { margin-bottom: 23px; border-bottom: 1px solid var(--as-line); }
+.phone.assessment-design .type-quick-index summary { display: flex; align-items: center; justify-content: space-between; min-height: 44px; font-size: 13px; color: var(--as-muted); cursor: pointer; list-style: none; }
+.phone.assessment-design .type-quick-index summary .icon { width: 19px; height: 19px; color: var(--as-blue); }
+.phone.assessment-design .type-quick-index > div { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 7px; padding: 8px 0 17px; }
+.phone.assessment-design .type-quick-index button { min-height: 44px; font-size: 13px; background: var(--as-paper); border: 1px solid var(--as-line); border-radius: 10px; color: var(--as-muted); }
+.phone.assessment-design .type-quick-index button.selected { color: var(--as-blue); background: var(--as-blue-wash); border-color: var(--as-blue); font-weight: 600; }
+.phone.assessment-design .type-detail { background: var(--as-paper); border: 1px solid var(--as-line); border-radius: 20px; padding: 21px 20px; }
+.phone.assessment-design .type-detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 21px; }
+.phone.assessment-design .type-detail-heading h3 { font-size: 18px; font-weight: 600; }
+.phone.assessment-design .type-detail-heading > span { font-size: 13px; color: var(--as-muted); }
+.phone.assessment-design .type-traits-block h4 { font-size: 14px; font-weight: 600; color: var(--type-accent); line-height: 1.6; margin-bottom: 12px; }
+.phone.assessment-design .type-traits-block + .type-traits-block { border-top: 1px dashed var(--as-line-strong); margin-top: 20px; padding-top: 20px; }
+.phone.assessment-design .type-traits-block ul { padding: 0; margin: 0; list-style: none; display: grid; gap: 10px; }
+.phone.assessment-design .type-traits-block li { display: flex; align-items: flex-start; gap: 10px; }
+.phone.assessment-design .type-traits-block .type-trait-mark { width: 5px; height: 5px; flex-shrink: 0; border-radius: 50%; background: var(--type-accent); margin-top: 10px; }
+.phone.assessment-design .type-traits-block p { font-size: 14px; line-height: 1.75; color: var(--as-ink); }
+.phone.assessment-design .type-explore-guidance { color: var(--as-muted); font-size: 13px; margin: 21px 0 15px; }
+.phone.assessment-design .type-explore-actions .primary { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; }
+.phone.assessment-design .type-explore-actions .icon { width: 17px; height: 17px; }
+.phone.assessment-design .type-explore-note { font-size: 12px; line-height: 1.75; color: var(--as-muted); margin: 16px 0; }
+
+/* 03 & 06: one illustrated introduction, then a visible start action. */
+.phone.assessment-design :is(.mbti-intro-hero,.via-hero) { position: relative; text-align: left; padding: 22px 20px; margin: 8px 0 20px; border-radius: 22px; min-height: 202px; background: var(--as-blue-wash); overflow: hidden; }
+.phone.assessment-design .via-hero { background: var(--as-teal-wash); }
+.phone.assessment-design :is(.mbti-intro-hero,.via-hero) .assessment-illustration { position: absolute; right: -4px; bottom: -2px; }
+.phone.assessment-design .assessment-hero-copy { position: relative; z-index: 1; }
+.phone.assessment-design :is(.mbti-intro-hero,.via-hero) h2 { font-size: 25px; line-height: 1.4; font-weight: 650; letter-spacing: -.5px; max-width: 210px; }
+.phone.assessment-design :is(.mbti-intro-hero,.via-hero) p { color: var(--as-muted); font-size: 13px; line-height: 1.75; max-width: 168px; margin-top: 12px; }
+.phone.assessment-design :is(.mbti-intro-facts,.via-facts) { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; text-align: center; margin: 18px 0 22px; }
+.phone.assessment-design :is(.mbti-intro-facts,.via-facts) > span { font-size: 12px; line-height: 1.65; color: var(--as-muted); }
+.phone.assessment-design :is(.mbti-intro-facts,.via-facts) b { display: block; font-size: 20px; font-weight: 600; color: var(--as-ink); margin-bottom: 4px; }
+.phone.assessment-design .mbti-dimension-list { margin-top: 21px; }
+.phone.assessment-design .mbti-dimension-list > div { padding: 16px 0; }
+.phone.assessment-design .mbti-dimension-list > div > span { width: 32px; height: 32px; border-radius: 10px; font-size: 12px; color: var(--as-blue); background: var(--as-blue-wash); }
+.phone.assessment-design .mbti-dimension-list b { font-size: 14px; font-weight: 600; }
+.phone.assessment-design .mbti-dimension-list strong { font-size: 14px; font-weight: 550; color: var(--as-blue); }
+.phone.assessment-design .mbti-simple-note { font-size: 13px; color: var(--as-muted); }
+.phone.assessment-design .via-section-heading { margin: 23px 0 14px; gap: 8px; }
+.phone.assessment-design .via-section-heading h3 { font-size: 17px; font-weight: 600; }
+.phone.assessment-design .via-section-heading > span { font-size: 12px; color: var(--as-muted); }
+.phone.assessment-design .via-virtues { gap: 11px; }
+.phone.assessment-design .via-virtues > div { border-color: var(--as-line); border-radius: 16px; padding: 17px 14px; background: var(--as-paper); }
+.phone.assessment-design .via-virtues strong { font-size: 14px; font-weight: 550; color: var(--as-ink); }
+
+/* 04 & 07: legible questions and stable, thumb-sized choices. */
+.phone.assessment-design .screen:is(.mbti-question-screen,.via-question-screen) { padding: 0; height: 100%; }
+.phone.assessment-design :is(.mbti-question-header,.via-question-header) { padding: 0 18px 14px; background: var(--as-ground); border-color: var(--as-line); }
+.phone.assessment-design :is(.mbti-question-top,.via-question-top) { height: 54px; }
+.phone.assessment-design :is(.mbti-question-top,.via-question-top) > strong { font-size: 15px; font-weight: 600; }
+.phone.assessment-design :is(.mbti-question-top,.via-question-top) .back { width: 44px; height: 44px; background: transparent; border: 0; padding: 10px; }
+.phone.assessment-design :is(.mbti-question-top,.via-question-top) .text-link { min-width: 44px; min-height: 44px; font-size: 13px; color: var(--as-blue); }
+.phone.assessment-design .mbti-question-header h2 { font-size: 20px; font-weight: 600; }
+.phone.assessment-design :is(.mbti-question-header > .between > span,.mbti-answer-progress,.via-progress-text,.via-item-caption,.via-item-caption > span:last-child) { font-size: 12px; color: var(--as-muted); }
+.phone.assessment-design .mbti-step-tabs { gap: 6px; margin: 12px 0; }
+.phone.assessment-design .mbti-step { min-height: 51px; font-size: 12px; color: var(--as-muted); padding: 7px 2px; border-radius: 11px; background: #e9edf5; }
+.phone.assessment-design .mbti-step b { font-size: 13px; color: inherit; font-weight: 550; }
+.phone.assessment-design .mbti-step.selected { background: var(--as-blue-wash); color: var(--as-blue); border-color: #9eb2f0; }
+.phone.assessment-design :is(.mbti-question-hint,.via-question-hint) { font-size: 12px; color: var(--as-muted); line-height: 1.75; }
+.phone.assessment-design .mbti-answer-progress { gap: 10px; line-height: 1.6; }
+.phone.assessment-design .assessment-progress-track { height: 4px; background: #e0e7f4; border-radius: 3px; margin-top: 10px; overflow: hidden; }
+.phone.assessment-design .assessment-progress-track > span { display: block; height: 100%; background: var(--as-blue); border-radius: inherit; transition: width var(--as-fast); }
+.phone.assessment-design :is(.mbti-question-scroll,.via-question-stage) { padding: 19px 16px; }
+.phone.assessment-design .mbti-question-item.is-current { min-height: 278px; padding: 23px 17px; border-color: var(--as-line); border-radius: 21px; }
+.phone.assessment-design .mbti-question-item.is-current legend { font-size: 22px; line-height: 1.65; font-weight: 600; margin-bottom: 24px; letter-spacing: -.4px; }
+.phone.assessment-design .mbti-question-item legend > span { display: block; font-family: "Avenir Next",sans-serif; font-size: 13px; color: var(--as-blue); margin-bottom: 11px; }
+.phone.assessment-design .mbti-question-item.is-current .mbti-question-ends { font-size: 14px; line-height: 1.7; margin-bottom: 20px; }
+.phone.assessment-design .mbti-answer-options { gap: 0; }
+.phone.assessment-design .mbti-answer-option { min-height: 58px; }
+.phone.assessment-design :is(.mbti-question-footnote,.via-small-note) { font-size: 12px; color: var(--as-muted); line-height: 1.75; }
+.phone.assessment-design :is(.mbti-question-footer,.via-question-footer) { background: var(--as-paper); border-color: var(--as-line); padding: 12px 18px 17px; }
+.phone.assessment-design .mbti-question-footer > div:first-child { font-size: 12px; line-height: 1.6; }
+.phone.assessment-design :is(.mbti-question-footer,.via-question-footer) button { min-height: 48px; }
+.phone.assessment-design :is(.mbti-question-footer,.via-question-footer) button:disabled { color: #64738e; background: #e0e6f2; }
+.phone.assessment-design .via-group-label { font-size: 12px; color: var(--as-muted); gap: 9px; margin: 8px 0 14px; }
+.phone.assessment-design .via-group-label select { min-height: 44px; border-color: var(--as-line); color: var(--as-ink); font-size: 13px; padding: 9px; }
+.phone.assessment-design .via-progress-track { background: #dee9e5; height: 4px; }
+.phone.assessment-design .via-progress-track > span { background: var(--as-teal); }
+.phone.assessment-design .via-question-card { min-height: 334px; padding: 20px 16px; border-color: var(--as-line); border-radius: 21px; }
+.phone.assessment-design .via-question-card h2 { color: var(--as-ink); font-size: 23px; line-height: 1.65; font-weight: 600; margin: 23px 0 12px; letter-spacing: -.3px; }
+.phone.assessment-design .via-options { gap: 0; }
+.phone.assessment-design .via-option { min-height: 96px; }
+.phone.assessment-design .via-option-label { font-size: 12px; line-height: 1.65; color: var(--as-muted); margin-top: 10px; max-width: 4em; text-wrap: balance; }
+.phone.assessment-design .via-selection-status { font-size: 12px; line-height: 1.7; color: var(--as-muted); margin-top: 16px; }
+
+/* 05 & 08: an illustrated result, with readable content below. */
+.phone.assessment-design .screen.mbti-result-screen { padding: 0 16px 28px; }
+.phone.assessment-design .mbti-result-demo { color: #58698a; font-size: 12px; line-height: 1.7; padding: 10px 12px; margin: 4px 0 15px; background: #eaf0fc; border-radius: 10px; }
+.phone.assessment-design .mbti-report-cover { position: relative; padding: 23px; text-align: left; border: 0; border-radius: 22px; background: var(--as-blue-wash); min-height: 232px; overflow: hidden; }
+.phone.assessment-design .mbti-result-ribbon { position: static; display: block; padding: 0; background: transparent; color: var(--as-blue); font-size: 12px; border-radius: 0; }
+.phone.assessment-design .mbti-report-leaf { position: absolute; right: -5px; bottom: 2px; margin: 0; width: 154px; height: 154px; }
+.phone.assessment-design .mbti-report-leaf .assessment-person { width: 100%; height: 100%; }
+.phone.assessment-design .mbti-report-cover h1 { color: var(--as-blue); font-family: "Avenir Next",-apple-system,sans-serif; font-size: 45px; line-height: 1.2; letter-spacing: -1px; margin: 15px 0 4px; font-weight: 650; }
+.phone.assessment-design .mbti-report-cover h2 { color: var(--as-ink); font-size: 20px; font-weight: 600; line-height: 1.6; margin: 0; }
+.phone.assessment-design .mbti-result-alias { display: block; font-size: 12px; margin-top: 5px; color: var(--as-muted); }
+.phone.assessment-design .mbti-result-keywords { position: relative; font-size: 13px; color: var(--as-muted); margin: 17px 0 0; padding: 0; border: 0; max-width: 165px; }
+.phone.assessment-design :is(.mbti-radar-card,.mbti-brief-card) { background: var(--as-paper); border-color: var(--as-line); border-radius: 20px; padding: 20px 17px; margin: 21px 0; }
+.phone.assessment-design :is(.mbti-radar-card,.mbti-brief-card) h2 { font-size: 17px; font-weight: 600; color: var(--as-ink); }
+.phone.assessment-design .mbti-radar-card > .between > span { font-size: 12px; color: var(--as-blue); background: var(--as-blue-wash); }
+.phone.assessment-design .mbti-radar-label { font-size: 15px; fill: var(--as-muted); }
+.phone.assessment-design .mbti-radar-value { font-size: 15px; fill: var(--as-blue); }
+.phone.assessment-design .mbti-radar-note { font-size: 12px; color: var(--as-muted); line-height: 1.8; }
+.phone.assessment-design .mbti-brief-card p { font-size: 14px; color: var(--as-muted); line-height: 1.9; }
+.phone.assessment-design .assessment-result-links { display: grid; gap: 9px; grid-template-columns: 1fr 1fr; }
+.phone.assessment-design .assessment-result-links button { min-height: 58px; font-size: 13px; line-height: 1.6; color: var(--as-blue); border-color: var(--as-line); border-radius: 13px; padding: 10px; }
+.phone.assessment-design :is(.mbti-report-boundary,.mbti-report-end) { font-size: 12px; color: var(--as-muted); line-height: 1.8; }
+.phone.assessment-design .mbti-report-directory { border-color: var(--as-line); border-radius: 16px; }
+.phone.assessment-design .mbti-report-directory summary { min-height: 48px; font-size: 15px; }
+.phone.assessment-design .mbti-report-directory summary span { font-size: 12px; color: var(--as-muted); }
+.phone.assessment-design .mbti-report-directory a { font-size: 13px; min-height: 44px; display: flex; align-items: center; color: var(--as-blue); }
+.phone.assessment-design .mbti-report-section { border: 0; border-bottom: 1px solid var(--as-line); border-radius: 0; padding: 0; margin: 0; background: transparent; }
+.phone.assessment-design .mbti-report-section > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 62px; cursor: pointer; list-style: none; }
+.phone.assessment-design .mbti-report-section > summary::after { content: "+"; font-size: 23px; font-weight: 400; color: var(--as-blue); }
+.phone.assessment-design .mbti-report-section[open] > summary::after { content: "−"; }
+.phone.assessment-design .mbti-report-section h2 { font-size: 17px; color: var(--as-ink); font-weight: 600; margin: 0; padding: 0; border: 0; }
+.phone.assessment-design .mbti-report-section :is(p,li) { font-size: 14px; color: var(--as-muted); line-height: 1.95; }
+.phone.assessment-design .mbti-report-section > :last-child { margin-bottom: 20px; }
+.phone.assessment-design #screen .mbti-celebrity-names > li { font-size: 13px; color: var(--as-ink); min-height: 48px; }
+.phone.assessment-design #screen .mbti-celebrity-prompt { font-size: 13px; color: var(--as-muted); line-height: 1.85; }
+.phone.assessment-design .via-note { color: var(--as-muted); font-size: 13px; line-height: 1.85; border-color: var(--as-line); border-radius: 13px; }
+.phone.assessment-design .via-note.example { background: var(--as-teal-wash); color: #35645a; border-color: #cbe3d8; font-size: 12px; }
+.phone.assessment-design .via-result-heading { position: relative; background: var(--as-teal-wash); border-radius: 22px; padding: 24px 20px; margin: 18px 0 23px; text-align: left; overflow: hidden; min-height: 184px; }
+.phone.assessment-design .via-result-heading h2 { position: relative; font-size: 24px; line-height: 1.45; font-weight: 650; max-width: 240px; z-index: 1; }
+.phone.assessment-design .via-result-heading p { position: relative; font-size: 13px; line-height: 1.75; max-width: 180px; margin-top: 14px; color: var(--as-muted); z-index: 1; }
+.phone.assessment-design .via-result-heading .assessment-illustration { position: absolute; right: -12px; bottom: -8px; width: 145px; height: 145px; }
+.phone.assessment-design .via-top-five { gap: 10px; }
+.phone.assessment-design .via-top-card { padding: 18px 14px; border-color: var(--as-line); border-radius: 17px; gap: 12px; }
+.phone.assessment-design .via-top-card:first-child { background: #edf7f2; border-color: #cde4d8; }
+.phone.assessment-design .via-rank { width: 30px; height: 30px; font-size: 13px; color: var(--as-teal); background: var(--as-teal-wash); }
+.phone.assessment-design .via-top-card h3 { color: var(--as-ink); font-size: 18px; font-weight: 600; }
+.phone.assessment-design .via-top-card p { color: var(--as-muted); font-size: 13px; line-height: 1.75; }
+.phone.assessment-design .via-top-card > strong { color: var(--as-teal); font-size: 23px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.phone.assessment-design .via-ranking-card { border-color: var(--as-line); padding: 21px 17px; border-radius: 19px; }
+.phone.assessment-design .via-ranking-card > h3 { font-size: 17px; font-weight: 600; }
+.phone.assessment-design .via-rank-row > span { color: var(--as-muted); font-size: 12px; }
+.phone.assessment-design .via-rank-row b { font-size: 14px; font-weight: 550; }
+.phone.assessment-design .via-rank-row strong { font-size: 14px; color: var(--as-teal); }
+.phone.assessment-design .via-strength-bar { background: #e5efeb; height: 5px; }
+.phone.assessment-design .via-strength-bar > span { background: #70ad95; }
+
+/* 09: concise reference covers; the full material opens on demand. */
+.phone.assessment-design .via-cross-hero { display: flex; align-items: center; gap: 9px; background: var(--as-blue-wash); border-radius: 21px; padding: 20px 16px; margin: 8px 0 20px; overflow: hidden; }
+.phone.assessment-design .via-cross-hero > div { flex: 1; min-width: 0; }
+.phone.assessment-design .via-cross-hero h2 { font-size: 23px; line-height: 1.45; font-weight: 650; letter-spacing: -.5px; }
+.phone.assessment-design .via-cross-hero p { font-size: 13px; color: var(--as-muted); margin-top: 12px; line-height: 1.7; }
+.phone.assessment-design .via-cross-hero .assessment-illustration { width: 118px; height: 135px; margin-right: -12px; }
+.phone.assessment-design .via-filter-label { font-size: 13px; font-weight: 550; color: var(--as-ink); margin: 18px 0 12px; }
+.phone.assessment-design .via-cross select { min-height: 48px; font-size: 14px; color: var(--as-blue); border-color: var(--as-line); border-radius: 12px; margin-top: 9px; }
+.phone.assessment-design .via-cross-list { margin: 17px 0 25px; gap: 12px; }
+.phone.assessment-design .via-cross-card { padding: 0; border-color: var(--as-line); border-radius: 18px; background: var(--as-paper); overflow: clip; }
+.phone.assessment-design .via-cross-card > summary { list-style: none; display: flex; gap: 10px; align-items: center; min-height: 97px; padding: 15px 16px; cursor: pointer; }
+.phone.assessment-design .via-cross-card > summary > div { flex: 1; }
+.phone.assessment-design .via-cross-card > summary .assessment-person { width: 65px; height: 65px; flex-shrink: 0; }
+.phone.assessment-design .via-cross-card h3 { font-size: 26px; font-family: "Avenir Next",-apple-system,sans-serif; line-height: 1.3; letter-spacing: -.5px; font-weight: 650; color: var(--as-blue); }
+.phone.assessment-design .via-cross-card summary p { font-size: 13px; color: var(--as-muted); margin-top: 3px; }
+.phone.assessment-design .via-cross-card summary > span { display: grid; place-items: center; color: var(--as-blue); width: 30px; height: 30px; border-radius: 50%; background: var(--as-blue-wash); }
+.phone.assessment-design .via-cross-card summary > span::after { content: "+"; font-size: 22px; }
+.phone.assessment-design .via-cross-card[open] summary > span::after { content: "−"; }
+.phone.assessment-design .via-cross-card-body { padding: 0 17px 19px; }
+.phone.assessment-design .via-cross-tags { gap: 7px; margin: 0 0 14px; }
+.phone.assessment-design .via-cross-tags > span { font-size: 13px; line-height: 1.65; padding: 6px 9px; color: #415ba4; background: var(--as-blue-wash); border-radius: 9px; }
+.phone.assessment-design .via-cross-card-body > p { font-size: 14px; color: var(--as-muted); line-height: 1.85; }
+.phone.assessment-design .via-cross-card-body > .text-link { display: flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--as-blue); margin-top: 13px; }
+.phone.assessment-design .via-cross-card .mbti-celebrity-card.compact { padding: 14px 0 0; margin: 17px 0 0; border: 0; border-top: 1px solid var(--as-line); border-radius: 0; background: transparent; }
+
+@media(max-width:350px) {
+  .phone.assessment-design .screen { padding-left: 17px; padding-right: 17px; }
+  .phone.assessment-design .type-deck { margin-left: -17px; margin-right: -17px; }
+  .phone.assessment-design .type-deck-card { padding: 20px 18px; }
+  .phone.assessment-design .type-card-code { font-size: 40px; }
+  .phone.assessment-design .type-card-alias { max-width: 112px; }
+  .phone.assessment-design .type-deck-card .assessment-person { width: 139px; height: 139px; bottom: 33px; right: -3px; }
+  .phone.assessment-design .type-card-selection { left: 18px; }
+  .phone.assessment-design .type-detail { padding: 20px 16px; }
+  .phone.assessment-design .type-deck-controls { gap: 14px; }
+  .phone.assessment-design #type-deck-status { min-width: 150px; }
+  .phone.assessment-design .type-explore-heading h2 { font-size: 22px; }
+  .phone.assessment-design :is(.mbti-intro-hero,.via-hero) { padding: 21px 17px; min-height: 195px; }
+  .phone.assessment-design :is(.mbti-intro-hero,.via-hero) h2 { font-size: 23px; }
+  .phone.assessment-design :is(.mbti-intro-hero,.via-hero) .assessment-illustration { width: 126px; height: 136px; right: -10px; }
+  .phone.assessment-design :is(.mbti-intro-hero,.via-hero) p { max-width: 145px; font-size: 13px; }
+  .phone.assessment-design :is(.mbti-question-scroll,.via-question-stage) { padding: 15px 12px; }
+  .phone.assessment-design .mbti-question-item.is-current { padding: 21px 14px; }
+  .phone.assessment-design .mbti-question-item.is-current legend { font-size: 20px; }
+  .phone.assessment-design .mbti-question-item.is-current .mbti-question-ends { font-size: 13px; }
+  .phone.assessment-design .mbti-answer-option.large .mbti-answer-circle { width: 44px; height: 44px; }
+  .phone.assessment-design .via-question-card { padding: 19px 12px; }
+  .phone.assessment-design .via-question-card h2 { font-size: 21px; }
+  .phone.assessment-design .via-option.large .via-circle { width: 44px; height: 44px; margin-top: 2px; margin-bottom: 2px; }
+  .phone.assessment-design .mbti-report-cover { padding: 21px 19px; }
+  .phone.assessment-design .mbti-report-leaf { width: 137px; height: 137px; right: -11px; }
+  .phone.assessment-design .mbti-report-cover h2 { font-size: 18px; }
+  .phone.assessment-design .mbti-radar-label,
+  .phone.assessment-design .mbti-radar-value { font-size: 18px; }
+  .phone.assessment-design .mbti-result-keywords { max-width: 145px; font-size: 12px; }
+  .phone.assessment-design .via-result-heading h2 { font-size: 22px; }
+  .phone.assessment-design .via-result-heading .assessment-illustration { width: 121px; height: 121px; right: -15px; }
+  .phone.assessment-design .via-cross-hero { padding: 19px 14px; gap: 3px; }
+  .phone.assessment-design .via-cross-hero h2 { font-size: 21px; }
+  .phone.assessment-design .via-cross-hero .assessment-illustration { width: 93px; height: 114px; margin-right: -12px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .phone.assessment-design .type-deck { perspective: none; }
+  .phone.assessment-design .type-deck-card { transition: none; transform: translate3d(calc(-50% + var(--shift)),var(--lift),0) scale(var(--scale)); }
+  .phone.assessment-design .assessment-progress-track > span { transition: none; }
+  .phone.assessment-design * { scroll-behavior: auto; }
+}

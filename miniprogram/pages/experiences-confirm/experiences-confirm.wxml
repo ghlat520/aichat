@@ -6,9 +6,8 @@
   </view>
 
   <view class="gk-eyebrow">个人经历 · 第 2 步 / 共 2 步</view>
-  <view class="gk-page-title">这样理解你，</view>
-  <view class="gk-page-title">准确吗？</view>
-  <view class="gk-lead">这是根据你填写的内容做的整理。确认前可以修改，不符合的地方直接改就好。</view>
+  <view class="gk-page-title">核对你的经历</view>
+  <view class="gk-lead">核对整理结果，可直接修改。</view>
 
   <view wx:for="{{experiences}}" wx:for-index="i" wx:key="i" class="gk-card">
     <view class="gk-between">

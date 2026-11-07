@@ -2,14 +2,13 @@
   <view class="gk-head">
     <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
     <view class="gk-head-title">借一点力量</view>
-    <text class="gk-head-tag">慢慢来</text>
+    <text class="gk-head-tag">人物经历</text>
   </view>
 
   <view class="voices-welcome">
     <text class="gk-tag gk-tag--white">给此刻正在努力的你</text>
-    <view class="voices-welcome-title">有些路，</view>
-    <view class="voices-welcome-title">他们也曾慢慢走过。</view>
-    <view class="voices-welcome-copy">从一段真实经历里，借一点力量。<text class="voices-copy-br"></text>也许今天，只需要往前一小步。</view>
+    <view class="voices-welcome-title">从人物经历中找启发</view>
+    <view class="voices-welcome-copy">读一段经历，找找有没有能用在眼前的思路。<text class="voices-copy-br"></text>也许今天，只需要往前一小步。</view>
     <view class="ui-companion voices-welcome-mascot"></view>
   </view>
 
@@ -33,7 +32,7 @@
   </block>
   <view wx:else class="gk-empty">
     <view class="voice-empty-icon"><view class="ui-icon ui-icon--heart"></view></view>
-    <view class="gk-empty-title">给自己慢慢留一点力量。</view>
+    <view class="gk-empty-title">还没有收藏</view>
     <view class="gk-empty-text">遇见有共鸣的一句话，<text class="voices-copy-br"></text>可以先留在这里，再回来看。</view>
     <button class="gk-primary" bindtap="allVoices">先读一段经历</button>
   </view>

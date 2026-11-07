@@ -120,7 +120,7 @@ Page({
     catch (error) { wx.showToast({ title: friendlyError(error), icon: 'none' }); return; }
     const growth = getGrowth();
     const text = [
-      '关系清晰卡｜个人优势说明书（UI 原型样例）',
+      '自有引力｜个人优势说明书（UI 原型样例）',
       `版本 ${growth.get().version}`,
       '',
       ...CONTENT.CHAPTERS.map((chapter, index) => `${index + 1}. ${chapter}`),
@@ -136,7 +136,7 @@ Page({
 
   deleteReport() {
     wx.showModal({
-      title: '删除这份个人报告？',
+      title: '清空本机的报告展示？',
       content: '清空本机的报告展示。后台购买记录保留，微信登录后仍可恢复；此操作不会退款。',
       confirmText: '清空本机',
       cancelText: '保留报告',

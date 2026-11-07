@@ -1,7 +1,7 @@
 <import src="../../templates/preview.wxml" />
 <view id="order-page" class="container ui-tab-page gk-screen">
   <template is="page-head" data="{{title:'订单与售后'}}" />
-  <view class="ui-page-lede">付款、报告权益与退款到账分别确认。</view>
+  <view class="ui-page-lede">这次购买到哪一步了？付款、报告与退款进度，都可以在这里核对。</view>
   <view wx:if="{{notice}}" class="gk-notice">{{notice}}</view>
   <button class="gk-secondary" loading="{{busy}}" disabled="{{busy}}" bindtap="restoreOrders">微信登录并恢复订单</button>
   <view wx:for="{{orders}}" wx:key="order_id" class="gk-card">

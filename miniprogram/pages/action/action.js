@@ -24,5 +24,5 @@ Page({
       wx.reLaunch({ url: '/pages/entry/entry' });
     }
   },
-  async trySave() { try { await getApiClient().putTaskAction(this.data.taskId, {}); } catch (e) { if (e && e.status === 501) { this.setData({ error: '行动计划功能开发中（G5）' }); } else { this.setData({ error: friendly(e) }); } } }
+  async trySave() { try { await getApiClient().putTaskAction(this.data.taskId, {}); } catch (e) { if (e && e.status === 501) { this.setData({ error: '行动计划暂未开放。' }); } else { this.setData({ error: friendly(e) }); } } }
 });

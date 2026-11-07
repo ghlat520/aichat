@@ -10,7 +10,7 @@
       <view class="checkout-mini-book {{career ? 'checkout-mini-book--aqua' : ''}}"><view class="ui-icon {{career ? 'ui-icon--leaf' : 'ui-icon--cards'}}"></view></view>
       <view>
         <view class="gk-title-sm">{{career ? '职业探索报告' : '个人优势说明书'}}</view>
-        <view class="gk-tiny">同一份测评与经历快照 · {{career ? '职业交付' : '个人优势'}} v1.0</view>
+        <view class="gk-tiny">留住这次测评与经历 · {{career ? '职业交付' : '个人优势'}} v1.0</view>
       </view>
     </view>
     <view class="gk-divider"></view>
@@ -20,7 +20,7 @@
   </view>
 
   <view class="gk-card">
-    <view class="gk-title-sm">这次实际纳入的内容</view>
+    <view class="gk-title-sm">结合你的真实经历</view>
     <view class="gk-tags checkout-include-tags">
       <text class="gk-tag gk-tag--aqua">性格特质</text>
       <text class="gk-tag gk-tag--pink">优势测评</text>
@@ -48,7 +48,7 @@
     <view class="gk-chevron"></view>
   </button>
 
-  <view class="gk-soft-note">付款确认后可重复查看本次快照；30 天职业计划为自主执行内容。iOS 退款请向 App Store 申请。</view>
+  <view class="gk-soft-note">付款确认后，可随时重读本次报告；30 天职业计划为自主执行内容。iOS 退款请向 App Store 申请。</view>
   <view wx:if="{{error}}" class="gk-notice">{{error}}</view>
 
   <block wx:if="{{blocked}}">
@@ -58,6 +58,5 @@
   <button wx:else class="gk-primary" disabled="{{busy || !quoteReady}}" loading="{{busy}}" bindtap="confirmPurchase">{{quoteReady ? '确认' + (upgrade ? '补差' : '购买') + ' ¥' + amount : '暂时无法购买'}}</button>
 
   <view class="gk-footer-note">继续即确认本次商品、交付与服务范围。<text class="checkout-br"></text><button class="gk-text-link checkout-terms" bindtap="purchaseInfo">购买须知与售后说明</button></view>
-  <view class="gk-footer-note">本页金额为本次商品成交价。平台开发者侧费率：Android 等 1%、iOS 12%；结算参考为 Android 等 T+3、iOS 约 45–60 天，以签约规则为准。个人主体全终端月支付总限额 10 万元。</view>
   <button class="gk-quiet" bindtap="backToFree">暂不购买，继续免费使用</button>
 </view>

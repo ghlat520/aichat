@@ -5,12 +5,11 @@
     <text class="gk-head-tag">自我探索</text>
   </view>
 
-  <text class="gk-tag {{missing ? 'gk-tag--gray' : 'gk-tag--aqua'}}">{{missing ? '再聊一点你的经历' : '你的故事，已经准备好了'}}</text>
-  <view class="portrait-title">从你做过的小事里，</view>
-  <view class="portrait-title">看见自己的力量。</view>
-  <view class="gk-small portrait-lead">那些你认真做过的小事，值得被好好看见。把不同的发现放在一起，慢慢找到适合自己的方式。</view>
+  <text class="gk-tag {{missing ? 'gk-tag--gray' : 'gk-tag--aqua'}}">{{missing ? '再聊一点你的经历' : '从测评线索，回到真实经历。'}}</text>
+  <view class="portrait-title">我的优势画像</view>
+  <view class="gk-small portrait-lead">结合测评与经历，梳理你的优势。</view>
 
-  <view class="gk-section-title"><view class="gk-section-title-title">这次画像基于什么</view></view>
+  <view class="gk-section-title"><view class="gk-section-title-title">画像依据</view></view>
   <view class="gk-card">
     <view wx:for="{{inputs}}" wx:key="id" class="gk-path-step">
       <view class="gk-step-check {{item.done ? '' : 'gk-step-check--missing'}}">{{item.done ? '✓' : '○'}}</view>
@@ -29,7 +28,7 @@
   </view>
 
   <view class="gk-section-title">
-    <view class="gk-section-title-title">值得发展的优势候选</view>
+    <view class="gk-section-title-title">优势参考</view>
     <text class="gk-section-title-note">待在生活中验证</text>
   </view>
   <view wx:for="{{strengths}}" wx:key="index" class="gk-card">
@@ -46,7 +45,7 @@
   </view>
 
   <view class="gk-card">
-    <view class="gk-title-sm">先免费试一个小练习</view>
+    <view class="gk-title-sm">尝试微行动</view>
     <view class="gk-small portrait-practice-copy">下次协作前，把共同目标写成一句话，再请对方确认。看看这是否让沟通更清楚。</view>
     <button class="gk-text-link" bindtap="freePractice">记下这个练习</button>
   </view>

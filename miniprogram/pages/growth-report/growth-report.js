@@ -2,12 +2,14 @@
 // 8 章报告、三项候选优势、适用条件、盲点与行动；一次校准和 7 天内一次复盘。
 const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
+const { currentReportOwner, openReportPoster } = require('../../report-poster');
 const { getVirtualPayment } = require('../../services/virtual-payment');
 const { friendlyError } = require('../../app-store');
 
 Page({
   data: {
     sample: false,
+    reportShareReady: false,
     locked: false,
     oldVersion: false,
     version: '1.0',
@@ -28,6 +30,7 @@ Page({
   },
 
   onLoad(query) {
+    this.reportPosterOwner = currentReportOwner();
     this.sampleMode = query && query.sample === '1';
     this.orderId = query && query.orderId;
   },
@@ -38,7 +41,7 @@ Page({
     const sample = !!this.sampleMode;
     let snapshot = null;
     let purchased = null;
-    this.setData({ sample, locked: !sample });
+    this.setData({ sample, locked: !sample, reportShareReady: false });
     if (!sample) {
       const id = this.orderId || (state.order && state.order.id);
       if (!id) return;
@@ -49,6 +52,7 @@ Page({
     this.setData({
       sample,
       locked: !snapshot && !sample,
+      reportShareReady: true,
       oldVersion: false,
       version: purchased ? purchased.report_version : '样例 v1',
       reportDate: purchased ? purchased.order.created_at.slice(0, 10) : '样例',
@@ -94,8 +98,7 @@ Page({
   },
 
   goShare() {
-    getGrowth().patch({ posterKind: 'strength', shareEntry: 'strengths' });
-    wx.navigateTo({ url: '/pages/growth-share/growth-share' });
+    openReportPoster('growth-report', this.data, this.reportPosterOwner);
   },
 
   selectAction(event) {

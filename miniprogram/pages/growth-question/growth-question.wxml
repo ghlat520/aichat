@@ -57,7 +57,7 @@
           </view>
         </view>
       </view>
-      <view class="mbti-q-footnote">中文 UI 示例题 · 答案没有好坏之分。</view>
+      <view class="mbti-q-footnote">当前为体验题，结果为样例。按平时的自己来选，答案没有好坏之分。</view>
     </scroll-view>
 
     <view class="mbti-q-footer">

@@ -33,7 +33,7 @@ Page({
     const activeTask = store.getState().activeTask || {};
     this.setData({ taskId: query.taskId || activeTask.taskId || '', ownerSessionId: (store.getState().session || {}).sessionId || '' });
     if (this.data.taskId) this.loadMirror();
-    else this.setData({ loading: false, error: '缺少任务，请先完成六字段' });
+    else this.setData({ loading: false, error: '还没有待整理的内容，请先写下这段经历。' });
   },
 
   onShow() {

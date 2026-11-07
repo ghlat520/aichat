@@ -2,6 +2,7 @@
 // 多个可验证方向，不给唯一职业结论；30 天为自主实践计划长度。
 const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
+const { currentReportOwner, openReportPoster } = require('../../report-poster');
 const { getVirtualPayment } = require('../../services/virtual-payment');
 const { friendlyError } = require('../../app-store');
 
@@ -28,7 +29,7 @@ Page({
     price: '49.90'
   },
 
-  onLoad(query) { this.orderId = query && query.orderId; },
+  onLoad(query) { this.reportPosterOwner = currentReportOwner(); this.orderId = query && query.orderId; },
   async onShow() {
     const growth = getGrowth();
     const state = growth.get();
@@ -60,6 +61,10 @@ Page({
       credit: money(Math.min(49.9, state.baseNet)),
       price: money(state.paid ? Math.max(0, 49.9 - state.baseNet) : 49.9)
     });
+  },
+
+  goShare() {
+    openReportPoster('career-report', this.data, this.reportPosterOwner);
   },
 
   goBack() {

@@ -3,19 +3,20 @@
 // 十二章节 + 可折叠目录；traits / strengths 保持 V1.2 通用结果。
 const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
+const { currentReportOwner, openReportPoster } = require('../../report-poster');
 
 function buildCover(toolId) {
   if (toolId === 'traits') {
     return {
-      headingFirst: '你的性格，',
-      headingSecond: '不止一个刻度。',
+      headingFirst: '你的性格特质',
+      headingSecond: '',
       sub: '用连续维度，看见程度差异。'
     };
   }
   if (toolId === 'strengths') {
     return {
-      headingFirst: '值得发展的优势，',
-      headingSecond: '藏在你做过的事里。',
+      headingFirst: '你的优势主题',
+      headingSecond: '',
       sub: '从测评倾向出发，再回到真实经历。'
     };
   }
@@ -47,6 +48,7 @@ Page({
   },
 
   onLoad(query) {
+    this.reportPosterOwner = currentReportOwner();
     const toolId = CONTENT.TOOLS[query && query.tool] ? query.tool : 'mbti';
     const growth = getGrowth();
     const state = growth.get();
@@ -130,8 +132,7 @@ Page({
   },
 
   shareResult() {
-    getGrowth().patch({ posterKind: 'result', shareEntry: this.data.toolId });
-    wx.navigateTo({ url: '/pages/growth-share/growth-share' });
+    openReportPoster(this.data.toolId, this.data, this.reportPosterOwner);
   },
 
   retest() {

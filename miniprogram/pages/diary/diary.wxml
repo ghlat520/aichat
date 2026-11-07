@@ -4,38 +4,37 @@
     <view class="gk-head-title">{{editing ? (draft.id ? '再看看这一刻' : '写下此刻的自己') : '觉察日记'}}</view>
     <text class="gk-head-tag">体验版</text>
   </view>
-  <view id="diary-preview-notice" class="diary-preview-note">记录仅在本次打开期间暂存，重启或切换身份后清除。日记不会上传，尚未接入 AI。</view>
+  <view id="diary-preview-notice" class="diary-preview-note">日记仅在本次体验中暂存，不会上传或由 AI 分析。重启小程序或切换身份后清除。</view>
 
   <block wx:if="{{editing}}">
-    <view id="diary-editor" class="diary-editor">
-      <view class="diary-editor-intro">不用写得完整。<text class="diary-line-break"></text>从一个真实的小片刻开始。</view>
-      <picker mode="date" value="{{draft.date}}" end="{{today}}" data-editor="{{editorToken}}" bindchange="onDate">
-        <view id="diary-date" class="diary-date-picker">{{draft.date}}<text>更改日期</text></view>
-      </picker>
-      <view class="diary-field-title">此刻，心里是什么天气？</view>
-      <view class="diary-moods">
-        <button wx:for="{{moods}}" wx:key="id" class="diary-mood {{draft.mood === item.id ? 'diary-mood--selected' : ''}}" data-id="{{item.id}}" data-editor="{{editorToken}}" bindtap="selectMood" aria-label="{{item.label}}，{{draft.mood === item.id ? '已选择' : '未选择'}}">
-          <view class="diary-mood-dot" style="background: {{item.color}};"></view><text>{{item.label}}</text>
-        </button>
+    <view id="diary-editor" class="diary-editor awareness-editor">
+      <view class="awareness-eyebrow">三行觉察</view>
+      <view class="diary-editor-intro">记录事实、感受和理解。</view>
+      <view class="awareness-helper">每题一句，写一题也能保存。</view>
+      <view wx:if="{{draft.inspiration}}" id="diary-inspiration" class="awareness-inspiration"><text>{{draft.inspiration.source}}</text><view>{{draft.inspiration.question}}</view></view>
+      <view wx:for="{{lineFields}}" wx:key="key" class="awareness-line awareness-line--{{item.key}}">
+        <view class="awareness-line-title"><text class="awareness-number">{{item.number}}</text><text>{{item.title}}</text></view>
+        <textarea id="diary-line-{{item.key}}" class="awareness-line-input" value="{{item.value}}" data-key="{{item.key}}" data-editor="{{editorToken}}" maxlength="600" bindinput="onLine" placeholder="{{item.placeholder}}" placeholder-class="diary-placeholder" cursor-spacing="100" adjust-position="{{true}}" aria-label="{{item.title}}" />
       </view>
-      <view class="diary-writing-paper">
-        <textarea id="diary-content" class="diary-textarea" value="{{draft.content}}" data-editor="{{editorToken}}" maxlength="2000" bindinput="onContent" placeholder="今天发生了什么？我有什么感受？身体有什么反应？哪怕只写一句话，也可以。" placeholder-class="diary-placeholder" cursor-spacing="90" adjust-position="{{true}}" />
-        <view class="diary-word-count">{{draft.content.length}} / 2000</view>
-      </view>
-      <view class="diary-field-title">这一次，我觉察到了什么？<text>可多选，也可以暂不标注</text></view>
-      <view class="diary-dimensions">
-        <button wx:for="{{dimensions}}" wx:key="id" class="diary-dimension {{item.selected ? 'diary-dimension--selected' : ''}}" data-id="{{item.id}}" data-editor="{{editorToken}}" bindtap="toggleDimension" aria-label="{{item.label}}，{{item.selected ? '已标注' : '未标注'}}"><text>{{item.label}}</text><text class="diary-dimension-check">{{item.selected ? '✓' : '+'}}</text></button>
-      </view>
-      <view class="diary-writing-prompt">可以问问自己：{{selectedBranch.prompt}}</view>
       <view wx:if="{{notice}}" id="diary-error" class="aichat-warning">{{notice}}</view>
-      <button id="diary-save" class="gk-primary" data-editor="{{editorToken}}" bindtap="saveEntry">{{draft.id ? '保存这次调整' : '留住这一刻'}}</button>
+      <button id="diary-save" class="gk-primary" data-editor="{{editorToken}}" bindtap="saveEntry">{{draft.id ? '保存这次调整' : '保存这次觉察'}}</button>
+      <button id="diary-free-toggle" class="awareness-expand" data-editor="{{editorToken}}" bindtap="toggleFreeWriting" aria-expanded="{{freeWriting}}"><text>还想再写一点</text><text>{{freeWriting ? '收起 −' : '自由写 +'}}</text></button>
+      <view wx:if="{{freeWriting}}" class="diary-writing-paper"><textarea id="diary-content" class="diary-textarea awareness-free" value="{{draft.freeContent}}" data-editor="{{editorToken}}" maxlength="2000" bindinput="onContent" placeholder="还想留住的片段，写在这里。" placeholder-class="diary-placeholder" cursor-spacing="100" adjust-position="{{true}}" aria-label="自由补充正文" /></view>
+      <button id="diary-more-toggle" class="awareness-expand" data-editor="{{editorToken}}" bindtap="toggleMoreFields" aria-expanded="{{moreFields}}"><text>日期、心情与觉察维度</text><text>{{moreFields ? '收起 −' : '选填 +'}}</text></button>
+      <view wx:if="{{moreFields}}" class="awareness-more">
+        <picker mode="date" value="{{draft.date}}" end="{{today}}" data-editor="{{editorToken}}" bindchange="onDate"><view id="diary-date" class="diary-date-picker">{{draft.date}}<text>更改日期</text></view></picker>
+        <view class="diary-field-title">此刻心情</view>
+        <view class="diary-moods"><button wx:for="{{moods}}" wx:key="id" class="diary-mood {{draft.mood === item.id ? 'diary-mood--selected' : ''}}" data-id="{{item.id}}" data-editor="{{editorToken}}" bindtap="selectMood" aria-label="{{item.label}}，{{draft.mood === item.id ? '已选择' : '未选择'}}"><view class="diary-mood-dot" style="background: {{item.color}};"></view><text>{{item.label}}</text></button></view>
+        <view class="diary-field-title">觉察维度<text>可多选，也可以暂不标注</text></view>
+        <view class="diary-dimensions"><button wx:for="{{dimensions}}" wx:key="id" class="diary-dimension {{item.selected ? 'diary-dimension--selected' : ''}}" data-id="{{item.id}}" data-editor="{{editorToken}}" bindtap="toggleDimension" aria-label="{{item.label}}，{{item.selected ? '已标注' : '未标注'}}"><text>{{item.label}}</text><text class="diary-dimension-check">{{item.selected ? '✓' : '+'}}</text></button></view>
+      </view>
       <button id="diary-close-editor" class="gk-quiet" data-editor="{{editorToken}}" bindtap="closeEditor">先放一放，保留草稿</button>
     </view>
   </block>
 
   <block wx:else>
-    <view class="diary-heading">每天，和自己见一面。</view>
-    <view class="diary-heading-note">把真实的片刻，慢慢写成自己的树。</view>
+    <view class="diary-heading">三行觉察</view>
+    <view class="diary-heading-note">记录事实、感受和理解。</view>
     <view class="diary-panels">
       <button id="diary-tree-tab" class="diary-panel {{panel === 'tree' ? 'diary-panel--active' : ''}}" data-panel="tree" bindtap="selectPanel">觉察树</button>
       <button id="diary-journal-tab" class="diary-panel {{panel === 'journal' ? 'diary-panel--active' : ''}}" data-panel="journal" bindtap="selectPanel">我的日记</button>
@@ -63,7 +62,7 @@
         <button id="diary-write-from-branch" class="gk-text-link" bindtap="writeFromBranch">从这个角度写一点</button>
       </view>
       <view wx:if="{{!viewingExample}}" class="diary-week"><text class="diary-week-label">最近七天</text><view class="diary-week-days"><view wx:for="{{week}}" wx:key="date" class="diary-week-day {{item.recorded ? 'diary-week-day--recorded' : ''}}"><text>{{item.label}}</text><view class="diary-week-dot"></view></view></view></view>
-      <button id="diary-write" class="gk-primary" bindtap="openEditor">{{draft.content ? '继续刚才的草稿' : '写下今天的觉察'}}</button>
+      <button id="diary-write" class="gk-primary" bindtap="openEditor">{{draft.content ? '继续刚才的草稿' : '写下今天的三行觉察'}}</button>
       <view class="diary-soft-note">不用补齐每一天。想起自己时，就来写一点。</view>
     </block>
 
@@ -74,6 +73,9 @@
         <view class="diary-entry-mood"><view class="diary-focus-dot" style="background: {{detail.moodColor}};"></view>{{detail.moodLabel}}<text wx:if="{{viewingExample}}" class="gk-tag gk-tag--gray">虚构示例</text></view>
         <view id="diary-entry-content" class="diary-entry-body">{{detail.content}}</view>
         <view class="diary-entry-tags"><text wx:for="{{detail.dimensionLabels}}" wx:key="*this">{{item}}</text></view>
+        <view wx:if="{{detail.inspiration}}" class="awareness-inspiration"><text>{{detail.inspiration.source}}</text><view>{{detail.inspiration.question}}</view></view>
+        <button wx:if="{{!viewingExample}}" id="diary-micro" class="gk-primary" bindtap="goMicro">设定微行动</button>
+        <button wx:if="{{!viewingExample}}" id="diary-home" class="gk-quiet" bindtap="goHome">回到首页</button>
         <button wx:if="{{!viewingExample}}" id="diary-edit" class="gk-secondary" data-id="{{detail.id}}" bindtap="editEntry">再补充一点</button>
       </view>
       <block wx:elif="{{entries.length}}">
@@ -87,7 +89,7 @@
         <view class="diary-soft-note">{{viewingExample ? '这 3 篇日记仅用于展示体验，不计入你的记录。' : '已经留住 ' + total + ' 个片刻。随时回来，再看看自己。'}}</view>
       </block>
       <view wx:else id="diary-empty" class="diary-empty">
-        <view class="ui-icon ui-icon--leaf"></view><view class="diary-empty-title">先留下一句话。</view><view class="diary-empty-copy">一件小事，一种感觉，<text class="diary-line-break"></text>都是认识自己的开始。</view>
+        <view class="ui-icon ui-icon--leaf"></view><view class="diary-empty-title">还没有日记</view><view class="diary-empty-copy">不必等到想明白，<text class="diary-line-break"></text>从心里最想说的那一句开始。</view>
       </view>
       <button id="diary-journal-write" class="gk-primary" bindtap="openEditor">{{draft.content ? '继续刚才的草稿' : '写下一篇日记'}}</button>
     </block>

@@ -5,10 +5,9 @@
     <text class="gk-head-tag">参考对照</text>
   </view>
 
-  <view class="vc-title">从另一种视角，</view>
-  <view class="vc-title">看看你的优势。</view>
-  <view class="vc-lead">16 型各自的 5 项优势参考，适合找共鸣、做自我对照。</view>
-  <view class="vc-note">沿用所提供整合工具中的探索性映射，基于类型取向推断，非官方交叉验证，也不是你的 VIA 实测结果。</view>
+  <view class="vc-title">16 型优势参考</view>
+  <view class="vc-lead">每型 5 项优势，仅作参考。</view>
+  <view class="vc-note">以下按类型取向整理，供阅读对照；不属于官方验证的对应关系，也不是你的 VIA 实测结果。</view>
 
   <view class="vc-filter-label">选择想看的 MBTI 类型
     <picker range="{{filterOptions}}" range-key="label" value="{{filter}}" bindchange="changeFilter" aria-label="选择 MBTI 类型">

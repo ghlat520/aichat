@@ -19,25 +19,24 @@
 
     <view class="report-header">
       <text class="gk-tag {{sample ? 'gk-tag--gray' : 'gk-tag--aqua'}}">{{sample ? '样例阅读' : '已购 · 可重复查看'}}</text>
-      <view class="report-header-title">温柔地理解，</view>
-      <view class="report-header-title">清楚地行动。</view>
+      <view class="report-header-title">我的优势与行动建议</view>
       <view class="gk-tiny report-header-meta">个人优势说明书 · {{version}} · {{reportDate}} · 目标：{{goals.length ? goals[0] : '协作'}}</view>
     </view>
 
     <view wx:if="{{calibrated && !oldVersion}}" class="gk-soft-note">
-      <text class="report-revision-title">这次修订采纳了你的补充</text>
+      <text class="report-revision-title">本次修订</text>
       <view>{{calibrationText || '已调整经历理解和场景建议。'}}</view>
       <view class="gk-tiny">量表得分未变，原版 v1.0 仍可查看。</view>
     </view>
 
     <view class="report-actions">
       <button class="report-action-btn" bindtap="saveReport"><view class="ui-icon ui-icon--cards"></view>{{reportSaved ? '已保存在我的报告' : '保存报告'}}</button>
-      <button class="report-action-btn" bindtap="goShare"><view class="ui-icon ui-icon--leaf"></view>分享预览</button>
+      <button id="growth-report-poster" class="report-action-btn" disabled="{{!reportShareReady}}" bindtap="goShare"><view class="ui-icon ui-icon--leaf"></view>生成海报</button>
     </view>
 
     <view class="report-paper">
       <view class="report-section">
-        <view class="report-section-title">这份报告基于什么</view>
+        <view class="report-section-title">报告依据</view>
         <view class="report-section-text">性格特质结果、优势测评与两段{{confirmed ? '本人确认' : '示例'}}经历，共同组成这次分析的基础。{{hasMbti ? '16 型人格作为补充偏好信息纳入。' : '本次未纳入 16 型人格，不补写人格类型。'}}</view>
         <view class="gk-tags report-source-tags">
           <text class="gk-tag gk-tag--aqua">测评数据</text>
@@ -48,13 +47,13 @@
       </view>
 
       <view class="report-section">
-        <view class="report-section-title">我的性格与行为画像</view>
+        <view class="report-section-title">性格与行为</view>
         <view class="report-section-text">在这份样例里，你既愿意理解新的可能，也会留意他人的体验。面对复杂任务，你更容易在有准备、有目标的沟通里发挥；持续、临时的情绪协调则可能让你消耗。</view>
         <view class="report-source">依据：开放性与宜人性倾向、两段经历的行动及能量感受。它是当前线索，仍会随环境变化。</view>
       </view>
 
       <view class="report-section">
-        <view class="report-section-title">值得发展的三项优势</view>
+        <view class="report-section-title">三项优势参考</view>
         <view wx:for="{{strengths}}" wx:for-index="i" wx:key="*this" class="report-strength">
           <view class="report-strength-title">{{i + 1}}. {{item[0]}} <text class="gk-inference">优势候选</text></view>
           <view class="report-section-text">{{item[1]}}</view>
@@ -67,7 +66,7 @@
       </view>
 
       <view class="report-section">
-        <view class="report-section-title">容易发挥与容易消耗的环境</view>
+        <view class="report-section-title">适合的环境</view>
         <view class="report-sub-title">更容易发挥</view>
         <view class="report-section-text">目标可讨论、有安静整理时间、愿意互相确认理解的合作。你不必包办全部协调，可以先贡献一份结构清楚的说明。</view>
         <view class="report-sub-title">更容易消耗</view>
@@ -75,7 +74,7 @@
       </view>
 
       <view class="report-section">
-        <view class="report-section-title">优势过度使用与盲点</view>
+        <view class="report-section-title">优势与盲点</view>
         <view class="report-section-text">理解别人，不意味着总要替别人承担。整理信息也可能变成反复推敲，迟迟不交付。可以先问"这次做到什么程度就足够？"，再给自己设一个停止点。</view>
         <view class="report-source">待验证：你是否真的存在这些消耗？若与你的经历不符，可在校准中修正。</view>
       </view>
@@ -87,7 +86,7 @@
       </view>
 
       <view class="report-section">
-        <view class="report-section-title">未来七天，选一件小事</view>
+        <view class="report-section-title">微行动建议</view>
         <view class="report-section-text">不用三件都做。选一个适合当前节奏的练习，把新发现放回生活。</view>
         <view wx:for="{{actions}}" wx:key="index" class="report-action-card">
           <view class="report-sub-title">{{item.title}}</view>
@@ -99,7 +98,7 @@
 
       <view class="report-section">
         <view class="report-section-title">校准与复盘</view>
-        <view class="report-section-text">你可以在服务窗口内集中指出一次不符合实际的解读，再记录一次行动后的新发现。解释可以调整，你也可以保留自己的不同理解。</view>
+        <view class="report-section-text">你可以先记下不符合自己的描述，再对照实际经历。这里的本机校准与复盘练习不会改写已购报告，已购服务以原订单说明为准。</view>
       </view>
     </view>
 

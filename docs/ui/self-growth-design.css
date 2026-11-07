@@ -1,0 +1,490 @@
+/* A shared visual language: clear windows, illustrated tools, quiet navigation. */
+.growth-test-card-kicker { display: block; font-size: 11px; line-height: 1.6; color: var(--brand); }
+.zodiac-profile-deck { user-select: none; }
+.zodiac-profile-headline { white-space: pre-line; }
+:root {
+  --ink: #192a43;
+  --muted: #62718a;
+  --brand: #3155d9;
+  --canvas: #f6f8fc;
+  --line: #e2e8f1;
+  --blue: #e8eeff;
+  --aqua: #e2f3ed;
+  --teal: #247b70;
+  --pink: #fbe9df;
+}
+.profile-space .page-head .head-note { font-size: 12px; }
+.profile-overview { padding: 20px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); }
+.profile-person { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.profile-greeting { color: var(--muted); font-size: 13px; line-height: 1.6; }
+.profile-person h2 { margin-top: 2px; font-size: 25px; line-height: 1.4; font-weight: 650; letter-spacing: -.6px; }
+.profile-portrait { display: grid; place-items: center; flex-shrink: 0; width: 60px; height: 60px; border-radius: 20px; background: var(--blue); color: var(--brand); }
+.profile-portrait .icon { width: 30px; height: 30px; }
+.profile-intro { margin-top: 12px; font-size: 13px; line-height: 1.7; color: var(--muted); }
+.profile-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+.profile-stat { text-align: center; min-width: 0; }
+.profile-stat + .profile-stat { border-left: 1px solid var(--line); }
+.profile-stat b { display: block; color: var(--ink); font-size: 25px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.35; }
+.profile-stat > span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.profile-next { display: block; width: 100%; margin-top: 16px; padding: 18px 20px; text-align: left; border-radius: 20px; background: var(--blue); }
+.profile-next-title { display: block; color: var(--ink); font-size: 16px; font-weight: 600; line-height: 1.6; }
+.profile-next-copy { display: block; margin-top: 6px; color: var(--ink); font-size: 13px; line-height: 1.75; }
+.profile-next-action { display: flex; align-items: center; gap: 6px; margin-top: 13px; color: var(--brand); font-size: 14px; font-weight: 600; line-height: 1.6; }
+.profile-next-action .icon { width: 17px; height: 17px; }
+.profile-section-title { margin: 24px 2px 10px; color: var(--ink); font-size: 14px; font-weight: 600; line-height: 1.6; }
+.profile-links { border: 1px solid var(--line); border-radius: 20px; background: var(--paper); }
+.profile-link { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 76px; padding: 14px 16px; text-align: left; border-radius: 0; }
+.profile-link:first-child { border-radius: 20px 20px 0 0; }
+.profile-link:last-child { border-radius: 0 0 20px 20px; }
+.profile-link + .profile-link { border-top: 1px solid var(--line); }
+.profile-link-icon { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; color: var(--brand); background: var(--blue); }
+.profile-link-icon.aqua { color: var(--teal); background: var(--aqua); }
+.profile-link-icon.pink { color: var(--ink); background: var(--pink); }
+.profile-link-icon .icon { width: 21px; height: 21px; }
+.profile-link-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.profile-link-title { display: block; color: var(--ink); font-size: 15px; font-weight: 500; line-height: 1.6; }
+.profile-link-note { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.profile-chevron { flex-shrink: 0; color: var(--muted); }
+.profile-chevron .icon { width: 18px; height: 18px; }
+.profile-link:active { background: var(--canvas); }
+.profile-next:active { background: var(--aqua); }
+.profile-space button:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; }
+.profile-footer { margin: 24px 0 2px; text-align: center; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.phone { background: var(--canvas); }
+.phone .status, .phone .mini-nav { background: var(--paper); }
+.phone .mini-nav { border-bottom: 1px solid var(--line); font-weight: 600; }
+.phone .mini-brand b { width: 23px; height: 23px; border-radius: 8px; background: transparent; }
+.phone .mini-brand b svg { width: 100%; height: 100%; }
+.brand-mark { background: transparent; border-radius: 10px; }
+.brand-mark svg { width: 32px; height: 32px; }
+.phone .page-head { height: 54px; grid-template-columns: 44px 1fr 52px; gap: 6px; }
+.phone .back { width: 44px; height: 44px; border: 0; background: transparent; }
+.phone .head-note { border: 0; font-size: 10px; padding: 0; }
+.phone .catalog-hero { margin: 0; padding: 8px 0 10px; min-height: 104px; background: transparent; overflow: visible; }
+.phone .catalog-hero .page-title { font-size: 28px; line-height: 1.25; font-weight: 650; letter-spacing: -.8px; }
+.phone .catalog-hero p { margin-top: 7px; font-size: 11px; color: var(--muted); max-width: 205px; }
+.catalog-art { position: absolute; right: -2px; top: -3px; width: 145px; height: 116px; }
+.phone .assessment-explore-teaser { min-height: 104px; padding: 15px 16px; margin: 10px 0 14px; border: 0; border-radius: 17px; background: var(--blue); gap: 4px; }
+.phone .assessment-explore-copy > small { font-size: 10px; line-height: 1.6; color: #50638c; }
+.phone .assessment-explore-copy > strong { font-size: 19px; font-weight: 600; line-height: 1.5; letter-spacing: -.4px; margin: 5px 0 7px; color: var(--ink); white-space: nowrap; }
+.phone .assessment-explore-copy > span { font-size: 11px; color: #435ca0; line-height: 1.5; }
+.phone .assessment-type-art { width: 96px; min-width: 80px; height: 88px; margin: -8px -8px -8px 0; }
+.phone #screen > .section-title { margin: 14px 0 9px; }
+.phone #screen > .section-title h2 { font-size: 16px; }
+.phone #self-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.phone #self-tools .test-card { display: flex; flex-direction: column; align-items: stretch; gap: 0; margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); min-width: 0; position: relative; }
+.phone #self-tools .test-card:nth-child(2) { background: #f0f7f2; border-color: #dcebe1; }
+.phone #self-tools .test-card > .test-art,
+.phone #self-tools .test-card > .via-catalog-art { width: 100%; height: 87px; min-height: 0; background: transparent; border-radius: 0; display: block; }
+.phone #self-tools .test-card h3 { font-size: 15px; line-height: 1.5; margin: 5px 0 3px; color: var(--ink); font-weight: 650; }
+.phone #self-tools .test-card p { font-size: 10px; line-height: 1.6; margin: 0 0 10px; color: var(--muted); }
+.phone #self-tools .test-card .tags { align-items: center; justify-content: space-between; gap: 3px; }
+.phone #self-tools .test-card .tag { padding: 0; font-size: 10px; font-weight: 500; line-height: 1.7; color: var(--brand); background: transparent; }
+.phone #self-tools .test-card .tag.aqua { color: var(--teal); }
+.phone #self-tools .test-card .tag.gray { color: var(--muted); font-size: 9px; }
+.phone #self-tools .test-card > .chevron { position: absolute; right: 10px; top: 10px; width: 15px; height: 15px; }
+.phone #self-tools .test-card > .chevron .icon { width: 15px; height: 15px; }
+.phone #self-tools .test-card:last-child { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 12px; padding: 14px; border-radius: 13px; }
+.phone #self-tools .test-card:last-child > .via-catalog-art { width: 37px; height: 37px; display: grid; place-items: center; color: var(--brand); background: var(--blue); border-radius: 10px; }
+.phone #self-tools .test-card:last-child > .via-catalog-art .icon { width: 22px; height: 22px; }
+.phone #self-tools .test-card:last-child h3 { font-size: 13px; margin: 0 0 3px; }
+.phone #self-tools .test-card:last-child p { font-size: 10px; margin: 0; }
+.phone #self-tools .test-card:last-child > .chevron { position: static; }
+.phone .continue-card { margin: 12px 0; border: 1px solid var(--line); box-shadow: none; }
+.phone .bottom-nav { height: 74px; padding: 3px 6px 13px; align-items: stretch; }
+.phone .tab { min-height: 54px; justify-content: center; gap: 4px; font-size: 10px; position: relative; color: #69778c; }
+.phone .tab > .icon, .phone .talk-orb { width: 36px; height: 30px; padding: 4px 7px; border-radius: 10px; }
+.phone .talk-orb { margin: 0; background: transparent; color: inherit; box-shadow: none; display: grid; place-items: center; }
+.phone .talk-orb .icon { width: 22px; height: 22px; }
+.phone .tab.active { color: var(--brand); }
+.phone .tab.active > .icon, .phone .tab.active .talk-orb { background: var(--blue); }
+.phone .home-welcome h1 { font-size: 22px; color: var(--ink); }
+.phone .home-welcome p { font-size: 12px; color: var(--muted); }
+.phone .home-tools { padding-top: 19px; margin-bottom: 22px; }
+.phone .home-tools > button { min-height: 87px; font-size: 12px; }
+.phone .home-tools .feature-icon { width: 49px; height: 49px; border-radius: 16px; }
+.phone .home-invitation { background: var(--blue); min-height: 232px; border-radius: 19px; padding: 22px; }
+.phone .home-invitation h2 { font-size: 23px; line-height: 1.45; position: relative; z-index: 1; }
+.phone .home-invitation h2 > span { display: block; font-size: 16px; line-height: 1.5; font-weight: 500; color: #4f6084; }
+.phone .home-invitation h2 > strong { display: block; font-size: 23px; line-height: 1.45; font-weight: 650; letter-spacing: -.5px; }
+.phone .home-invitation p { color: #4f6084; max-width: 170px; font-size: 13px; line-height: 1.65; margin-top: 9px; position: relative; z-index: 1; }
+.phone .home-invitation .catalog-mascot { width: 148px; height: 156px; right: -6px; bottom: 9px; }
+.phone .home-invitation .text-link { background: var(--brand); color: white; border-radius: 9px; min-height: 44px; margin-top: 15px; padding: 0 14px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; position: relative; z-index: 1; }
+.phone .home-invitation .text-link .icon { width: 14px; height: 14px; }
+.phone .home-invitation .tag.white { padding: 0; background: transparent; font-size: 12px; line-height: 1.5; color: #50638c; }
+.phone .home-invitation .tag.white + h2 { margin-top: 8px; }
+.phone .home-invitation:focus-visible { outline: 2px solid var(--brand); outline-offset: 4px; }
+.phone .test-card .test-art.mbti { background: #edf1ff; }
+.phone .test-card .test-art.mbti svg { width: 100%; height: 100%; }
+.phone button:active { transform: translateY(1px); }
+.phone button:disabled:active { transform: none; }
+@media (max-width: 350px) {
+  .phone .home-invitation h2 > strong { font-size: 22px; }
+  .phone .home-invitation .catalog-mascot { width: 120px; height: 132px; right: -4px; }
+  .phone .catalog-hero .page-title { font-size: 25px; }
+  .phone .catalog-hero p { font-size: 10px; }
+  .catalog-art { width: 118px; right: -6px; }
+  .phone .assessment-explore-copy > strong { font-size: 17px; }
+  .phone .assessment-type-art { min-width: 61px; width: 65px; }
+  .phone #self-tools { gap: 9px; }
+  .phone #self-tools .test-card { padding: 10px; }
+  .phone #self-tools .test-card h3 { font-size: 13px; }
+  .phone #self-tools .test-card p { font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .phone button:active { transform: none; }
+}
+
+/* Homepage: the next real piece of work, a pair of tools, and a light zodiac companion. */
+:root {
+  --home-blue-status: #435b9b;
+  --home-mint-status: #316f60;
+  --home-blue-copy: #4f6084;
+  --home-mint-copy: #456e63;
+  --home-progress-track: #cdd8f5;
+  --peach-copy: #805d4c;
+  --peach-label: #80513c;
+  --peach-art: #a5653d;
+  --zodiac-fire: #9b5b34;
+  --zodiac-water: #7454ad;
+  --zodiac-water-wash: #eee5fa;
+  --zodiac-ring: #d5deee;
+  --mint-label: #35685d;
+  --mint-border: #cde4da;
+  --zodiac-latin-font: "Avenir Next",-apple-system,sans-serif;
+}
+
+.phone.growth-home-screen { background: var(--canvas); color: var(--ink); }
+.phone.growth-home-screen .screen { padding: 0 20px 28px; }
+.phone.growth-home-screen .bottom-nav { background: var(--paper); border-color: var(--line); }
+.phone.growth-home-screen .tab { font-size: 12px; }
+.growth-home { font-size: 14px; line-height: 1.7; }
+.growth-home-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 17px 0 16px; }
+.growth-home-heading p { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 7px; }
+.growth-home-heading h1 { font-size: 24px; font-weight: 600; line-height: 1.35; letter-spacing: -.7px; }
+.growth-home-profile { width: 44px; height: 44px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; color: var(--brand); background: var(--pink); }
+.growth-home-profile .icon { width: 21px; height: 21px; }
+.growth-next { padding: 20px; border-radius: 22px; background: var(--blue); }
+.growth-next--mint { background: var(--aqua); }
+.growth-next-heading { display: grid; grid-template-columns: minmax(0,1fr) 126px; gap: 10px; align-items: center; }
+.growth-next-heading .assessment-illustration { display: block; width: 126px; height: 126px; }
+.growth-next-status { font-size: 12px; color: var(--home-blue-status); line-height: 1.6; margin-bottom: 9px; }
+.growth-next--mint .growth-next-status { color: var(--home-mint-status); }
+.growth-next h2 { font-size: 23px; line-height: 1.4; letter-spacing: -.5px; font-weight: 600; }
+.growth-next-description { font-size: 13px; color: var(--home-blue-copy); line-height: 1.75; margin-top: 8px; }
+.growth-next--mint .growth-next-description { color: var(--home-mint-copy); }
+.growth-next-action { display: block; width: 100%; min-height: 48px; margin-top: 16px; padding: 11px 13px; border-radius: 12px; background: var(--brand); color: var(--paper); font-size: 14px; font-weight: 550; }
+.growth-next-progress { height: 4px; background: var(--home-progress-track); border-radius: 3px; overflow: hidden; margin-top: 12px; }
+.growth-next-progress > span { display: block; height: 100%; background: var(--brand); border-radius: inherit; }
+.growth-zodiac-entry { display: flex; align-items: center; gap: 12px; padding: 17px 18px; width: 100%; min-height: 124px; text-align: left; background: var(--pink); border-radius: 19px; color: var(--ink); }
+.growth-zodiac-entry > span { flex: 1; min-width: 0; }
+.growth-zodiac-entry strong { display: block; font-size: 18px; font-weight: 600; line-height: 1.5; }
+.growth-zodiac-entry p { font-size: 13px; line-height: 1.75; color: var(--peach-copy); margin-top: 6px; }
+.growth-zodiac-entry > span > span { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--peach-label); margin-top: 10px; }
+.growth-zodiac-entry .icon { width: 14px; height: 14px; }
+.growth-zodiac-entry .zodiac-glyph { width: 77px; height: 77px; flex-shrink: 0; color: var(--peach-art); }
+.growth-recent { margin-top: 26px; }
+.growth-section-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 9px; }
+.growth-section-heading h2 { font-size: 17px; font-weight: 600; }
+.growth-section-heading > button { display: flex; align-items: center; gap: 3px; min-height: 44px; font-size: 12px; color: var(--brand); }
+.growth-section-heading .icon { width: 14px; height: 14px; }
+.growth-recent-entry { width: 100%; text-align: left; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 17px; }
+.growth-recent-entry > span { font-size: 12px; color: var(--muted); }
+.growth-recent-entry p { font-size: 14px; line-height: 1.8; color: var(--ink); margin-top: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.growth-recent-entry small { display: inline-block; font-size: 12px; color: var(--teal); margin-top: 12px; }
+.growth-home :is(button,a):focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.growth-home button:active { transform: none; opacity: .8; }
+
+/* Zodiac: twelve genuine choices arranged as an orbit, one observation below. */
+.phone.zodiac-screen .screen { padding: 0 20px 30px; }
+.phone.zodiac-screen .bottom-nav { background: var(--paper); }
+.phone.zodiac-screen .tab { font-size: 12px; }
+.zodiac-tone-fire { --zodiac-accent: var(--zodiac-fire); --zodiac-wash: var(--pink); }
+.zodiac-tone-earth { --zodiac-accent: var(--teal); --zodiac-wash: var(--aqua); }
+.zodiac-tone-air { --zodiac-accent: var(--brand); --zodiac-wash: var(--blue); }
+.zodiac-tone-water { --zodiac-accent: var(--zodiac-water); --zodiac-wash: var(--zodiac-water-wash); }
+.zodiac-page .page-head { height: 55px; grid-template-columns: 44px 1fr 65px; }
+.zodiac-page .page-head h1 { font-size: 16px; color: var(--ink); font-weight: 600; }
+.zodiac-page .page-head .head-note { font-size: 12px; color: var(--muted); }
+.zodiac-page .back { width: 44px; height: 44px; padding: 10px; border: 0; background: transparent; }
+.zodiac-page .back .icon { width: 20px; height: 20px; }
+.zodiac-reading-top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 14px; }
+.zodiac-reading-top > p { color:var(--muted); font-size:12px; line-height:1.7; }
+.zodiac-reading-top > button { min-height:44px; padding:8px 0 8px 12px; display:flex; gap:3px; align-items:center; border:0; background:transparent; color:var(--brand); font-size:13px; white-space:nowrap; }
+.zodiac-reading-top .icon { width:15px; height:15px; transform:rotate(90deg); }
+.zodiac-selector { border-bottom:1px solid var(--line); margin-bottom:22px; }
+.zodiac-selector[hidden] { display:none; }
+.zodiac-orbit { position:relative; width:100%; max-width:310px; aspect-ratio:1; margin:8px auto 18px; }
+.zodiac-orbit::before { content:''; position:absolute; inset:13%; border:1px solid var(--zodiac-ring); border-radius:50%; }
+.zodiac-choice { position:absolute; width:48px; height:48px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:1px; border:1px solid transparent; border-radius:50%; transform:translate(-50%,-50%); color:var(--zodiac-accent); background:var(--canvas); transition:background 160ms,border-color 160ms; }
+.zodiac-choice .zodiac-glyph { width:22px; height:22px; flex-shrink:0; }
+.zodiac-choice > span { font-size:12px; line-height:1.5; color:var(--ink); white-space:nowrap; }
+.zodiac-choice[aria-checked='true'] { border:2px solid var(--zodiac-accent); background:var(--zodiac-wash); }
+.zodiac-choice[aria-checked='true'] > span { font-weight:600; color:var(--zodiac-accent); }
+.zodiac-orbit-center { position:absolute; left:50%; top:50%; width:116px; height:116px; border-radius:50%; background:var(--zodiac-wash); color:var(--zodiac-accent); transform:translate(-50%,-50%); display:flex; align-items:center; justify-content:center; flex-direction:column; padding:8px; }
+.zodiac-orbit-center .zodiac-glyph { width:49px; height:49px; }
+.zodiac-orbit-center strong { font-size:18px; line-height:1.5; font-weight:600; }
+.zodiac-orbit-center > span { font-family:var(--zodiac-latin-font); font-size:12px; line-height:1.5; }
+.zodiac-profile-deck { position:relative; margin:8px 3px 0; touch-action:pan-y; }
+.zodiac-profile-deck::before { content:''; position:absolute; inset:7px -3px -5px 4px; border-radius:24px; background:var(--zodiac-wash); opacity:.52; transform:rotate(2deg); }
+.zodiac-profile-card { position:relative; overflow:hidden; min-height:202px; padding:24px 22px; border-radius:24px; background:var(--zodiac-wash); color:var(--zodiac-accent); border:1px solid rgba(60,80,120,.05); }
+.zodiac-profile-copy { position:relative; z-index:1; max-width:65%; }
+.zodiac-profile-copy h2 { font-size:27px; line-height:1.3; font-weight:600; letter-spacing:-.6px; color:var(--ink); }
+.zodiac-profile-meta { font-size:12px; margin-top:7px; color:var(--zodiac-accent); }
+.zodiac-profile-headline { margin-top:17px; font-size:18px; line-height:1.6; font-weight:500; color:var(--ink); }
+.zodiac-profile-words { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; font-size:12px; line-height:1.6; color:var(--zodiac-accent); }
+.zodiac-profile-card .zodiac-portrait { position:absolute; width:47%; height:auto; right:-4px; top:29px; }
+.zodiac-navigation { display:flex; justify-content:center; align-items:center; gap:28px; margin:10px 0 21px; }
+.zodiac-navigation > button { width:44px; height:44px; padding:12px; background:transparent; border:0; color:var(--brand); }
+.zodiac-navigation .icon { width:18px; height:18px; }
+.zodiac-navigation > span { font-size:13px; color:var(--muted); min-width:52px; text-align:center; }
+.zodiac-selection-status { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+.zodiac-personality { padding:21px; background:var(--paper); border:1px solid var(--line); border-radius:20px; }
+.zodiac-chapter-label { display:flex; align-items:center; gap:9px; color:var(--zodiac-accent); }
+.zodiac-chapter-label > svg { width:24px; height:24px; flex-shrink:0; }
+.zodiac-chapter-label > h3 { font-size:17px; line-height:1.5; font-weight:600; color:var(--ink); }
+.zodiac-personality > h4,.zodiac-topic > h4 { margin-top:17px; font-size:19px; font-weight:550; line-height:1.6; color:var(--ink); }
+.zodiac-reading-copy { margin-top:10px; font-size:14px; line-height:1.9; color:var(--muted); }
+.zodiac-character-sides { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:15px; margin-top:20px; padding-top:18px; border-top:1px dashed var(--zodiac-ring); }
+.zodiac-character-sides > section + section { border-left:1px dashed var(--zodiac-ring); padding-left:15px; }
+.zodiac-character-sides h5 { font-size:12px; color:var(--muted); font-weight:400; margin-bottom:10px; }
+.zodiac-character-sides strong { font-size:14px; line-height:1.7; font-weight:550; color:var(--ink); }
+.zodiac-character-sides p { margin-top:7px; font-size:14px; line-height:1.85; color:var(--muted); }
+.zodiac-topics { margin:5px 0 29px; }
+.zodiac-topic { padding:25px 4px; }
+.zodiac-topic-career .zodiac-chapter-label { color:var(--brand); }
+.zodiac-scenes { display:flex; flex-wrap:wrap; gap:8px; margin-top:17px; }
+.zodiac-scenes > span { padding:5px 9px; background:var(--blue); color:var(--brand); border-radius:6px; font-size:12px; line-height:1.7; }
+.zodiac-topic-money { padding:21px; border-radius:20px; background:var(--pink); }
+.zodiac-topic-money .zodiac-chapter-label { color:var(--zodiac-fire); }
+.zodiac-traits > header h3 { font-size:19px; font-weight:550; line-height:1.6; }
+.zodiac-traits > header p { margin-top:6px; color:var(--muted); font-size:13px; line-height:1.8; }
+.zodiac-traits-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); background:var(--paper); border:1px solid var(--line); border-radius:20px; overflow:hidden; margin-top:18px; }
+.zodiac-trait { padding:18px 16px; }
+.zodiac-trait:nth-child(2n) { border-left:1px solid var(--line); }
+.zodiac-trait:nth-child(n+3) { border-top:1px solid var(--line); }
+.zodiac-trait-label { display:flex; align-items:center; gap:7px; color:var(--zodiac-accent); }
+.zodiac-trait-label > svg { width:23px; height:23px; flex-shrink:0; }
+.zodiac-trait-label > h4 { font-size:14px; font-weight:500; color:var(--ink); }
+.zodiac-trait-meaning { font-size:12px; line-height:1.6; color:var(--muted); margin-top:8px; }
+.zodiac-trait > h5 { font-size:17px; line-height:1.6; font-weight:550; color:var(--ink); margin-top:13px; }
+.zodiac-trait-copy { font-size:14px; line-height:1.85; color:var(--muted); margin-top:8px; }
+.zodiac-awareness { margin-top:28px; padding:21px; background:var(--aqua); border-radius:20px; }
+.zodiac-awareness > h3 { font-size:17px; font-weight:550; line-height:1.6; margin-bottom:15px; color:var(--teal); }
+.zodiac-question { font-size:17px; font-weight:500; line-height:1.8; color:var(--ink); }
+.zodiac-observation { font-size:14px; line-height:1.85; color:var(--muted); margin:13px 0 20px; }
+.zodiac-awareness .primary { min-height:48px; font-size:14px; margin-top:0; border-radius:12px; }
+.zodiac-footnote { color:var(--muted); font-size:12px; line-height:1.8; margin:17px 0 0; }
+.zodiac-page :is(button,a):focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
+.zodiac-page .zodiac-choice:active { transform:translate(-50%,-50%); }
+
+
+/* A chosen question is guidance beside the draft, not text written on the user's behalf. */
+.awareness-page .awareness-inspiration { display: flex; gap: 8px; align-items: flex-start; padding: 12px 13px; margin: 0 0 16px; border-left: 2px solid var(--teal); background: var(--aqua); border-radius: 0 10px 10px 0; }
+.awareness-page .awareness-inspiration > div { flex: 1; min-width: 0; }
+.awareness-page .awareness-inspiration span { display: block; font-size: 12px; color: var(--mint-label); line-height: 1.6; }
+.awareness-page .awareness-inspiration p { font-size: 14px; line-height: 1.8; color: var(--ink); margin-top: 5px; overflow-wrap: anywhere; }
+.awareness-page .awareness-inspiration-close { width: 44px; height: 44px; flex-shrink: 0; font-size: 23px; line-height: 1; color: var(--teal); margin: -7px -9px -2px 0; }
+.awareness-entry-detail .awareness-inspiration { margin-top: 20px; }
+.phone .assessment-diary-link { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 16px; margin: 21px 0; border: 1px solid var(--mint-border); border-radius: 16px; background: var(--aqua); color: var(--ink); }
+.phone .assessment-diary-link > .icon { width: 25px; height: 25px; flex-shrink: 0; color: var(--teal); }
+.phone .assessment-diary-link > span { flex: 1; }
+.phone .assessment-diary-link strong { display: block; font-size: 15px; line-height: 1.7; font-weight: 550; }
+.phone .assessment-diary-link small { display: block; font-size: 12px; line-height: 1.7; color: var(--home-mint-copy); margin-top: 4px; }
+
+@media(max-width:350px) {
+  .phone.growth-home-screen .screen,.phone.zodiac-screen .screen { padding-left: 17px; padding-right: 17px; }
+  .growth-home-heading h1 { font-size: 22px; }
+  .growth-next { padding: 18px; }
+  .growth-next-heading { grid-template-columns: minmax(0,1fr) 106px; gap: 8px; }
+  .growth-next-heading .assessment-illustration { width: 106px; height: 106px; }
+  .growth-next h2 { font-size: 21px; }
+  .growth-zodiac-entry { padding: 17px 15px; gap: 8px; }
+  .growth-zodiac-entry .zodiac-glyph { width: 65px; height: 65px; }
+  .zodiac-profile-card { padding:20px 17px; min-height:202px; }
+  .zodiac-profile-copy h2 { font-size:25px; }
+  .zodiac-profile-copy { max-width:67%; }
+  .zodiac-personality,.zodiac-topic-money,.zodiac-awareness { padding:18px 16px; }
+  .zodiac-trait { padding:17px 13px; }
+  .zodiac-choice { width: 44px; height: 44px; }
+  .zodiac-choice .zodiac-glyph { width: 19px; height: 19px; }
+  .zodiac-observation-card { padding: 19px 16px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .zodiac-choice { transition: none; }
+}
+
+/* Three meaningful doors: explore, become aware, and act. */
+.growth-next--peach { background: var(--pink); }
+.growth-next--peach .growth-next-status { color: var(--peach-label); }
+.growth-next--peach .growth-next-description { color: var(--peach-copy); overflow-wrap: anywhere; }
+
+/* Feedback is a guided practice loop; only the user can report an action's outcome. */
+.phone.growth-practice-screen .screen { padding: 0 20px 30px; }
+.phone.growth-practice-screen .tab { font-size: 12px; }
+.practice-page { font-size: 14px; line-height: 1.8; color: var(--ink); }
+.practice-page .page-head { height: 55px; grid-template-columns: 44px 1fr 64px; }
+.practice-page .page-head h1 { font-size: 17px; font-weight: 600; }
+.practice-page .head-note { font-size: 12px; color: var(--muted); }
+.practice-steps { margin: 3px 0 20px; }
+.practice-steps ol { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 3px; list-style: none; padding: 0; position: relative; }
+.practice-steps ol::before { content: ""; position: absolute; left: 10%; right: 10%; top: 16px; height: 1px; background: var(--line); }
+.practice-steps li { min-width: 0; }
+.practice-steps button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; width: 100%; min-height: 60px; font-size: 12px; line-height: 1.5; color: var(--muted); position: relative; }
+.practice-steps button > span { display: grid; place-items: center; width: 30px; height: 30px; font-size: 13px; border: 3px solid var(--canvas); border-radius: 50%; background: var(--paper); }
+.practice-steps [aria-current="step"] { color: var(--brand); font-weight: 600; }
+.practice-steps [aria-current="step"] > span { background: var(--brand); color: var(--paper); }
+.practice-steps button:disabled { opacity: .6; cursor: default; }
+.practice-intro { display: grid; grid-template-columns: minmax(0,1fr) 108px; align-items: center; gap: 10px; margin: 7px 0 17px; }
+.practice-intro h2 { font-size: 26px; line-height: 1.45; font-weight: 600; letter-spacing: -.5px; }
+.practice-intro p { color: var(--home-blue-copy); font-size: 13px; line-height: 1.85; margin-top: 12px; }
+.practice-intro .assessment-illustration { width: 108px; height: 112px; }
+.practice-prototype-note { font-size: 12px; color: var(--home-blue-copy); line-height: 1.8; background: var(--blue); padding: 12px 14px; border-radius: 12px; margin: 0 0 22px; }
+.practice-field-heading { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.practice-directions,.practice-outcomes { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7px; margin: 0 0 22px; }
+.practice-directions button,.practice-outcomes button { min-height: 48px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--muted); font-size: 12px; line-height: 1.6; padding: 8px 5px; }
+.practice-directions [aria-pressed="true"],.practice-outcomes [aria-pressed="true"] { background: var(--blue); border-color: var(--brand); color: var(--brand); font-weight: 550; }
+.practice-field { display: block; margin: 0 0 21px; }
+.practice-field > span { display: flex; justify-content: space-between; gap: 8px; margin: 0 0 9px; font-size: 15px; font-weight: 550; }
+.practice-field > span small { flex-shrink: 0; font-size: 12px; color: var(--muted); font-weight: 400; }
+.practice-field textarea { display: block; resize: vertical; width: 100%; min-height: 108px; padding: 13px 14px; font-family: inherit; font-size: 16px; line-height: 1.8; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--paper); overflow-wrap: anywhere; }
+.practice-field textarea::placeholder { color: var(--muted); opacity: 1; }
+.practice-field textarea:focus { border-color: var(--brand); outline: 2px solid var(--blue); outline-offset: 1px; }
+.practice-extra,.practice-context,.practice-history { border-top: 1px solid var(--line); margin: 0 0 18px; }
+.practice-extra > summary,.practice-context > summary,.practice-history > summary { min-height: 44px; padding: 10px 0; font-size: 13px; color: var(--brand); cursor: pointer; }
+.practice-extra .practice-field:first-of-type { margin-top: 12px; }
+.practice-step-heading { margin: 6px 0 22px; }
+.practice-step-heading > p:first-child { font-size: 12px; line-height: 1.7; color: var(--muted); margin-bottom: 9px; }
+.practice-step-heading h2 { font-size: 26px; font-weight: 600; line-height: 1.5; letter-spacing: -.5px; }
+.practice-step-heading > p:last-child { color: var(--muted); font-size: 13px; line-height: 1.85; margin-top: 12px; }
+.practice-quote { padding: 15px 0; }
+.practice-quote h3 { font-size: 13px; font-weight: 500; color: var(--muted); line-height: 1.7; margin-bottom: 6px; }
+.practice-quote p { font-size: 15px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+.practice-feedback { background: var(--aqua); border-radius: 16px; padding: 18px; margin-bottom: 13px; }
+.practice-feedback h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+.practice-feedback p { font-size: 14px; line-height: 1.9; color: var(--home-mint-copy); }
+.practice-feedback h4 { font-size: 13px; font-weight: 550; color: var(--teal); margin: 18px 0 6px; }
+.practice-evidence-note { font-size: 12px; line-height: 1.8; color: var(--muted); margin: 0 0 21px; }
+.practice-pattern { color: var(--teal); background: var(--aqua); font-size: 13px; line-height: 1.9; border-radius: 10px; padding: 12px 14px; margin: 0 0 20px; }
+.practice-text-button { color: var(--brand); font-size: 13px; min-height: 44px; padding: 7px 0; margin-top: -10px; }
+.practice-text-button[hidden] { display: none; }
+.practice-check { border-top: 1px solid var(--line); padding-top: 18px; margin: 5px 0 23px; }
+.practice-check h3 { font-size: 15px; font-weight: 600; }
+.practice-check ul { padding-left: 19px; margin-top: 8px; }
+.practice-check li { font-size: 13px; line-height: 1.9; color: var(--muted); margin: 7px 0; }
+.practice-action-card { background: var(--pink); border-radius: 16px; padding: 20px; margin: 0 0 22px; }
+.practice-action-card > span { font-size: 13px; color: var(--peach-label); }
+.practice-action-card ol { list-style: none; margin-top: 15px; padding: 0; }
+.practice-action-card li { border-top: 1px solid var(--mint-border); padding: 13px 0 3px; margin-top: 9px; }
+.practice-action-card li > span { font-size: 12px; color: var(--peach-label); }
+.practice-action-card li p { font-size: 16px; line-height: 1.8; font-weight: 500; margin-top: 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.practice-error { font-size: 13px; color: var(--peach-label); background: var(--pink); border-radius: 9px; padding: 11px 13px; margin: 0 0 14px; }
+.practice-error[hidden] { display: none; }
+.phone .practice-page .primary,.phone .practice-page .secondary { width: 100%; min-height: 48px; font-size: 14px; line-height: 1.6; padding: 12px; border-radius: 12px; margin: 12px 0 0; }
+.phone .practice-page .secondary { background: var(--paper); color: var(--brand); border: 1px solid var(--line); }
+.phone .practice-page .quiet-button { min-height: 44px; margin-top: 9px; font-size: 13px; }
+.practice-complete-art { display: flex; justify-content: flex-start; margin: 5px 0 12px; }
+.practice-complete-art .assessment-illustration { width: 123px; height: 110px; }
+.practice-complete-heading p { font-size: 12px; color: var(--teal); margin-bottom: 10px; }
+.practice-complete-heading h2 { font-size: 26px; line-height: 1.5; font-weight: 600; letter-spacing: -.5px; }
+.practice-next-insight { background: var(--aqua); padding: 18px; border-radius: 16px; margin: 12px 0 23px; }
+.practice-next-insight h3 { font-size: 14px; color: var(--teal); font-weight: 550; margin-bottom: 10px; }
+.practice-next-insight p { font-size: 16px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+.practice-history { margin-top: 24px; }
+.practice-history article { padding: 14px 0 18px; border-bottom: 1px solid var(--line); }
+.practice-history h3 { font-size: 16px; font-weight: 550; overflow-wrap: anywhere; }
+.practice-history article > span { font-size: 12px; color: var(--teal); }
+.practice-history p { font-size: 14px; line-height: 1.9; margin-top: 9px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.practice-history h4 { font-size: 13px; color: var(--muted); font-weight: 500; margin-top: 15px; }
+.practice-page :is(button,textarea,summary):focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+@media(max-width:350px) {
+  .phone.growth-practice-screen .screen { padding-left: 17px; padding-right: 17px; }
+  .practice-intro { grid-template-columns: minmax(0,1fr) 88px; gap: 8px; }
+  .practice-intro .assessment-illustration { width: 88px; height: 102px; }
+  .practice-intro h2,.practice-step-heading h2,.practice-complete-heading h2 { font-size: 23px; }
+}
+
+/* The home motto becomes four ascending, working doors. */
+.growth-cycle { position: relative; margin: 18px 0 12px; }
+.growth-cycle-connect { position: absolute; inset: 0 0 auto; width: 100%; height: 80px; overflow: visible; pointer-events: none; }
+.growth-cycle-connect path { fill: none; stroke: var(--line); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.growth-cycle-connect .growth-cycle-arrows { stroke: var(--brand); opacity: .45; stroke-linecap: round; stroke-linejoin: round; }
+.growth-cycle ol { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); min-height: 134px; padding: 0; list-style: none; }
+.growth-cycle li { min-width: 0; }
+.growth-cycle button { display: flex; align-items: center; flex-direction: column; width: 100%; min-height: 108px; padding: 0; gap: 6px; transform: translateY(calc((3 - var(--level))*8px)); text-align: center; }
+.growth-cycle .growth-cycle-icon { width: 42px; height: 42px; display: grid; place-items: center; border: 4px solid var(--canvas); border-radius: 50%; background: var(--blue); color: var(--brand); }
+.growth-cycle-icon .icon { width: 22px; height: 22px; }
+.growth-cycle .growth-cycle-icon.mint { background: var(--aqua); color: var(--teal); }
+.growth-cycle .growth-cycle-icon.peach { background: var(--pink); color: var(--peach-art); }
+.growth-cycle .growth-cycle-icon.review { background: var(--zodiac-water-wash); color: var(--zodiac-water); }
+.growth-cycle strong { font-size: 14px; line-height: 1.5; font-weight: 600; white-space: nowrap; }
+.growth-cycle small { font-size: 12px; letter-spacing: -.02em; line-height: 1.6; color: var(--muted); }
+.growth-cycle button:active { transform: translateY(calc((3 - var(--level))*8px)); opacity: .75; }
+
+/* Daily awareness: three small prompts, with existing detail available on demand. */
+.phone .awareness-page .awareness-preview-note { font-size: 12px; line-height: 1.7; padding: 9px 12px; margin-bottom: 16px; }
+.awareness-light-intro { margin: 8px 0 20px; }
+.awareness-light-intro h2 { font-size: 23px; line-height: 1.5; font-weight: 600; letter-spacing: -.4px; }
+.awareness-light-intro p { color: var(--muted); font-size: 13px; line-height: 1.8; margin-top: 7px; }
+.awareness-line-field { display: block; margin-bottom: 16px; }
+.awareness-line-field > span { display: flex; align-items: flex-start; gap: 7px; font-size: 14px; line-height: 1.6; font-weight: 550; margin-bottom: 8px; }
+.awareness-line-field i { width: 20px; height: 20px; flex-shrink: 0; display: grid; place-items: center; font-size: 12px; font-style: normal; line-height: 1; border-radius: 50%; background: var(--aqua); color: var(--teal); margin-top: 1px; }
+.awareness-page .awareness-line-field textarea,.awareness-page .awareness-free-extra textarea { width: 100%; display: block; min-height: 74px; resize: vertical; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); padding: 10px 12px; font: inherit; font-size: 16px; line-height: 1.7; overflow-wrap: anywhere; }
+.awareness-line-field textarea::placeholder,.awareness-free-extra textarea::placeholder { color: var(--muted); opacity: 1; }
+.awareness-line-field textarea:focus-visible,.awareness-free-extra textarea:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.awareness-light-word-count { display: block; font-size: 12px; text-align: right; line-height: 1.6; color: var(--muted); margin: -4px 0 10px; }
+.awareness-free-extra,.awareness-light-options { margin: 13px 0; border-top: 1px solid var(--line); }
+.awareness-free-extra > summary,.awareness-light-options > summary { min-height: 44px; padding: 11px 0; font-size: 13px; color: var(--brand); cursor: pointer; }
+.awareness-page .awareness-free-extra textarea { min-height: 132px; margin: 8px 0 15px; }
+.awareness-light-options h3 { font-size: 14px; font-weight: 550; margin: 15px 0 10px; }
+.awareness-light-options .awareness-date { margin: 10px 0; }
+.phone .awareness-page > .primary { min-height: 48px; font-size: 14px; border-radius: 12px; }
+.awareness-entry-lines section { margin: 0 0 19px; }
+.awareness-entry-lines h3 { font-size: 13px; line-height: 1.7; font-weight: 500; color: var(--teal); margin-bottom: 6px; }
+.awareness-entry-lines p { font-size: 15px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* The same user-authored fields power both light and deep practice. */
+.practice-mode-choice { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 44px; margin: 0 0 8px; border-bottom: 1px solid var(--line); }
+.practice-mode-choice > span { font-size: 12px; color: var(--muted); }
+.practice-mode-choice > button { display: flex; align-items: center; justify-content: flex-end; gap: 4px; min-height: 44px; font-size: 12px; color: var(--brand); }
+.practice-mode-choice .icon { width: 13px; height: 13px; }
+.light-flow { display: flex; align-items: center; gap: 3px; margin: 0 0 20px; }
+.light-flow > button { flex: 1; min-width: 0; min-height: 44px; font-size: 13px; line-height: 1.6; color: var(--muted); border-bottom: 2px solid transparent; }
+.light-flow > button[aria-current="step"] { color: var(--brand); font-weight: 600; border-bottom-color: var(--brand); }
+.light-flow > span .icon { width: 12px; height: 12px; color: var(--muted); }
+.light-heading { margin: 9px 0 22px; }
+.light-heading h2 { font-size: 25px; font-weight: 600; line-height: 1.5; letter-spacing: -.4px; }
+.light-heading p { font-size: 13px; line-height: 1.85; color: var(--muted); margin-top: 10px; }
+.light-heading-art { display: grid; grid-template-columns: minmax(0,1fr) 94px; align-items: center; gap: 10px; }
+.light-heading-art .assessment-illustration { width: 94px; height: 105px; }
+.light-awareness-link { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 52px; padding: 11px 12px; text-align: left; font-size: 13px; line-height: 1.8; color: var(--teal); background: var(--aqua); border-radius: 12px; margin-bottom: 24px; }
+.light-awareness-link > .icon:first-child { width: 21px; height: 21px; flex-shrink: 0; }
+.light-awareness-link > .icon:last-child { width: 13px; height: 13px; margin-left: auto; flex-shrink: 0; }
+.light-diary-source { background: var(--aqua); padding: 0 14px; border-radius: 12px; margin-bottom: 23px; }
+.light-diary-source > summary { min-height: 44px; font-size: 13px; padding: 11px 0; color: var(--teal); cursor: pointer; }
+.light-diary-source p { font-size: 14px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; padding: 3px 0 8px; }
+.practice-light .light-field { margin-bottom: 18px; }
+.practice-light .light-field > span { font-size: 14px; }
+.practice-light .light-field textarea { min-height: 84px; }
+.practice-light .light-field input { width: 100%; min-height: 48px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink); font: inherit; font-size: 16px; line-height: 1.7; padding: 10px 12px; }
+.practice-light .light-field input::placeholder { color: var(--muted); opacity: 1; }
+.practice-light .light-field input:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.light-helper { font-size: 12px; line-height: 1.8; color: var(--muted); margin-top: 13px; }
+.light-action-card { background: var(--pink); padding: 20px; border-radius: 16px; margin-bottom: 22px; }
+.light-action-card > span { font-size: 12px; color: var(--peach-label); }
+.light-action-card h3 { font-size: 19px; line-height: 1.8; font-weight: 550; margin: 11px 0 18px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.light-action-card p { font-size: 15px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; border-top: 1px solid var(--mint-border); padding-top: 11px; margin-top: 12px; }
+.light-action-card p > span { display: block; color: var(--peach-label); font-size: 12px; margin-bottom: 5px; }
+.light-review-action { border-left: 1px solid var(--teal); padding-left: 13px; margin-bottom: 23px; }
+.light-review-action > span { font-size: 12px; color: var(--muted); }
+.light-review-action p { font-size: 15px; line-height: 1.8; margin-top: 6px; overflow-wrap: anywhere; }
+.light-review-result { background: var(--aqua); padding: 4px 17px; border-radius: 16px; margin: 10px 0 23px; }
+.light-empty .assessment-illustration { width: 116px; height: 108px; margin: 8px 0; }
+.light-empty h2 { font-size: 25px; font-weight: 600; line-height: 1.5; margin: 7px 0 13px; }
+.light-empty p { color: var(--muted); font-size: 14px; line-height: 1.9; margin-bottom: 21px; }
+@media(max-width:350px) {
+  .light-heading h2,.light-empty h2 { font-size: 23px; }
+  .light-heading-art { grid-template-columns: minmax(0,1fr) 82px; }
+  .light-heading-art .assessment-illustration { width: 82px; height: 98px; }
+  .awareness-light-intro h2 { font-size: 22px; }
+}

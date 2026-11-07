@@ -18,21 +18,25 @@
     const date = new Date();
     return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
   };
-  const emptyDraft = () => ({ id: '', date: today(), mood: 'calm', content: '', dimensions: [] });
+  const emptyDraft = () => ({ id: '', date: today(), mood: '', content: '', dimensions: [], lines: { event: '', feeling: '', insight: '' }, freeContent: '' });
   function diary() {
     if (!state.diary) state.diary = { entries: [], draft: emptyDraft(), example: true, branch: 'emotion', detail: '', error: '' };
+    const draft=state.diary.draft;
+    if(!draft.lines){draft.lines={event:'',feeling:'',insight:''};draft.freeContent=draft.content||'';}
+    draft.freeContent??='';
     return state.diary;
   }
   const entries = () => diary().example ? examples : diary().entries;
-  const mood = entry => moods.find(item => item[0] === entry.mood) || moods[1];
+  const mood = entry => moods.find(item => item[0] === entry.mood) || ['', '未标注心情', 'var(--muted)'];
   const dateLabel = date => `${Number(date.slice(5, 7))} 月 ${Number(date.slice(8))} 日`;
   const button = (text, action, cls = 'primary', extra = '') => `<button class="${cls}" data-diary-action="${action}" ${extra}>${text}</button>`;
   const tags = entry => `<div class="awareness-tags">${dimensions.filter(item => entry.dimensions.includes(item.id)).map(item => `<span>${item.label}</span>`).join('') || '<span>未标注维度</span>'}</div>`;
   const previewNote = '<p class="awareness-preview-note">体验版 · 记录仅在本页内存中暂存，刷新清除。日记不会上传，尚未接入 AI。</p>';
   const tabs = active => `<nav class="awareness-tabs" aria-label="觉察日记栏目">${[['diary', '觉察树'], ['diary-journal', '我的日记'], ['diary-letter', '一封回信']].map(([id, title]) => `<button data-go="${id}" class="${active === id ? 'selected' : ''}" ${active === id ? 'aria-current="page"' : ''}>${title}</button>`).join('')}</nav>`;
   const viewSwitch = () => `<div class="awareness-view-switch"><span>${diary().example ? '正在看虚构示例' : '我的本次记录'}</span>${button(diary().example ? '回到我的记录' : '看看示例', 'toggle-example', 'text-link')}</div>`;
+  const inspirationCard = (prompt, editable = false) => prompt ? `<aside class="awareness-inspiration"><div><span>${esc(prompt.source)}</span><p>${esc(prompt.question)}</p></div>${editable ? button('×', 'dismiss-prompt', 'awareness-inspiration-close', 'type="button" aria-label="收起观察提示"') : ''}</aside>` : '';
   const shell = (content, title = '觉察日记', back = 'home') => `<section class="awareness-page">${head(title, back, '体验版')}${previewNote}${content}</section>`;
-  const heading = active => `<h2 class="awareness-heading">每天，和自己见一面。</h2><p class="awareness-subtitle">把真实的片刻，慢慢写成自己的树。</p>${tabs(active)}`;
+  const heading = active => `<h2 class="awareness-heading">三行觉察</h2><p class="awareness-subtitle">记录事实、感受和理解。</p>${tabs(active)}`;
 
   function treeSvg(counts) {
     const shapes = [
@@ -51,24 +55,34 @@
     const d = diary(), rows = entries(), counts = dimensions.map(item => rows.filter(entry => entry.dimensions.includes(item.id)).length);
     const selected = dimensions.find(item => item.id === d.branch) || dimensions[0];
     const selectedCount = counts[dimensions.indexOf(selected)];
-    return shell(`${heading('diary')}${viewSwitch()}<div class="awareness-tree-card"><div class="between top-align"><div><h3>${rows.length ? '每一片叶子，都算数。' : '从第一片叶子开始。'}</h3><p>${d.example ? '这棵树来自 3 篇虚构日记' : rows.length ? '这是你主动留意过的生活' : '不必写得深刻，真实就很好'}</p></div><div class="awareness-day-count"><b>${new Set(rows.map(entry => entry.date)).size}</b><span>天${d.example ? '示例' : '记录'}</span></div></div><div class="awareness-tree-stage">${treeSvg(counts)}${dimensions.map((item, index) => `<button class="awareness-branch awareness-branch--${item.id} ${d.branch === item.id ? 'selected' : ''}" data-diary-action="branch" data-id="${item.id}" aria-label="${item.label}，${counts[index]}篇记录"><span>${item.label}</span><small style="color:${counts[index] ? item.color : '#9ba6b7'}">${counts[index] ? counts[index] + ' 篇' : '待探索'}</small></button>`).join('')}</div><p class="awareness-tree-caption">枝叶来自你选择的觉察维度。记录多少，不代表好坏。</p></div><div class="awareness-focus"><div class="between"><h3><i style="background:${selected.color}"></i>${selected.label}</h3><small>${selectedCount ? selectedCount + ' 篇记录' : '还没写到这里，也没关系'}</small></div><p>${selected.prompt}</p>${button('从这个角度写一点', 'write-branch', 'text-link')}</div>${button(d.draft.content ? '继续刚才的草稿' : '写下今天的觉察', 'write')}<p class="footer-note">不用补齐每一天。想起自己时，就来写一点。</p>`);
+    return shell(`${heading('diary')}${viewSwitch()}<div class="awareness-tree-card"><div class="between top-align"><div><h3>${rows.length ? '每一次觉察，都有意义。' : '从一次觉察开始。'}</h3><p>${d.example ? '这棵树来自 3 篇虚构日记' : rows.length ? '从记录中理解自己的感受、需要与选择' : '了解自己，从真实的感受开始'}</p></div><div class="awareness-day-count"><b>${new Set(rows.map(entry => entry.date)).size}</b><span>天${d.example ? '示例' : '记录'}</span></div></div><div class="awareness-tree-stage">${treeSvg(counts)}${dimensions.map((item, index) => `<button class="awareness-branch awareness-branch--${item.id} ${d.branch === item.id ? 'selected' : ''}" data-diary-action="branch" data-id="${item.id}" aria-label="${item.label}，${counts[index]}篇记录"><span>${item.label}</span><small style="color:${counts[index] ? item.color : '#9ba6b7'}">${counts[index] ? counts[index] + ' 篇' : '待探索'}</small></button>`).join('')}</div><p class="awareness-tree-caption">枝叶来自你选择的觉察维度。记录多少，不代表好坏。</p></div><div class="awareness-focus"><div class="between"><h3><i style="background:${selected.color}"></i>${selected.label}</h3><small>${selectedCount ? selectedCount + ' 篇记录' : '还没写到这里，也没关系'}</small></div><p>${selected.prompt}</p>${button('从这个角度写一点', 'write-branch', 'text-link')}</div>${button(d.draft.content ? '继续我的三行觉察' : '写下今天的三行觉察', 'write')}<p class="footer-note">理解自己，再选择如何改变。</p>`);
   }
 
+  const linePrompts=[['event','今天，哪件事让我有感觉？','记一件具体的事，先不急着评价。'],['feeling','我有什么感受，真正在意什么？','一个情绪、一种需要，用自己的话写。'],['insight','我对自己有了什么新发现？','一点新理解，也可以是暂时还不确定的地方。']];
+  function composeDraft(draft){
+    const names={event:'发生的事',feeling:'感受与在意',insight:'新的发现'};
+    const parts=Object.entries(draft.lines).filter(([,value])=>value.trim()).map(([key,value])=>`${names[key]}：${value.trim()}`);
+    return [...parts,draft.freeContent.trim()].filter(Boolean).join('\n\n');
+  }
+  function entryBody(entry){
+    if(!entry.lines||!Object.values(entry.lines).some(value=>value.trim()))return `<p class="awareness-entry-body">${esc(entry.content)}</p>`;
+    return `<div class="awareness-entry-body awareness-entry-lines">${linePrompts.filter(([key])=>entry.lines[key]?.trim()).map(([key,title])=>`<section><h3>${title}</h3><p>${esc(entry.lines[key])}</p></section>`).join('')}${entry.freeContent?`<section><h3>补充的记录</h3><p>${esc(entry.freeContent)}</p></section>`:''}</div>`;
+  }
   function writePage() {
-    const d = diary(), draft = d.draft;
-    d.example = false;
-    return shell(`<div class="awareness-write-intro">不用写得完整。<br>从一个真实的小片刻开始。</div><label class="awareness-date"><span>记录日期</span><input type="date" aria-label="记录日期" data-diary-field="date" value="${esc(draft.date)}" max="${today()}"></label><h2 class="awareness-field-title">此刻，心里是什么天气？</h2><div class="awareness-moods">${moods.map(([id, title, color]) => button(`<i style="background:${color}"></i><span>${title}</span>`, 'mood', `awareness-mood ${draft.mood === id ? 'selected' : ''}`, `data-id="${id}" aria-label="${title}" aria-pressed="${draft.mood === id}"`)).join('')}</div><div class="awareness-writing-paper"><textarea id="awareness-content" aria-label="今天的觉察" data-diary-field="content" maxlength="2000" placeholder="今天发生了什么？我有什么感受？身体有什么反应？哪怕只写一句话，也可以。">${esc(draft.content)}</textarea><small id="awareness-word-count">${draft.content.length} / 2000</small></div><h2 class="awareness-field-title">这一次，我觉察到了什么？<small>可多选，也可以暂不标注</small></h2><div class="awareness-dimensions">${dimensions.map(item => button(`<span>${item.label}</span><span>${draft.dimensions.includes(item.id) ? '✓' : '+'}</span>`, 'dimension', `awareness-dimension ${draft.dimensions.includes(item.id) ? 'selected' : ''}`, `data-id="${item.id}" aria-pressed="${draft.dimensions.includes(item.id)}"`)).join('')}</div><p class="awareness-writing-prompt">可以问问自己：${(dimensions.find(item => item.id === d.branch) || dimensions[0]).prompt}</p>${d.error ? `<p class="notice error" role="alert">${esc(d.error)}</p>` : ''}${button(draft.id ? '保存这次调整' : '留住这一刻', 'save')}${goButton('先放一放，保留草稿', 'diary', 'quiet-button')}`, draft.id ? '再看看这一刻' : '写下此刻的自己', 'diary');
+    const d=diary(),draft=d.draft;d.example=false;
+    const freeMarkup=`<details class="awareness-free-extra" ${draft.freeContent?'open':''}><summary>${draft.freeContent?'原有正文已保留，可继续补充':'想多写一点？展开自由记录'}</summary><textarea id="awareness-content" aria-label="补充的自由记录" data-diary-field="freeContent" maxlength="2000" placeholder="写下想补充的内容，也可以只保留上面的三行。">${esc(draft.freeContent)}</textarea></details>`;
+    return shell(`<header class="awareness-light-intro"><h2>写下来，慢慢听自己说。</h2><p>三行提示，写一句也算完成。</p></header>${inspirationCard(draft.inspiration,true)}<div class="awareness-three-lines">${linePrompts.map(([key,title,placeholder],index)=>`<label class="awareness-line-field"><span><i>${index+1}</i>${title}</span><textarea rows="2" id="awareness-line-${key}" data-diary-line="${key}" maxlength="600" placeholder="${placeholder}">${esc(draft.lines[key])}</textarea></label>`).join('')}</div>${draft.freeContent?freeMarkup:''}<small class="awareness-light-word-count" id="awareness-word-count">${draft.content.length} / 2000 字</small>${d.error?`<p class="notice error" role="alert">${esc(d.error)}</p>`:''}${button(draft.id?'保存这次调整':'保存这次觉察','save')}${!draft.freeContent?freeMarkup:''}<details class="awareness-light-options"><summary>补充心情、日期与觉察维度</summary><label class="awareness-date"><span>记录日期</span><input type="date" aria-label="记录日期" data-diary-field="date" value="${esc(draft.date)}" max="${today()}"></label><h3>此刻的感受</h3><div class="awareness-moods">${moods.map(([id,title,color])=>button(`<i style="background:${color}"></i><span>${title}</span>`,'mood',`awareness-mood ${draft.mood===id?'selected':''}`,`data-id="${id}" aria-label="${title}" aria-pressed="${draft.mood===id}"`)).join('')}</div><h3>这次想标注的觉察维度</h3><div class="awareness-dimensions">${dimensions.map(item=>button(`<span>${item.label}</span><span>${draft.dimensions.includes(item.id)?'✓':'+'}</span>`,'dimension',`awareness-dimension ${draft.dimensions.includes(item.id)?'selected':''}`,`data-id="${item.id}" aria-pressed="${draft.dimensions.includes(item.id)}"`)).join('')}</div></details>${goButton('先放一放，保留草稿','home','quiet-button')}`,draft.id?'补充我的觉察':'三行觉察','home');
   }
 
   function journalPage() {
     const rows = entries();
-    return shell(`${heading('diary-journal')}${viewSwitch()}${rows.length ? `<div class="awareness-entry-list">${rows.map(entry => button(`<div class="between"><h3>${dateLabel(entry.date)}</h3><span class="awareness-entry-mood"><i style="background:${mood(entry)[2]}"></i>${mood(entry)[1]}</span></div><p>${esc(entry.content.length > 66 ? entry.content.slice(0, 66) + '…' : entry.content)}</p>${tags(entry)}`, 'entry', 'awareness-entry-row', `data-id="${entry.id}"`)).join('')}</div><p class="footer-note">${diary().example ? '这 3 篇日记仅用于展示，不计入你的记录。' : '已经留住 ' + rows.length + ' 个片刻。随时回来，再看看自己。'}</p>` : `<div class="awareness-empty">${icon('leaf')}<h3>先留下一句话。</h3><p>一件小事，一种感觉，<br>都是认识自己的开始。</p></div>`}${button(diary().draft.content ? '继续刚才的草稿' : '写下一篇日记', 'write')}`);
+    return shell(`${heading('diary-journal')}${viewSwitch()}${rows.length ? `<div class="awareness-entry-list">${rows.map(entry => button(`<div class="between"><h3>${dateLabel(entry.date)}</h3><span class="awareness-entry-mood"><i style="background:${mood(entry)[2]}"></i>${mood(entry)[1]}</span></div><p>${esc(entry.content.length > 66 ? entry.content.slice(0, 66) + '…' : entry.content)}</p>${tags(entry)}`, 'entry', 'awareness-entry-row', `data-id="${entry.id}"`)).join('')}</div><p class="footer-note">${diary().example ? '这 3 篇日记仅用于展示，不计入你的记录。' : '已经留住 ' + rows.length + ' 个片刻。随时回来，再看看自己。'}</p>` : `<div class="awareness-empty">${icon('leaf')}<h3>还没有日记</h3><p>理解情绪与需要，<br>让下一步更有方向。</p></div>`}${button(diary().draft.content ? '继续刚才的草稿' : '写下一篇日记', 'write')}`);
   }
 
   function entryPage() {
     const d = diary(), rows = entries(), entry = rows.find(item => item.id === d.detail) || rows[0];
     if (!entry) return shell(`<div class="awareness-empty"><h3>还没有留下记录。</h3><p>先写下一点今天的感受吧。</p></div>${button('写下一篇日记', 'write')}`, '一个真实的片刻', 'diary-journal');
-    return shell(`<article class="awareness-entry-detail"><span class="tag ${d.example ? 'gray' : 'aqua'}">${d.example ? '虚构示例' : '我的本次记录'}</span><h2>${dateLabel(entry.date)}</h2><div class="awareness-entry-mood"><i style="background:${mood(entry)[2]}"></i>${mood(entry)[1]}</div><p class="awareness-entry-body">${esc(entry.content)}</p>${tags(entry)}${d.example ? '<p class="footer-note">这是虚构日记，供你审核回看体验。</p>' : button('再补充一点', 'edit', 'secondary', `data-id="${entry.id}"`)}</article>${goButton('回到日记列表', 'diary-journal', 'secondary')}`, '一个真实的片刻', 'diary-journal');
+    return shell(`<article class="awareness-entry-detail"><span class="tag ${d.example ? 'gray' : 'aqua'}">${d.example ? '虚构示例' : '我的本次记录'}</span><h2>${dateLabel(entry.date)}</h2><div class="awareness-entry-mood"><i style="background:${mood(entry)[2]}"></i>${mood(entry)[1]}</div>${entryBody(entry)}${tags(entry)}${inspirationCard(entry.inspiration)}${d.example ? '<p class="footer-note">这是虚构日记，供你审核回看体验。</p>' : button('再补充一点', 'edit', 'secondary', `data-id="${entry.id}"`)}</article>${!d.example?button('设定微行动','micro','primary',`data-id="${esc(entry.id)}"`)+goButton('今天先记到这里','home','quiet-button'):''}${goButton('回到日记列表', 'diary-journal', 'secondary')}`, '一个真实的片刻', 'diary-journal');
   }
 
   function letterPage() {
@@ -86,8 +100,8 @@
   }
 
   pageMeta.splice(pageMeta.findIndex(item => item[0] === 'discover') + 1, 0,
-    ['diary', '觉察日记 · 觉察树', '本次新增', '每天几分钟，留住真实片刻，让六个觉察维度慢慢长出枝叶。', ['第三个底部入口，位于自测右侧；清晰卡由“我的”进入。', '可切换虚构示例与本轮个人记录；枝叶只表示主动标注的记录数。']],
-    ['diary-write', '觉察日记 · 写下此刻', '本次新增', '日期、心情、一段文字和可选的六维标注，按自己的节奏写。', ['可输入、暂存草稿、保存和编辑，返回不会丢失本轮草稿。', '仅内存演示，不上传、不写本机存储；刷新后清除。']],
+    ['diary', '觉察日记 · 觉察树', '本次新增', '每天几分钟，留住真实片刻，让六个觉察维度慢慢长出枝叶。', ['第三个底部入口，位于自测右侧；也可从首页直接开始记录。', '可切换虚构示例与本轮个人记录；枝叶只表示主动标注的记录数。']],
+    ['diary-write', '觉察日记 · 写下此刻', '本次新增', '默认三行觉察，一句也可保存；自由正文、日期、心情与维度按需补充。', ['可输入、暂存草稿、保存和编辑，返回不会丢失本轮草稿。', '仅内存演示，不上传、不写本机存储；刷新后清除。']],
     ['diary-journal', '觉察日记 · 日记回看', '本次新增', '按日期回看留住的片刻，让每一天都可以被温柔地重新理解。', ['列表可打开详情，自己的日记可以继续补充。', '示例与个人记录隔离，不把虚构日记计入个人统计。']],
     ['diary-entry', '觉察日记 · 一个片刻', '本次新增', '完整阅读一篇日记，保留当时的心情与觉察维度。', ['个人记录可编辑后覆盖原篇，不额外增加树枝计数。', '虚构示例明确标注，编辑入口只用于本轮个人记录。']],
     ['diary-letter', '觉察日记 · 一封回信', '本次新增', '以书信展示观察习惯、提出待验证猜想和一个小行动的阅读体验。', ['回信明确为虚构日记的示例，不伪装成对私人日记的分析。', '可回看对应的三篇示例；真实 AI 留待后续接入。']]
@@ -100,18 +114,42 @@
   };
 
   function startWriting() { diary().example = false; diary().error = ''; go('diary-write'); }
+  globalThis.diaryHomeSnapshot = () => {
+    const d = diary(), draft = d.draft;
+    const summarize = entry => entry ? { id: entry.id, date: entry.date, content: entry.content.slice(0, 100), mood: mood(entry)[1], inspiration: entry.inspiration } : null;
+    return {
+      count: d.entries.length,
+      hasDraft: !!(draft.content.length || draft.id || draft.dimensions.length || !!draft.mood || draft.date !== today() || draft.inspiration),
+      draftLength: draft.content.length,
+      today: summarize(d.entries.find(entry => entry.date === today())),
+      latest: summarize(d.entries[0])
+    };
+  };
+  globalThis.openDiaryFromHome = ({ prompt, entryId, browse = false } = {}) => {
+    const d = diary(); d.example = false; d.error = '';
+    if (entryId) {
+      if (!d.entries.some(entry => entry.id === entryId)) { go('diary-journal'); return; }
+      d.detail = entryId; go('diary-entry'); return;
+    }
+    if (browse) { go('diary-journal'); return; }
+    if (prompt) d.draft.inspiration = { source: prompt.source, question: prompt.question };
+    startWriting();
+  };
+  globalThis.openMicroFromDiary=id=>{const entry=diary().entries.find(item=>item.id===id);if(entry)startMicroFromDiary(entry);else openDiaryFromHome({browse:true});};
   function editEntry(id) {
     const entry = diary().entries.find(item => item.id === id);
     if (!entry) return;
-    diary().draft = { ...entry, dimensions: [...entry.dimensions] };
+    diary().draft = { ...entry, dimensions: [...entry.dimensions], lines: entry.lines?{...entry.lines}:undefined };
     startWriting();
   }
   let sequence = 0;
   document.addEventListener('click', event => {
     const target = event.target.closest('button[data-diary-action]');
-    if (!target || target.disabled) return;
+    if (!target || !target.isConnected || target.disabled) return;
     const action = target.dataset.diaryAction, d = diary();
-    if (action === 'write') startWriting();
+    if(action==='micro'){const entry=d.entries.find(item=>item.id===target.dataset.id);if(entry&&!d.example)startMicroFromDiary(entry);}
+    else if (action === 'write') startWriting();
+    else if (action === 'dismiss-prompt') { delete d.draft.inspiration; render({ keepScroll: true }); $('#awareness-line-event').focus({ preventScroll: true }); }
     else if (action === 'branch') { d.branch = target.dataset.id; render({ keepScroll: true }); }
     else if (action === 'write-branch') { d.draft.dimensions = [...new Set([...d.draft.dimensions, d.branch])]; startWriting(); }
     else if (action === 'toggle-example') { d.example = !d.example; d.detail = ''; render({ keepScroll: true }); }
@@ -137,7 +175,7 @@
         render({ keepScroll: true });
         return;
       }
-      const entry = { ...d.draft, content, dimensions: [...d.draft.dimensions], id: d.draft.id || `diary-${Date.now()}-${++sequence}` };
+      const entry = { ...d.draft, content, lines: {...d.draft.lines}, freeContent: d.draft.freeContent, dimensions: [...d.draft.dimensions], id: d.draft.id || `diary-${Date.now()}-${++sequence}` };
       const index = d.entries.findIndex(item => item.id === entry.id);
       if (index < 0) d.entries.unshift(entry); else d.entries[index] = entry;
       d.entries.sort((a, b) => b.date.localeCompare(a.date));
@@ -146,11 +184,14 @@
     }
   });
   function updateDraft(event) {
-    const field = event.target.dataset.diaryField;
-    if (page !== 'diary-write' || !event.target.isConnected || !['content', 'date'].includes(field)) return;
-    diary().draft[field] = event.target.value;
-    if (field === 'content') $('#awareness-word-count').textContent = `${event.target.value.length} / 2000`;
-    $('#state-panel').textContent = diaryReviewState();
+    const target=event.target;if(page!=='diary-write'||!target.isConnected)return;
+    const draft=diary().draft,line=target.dataset.diaryLine,field=target.dataset.diaryField;
+    if(['event','feeling','insight'].includes(line)){draft.lines[line]=target.value;draft.content=composeDraft(draft);}
+    else if(field==='freeContent'){draft.freeContent=target.value;draft.content=composeDraft(draft);}
+    else if(field==='date')draft.date=target.value;
+    else return;
+    $('#awareness-word-count').textContent=`${draft.content.length} / 2000 字`;
+    $('#state-panel').textContent=diaryReviewState();
   }
   document.addEventListener('input', updateDraft);
   document.addEventListener('change', updateDraft);

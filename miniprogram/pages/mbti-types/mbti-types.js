@@ -1,85 +1,100 @@
-// pages/mbti-types/mbti-types.js — MBTI 16 型优缺点（2026-11-03 原型 V2 mbti-types 屏）
-// 参考阅读不产生测评记录；支持看自己/看 TA 视角、分组筛选与带类型互跳。
-const { getGrowth } = require('../../growth-store');
+// Reference reading only: selecting a card never creates a measurement result.
 const CONTENT = require('../../growth-content');
+const UI = require('../../growth-ui-data.js');
 
 const GROUP_CHIPS = [{ code: 'all', label: '全部' }].concat(
   Object.keys(CONTENT.MBTI_TYPE_GROUPS).map((code) => ({
     code,
-    label: CONTENT.MBTI_TYPE_GROUPS[code] + ' ' + code
+    label: CONTENT.MBTI_TYPE_GROUPS[code]
   }))
 );
 
 Page({
   data: {
-    mode: 'self',
     group: 'all',
-    filter: 'all',
-    filterOptions: [],
+    typeOptions: CONTENT.MBTI_TYPE_CONTENT.map(type => ({ code: type.code, label: type.code + ' ' + type.name })),
+    pickerIndex: 0,
     groupChips: GROUP_CHIPS,
     cards: [],
     visibleCount: 16,
-    guidance: ''
+    currentIndex: 0,
+    cardOffsets: [],
+    selectedType: null,
+    selectedFigure: null,
+    showSources: false
   },
 
   onLoad(query) {
-    const code = query && query.code;
-    const filter = CONTENT.MBTI_TYPE_CONTENT.some((type) => type.code === code) ? code : 'all';
-    this.setData({
-      filterOptions: [{ value: 'all', label: '全部 16 型' }].concat(
-        CONTENT.MBTI_TYPE_CONTENT.map((type) => ({ value: type.code, label: type.code + ' · ' + type.name }))
-      )
-    });
-    this.applyFilter({ filter, group: 'all' });
+    wx.setNavigationBarTitle({ title: '16 型名人图鉴' });
+    this.selectInGroup('all', query && query.code);
   },
 
-  applyFilter(part) {
-    const v = {
-      mode: part.mode !== undefined ? part.mode : this.data.mode,
-      group: part.group !== undefined ? part.group : this.data.group,
-      filter: part.filter !== undefined ? part.filter : this.data.filter
+  selectInGroup(group, code) {
+    const visible = CONTENT.MBTI_TYPE_CONTENT.filter(type => group === 'all' || type.group === group);
+    const selected = visible.find(type => type.code === code) || visible[0];
+    if (!selected) return;
+    const currentIndex = visible.indexOf(selected);
+    const cardOffsets = visible.map((type, index) => {
+      let offset = (index - currentIndex + visible.length) % visible.length;
+      if (offset > visible.length / 2) offset -= visible.length;
+      return offset;
+    });
+    const patch = {
+      group, currentIndex, cardOffsets, visibleCount: visible.length,
+      selectedType: selected,
+      selectedFigure: UI.typeFigures[selected.code],
+      pickerIndex: CONTENT.MBTI_TYPE_CONTENT.findIndex(type => type.code === selected.code)
     };
-    const visible = CONTENT.MBTI_TYPE_CONTENT.filter((type) =>
-      (v.group === 'all' || type.group === v.group) && (v.filter === 'all' || type.code === v.filter));
-    this.setData({
-      mode: v.mode,
-      group: v.group,
-      filter: v.filter,
-      guidance: v.mode === 'self'
-        ? '哪段描述让你觉得熟悉？可以先记住一个想多了解的类型。'
-        : '把类型当作一个交流话题，也给真实的人留下不同的空间。',
-      visibleCount: visible.length,
-      cards: visible.map((type) => ({
-        code: type.code,
-        name: type.name,
-        alias: type.alias,
-        group: type.group,
-        groupLabel: CONTENT.MBTI_TYPE_GROUPS[type.group] + ' ' + type.group,
-        up: type.up,
-        dn: type.dn
-      }))
-    });
+    if (group !== this.data.group || !this.data.cards.length) {
+      patch.cards = visible.map(type => ({ ...type, portrait: UI.typePortraits[type.code], figure: UI.typeFigures[type.code], groupLabel: CONTENT.MBTI_TYPE_GROUPS[type.group] }));
+    }
+    this.setData(patch);
   },
 
-  setMode(event) {
-    this.applyFilter({ mode: event.currentTarget.dataset.mode });
+  selectType(event) {
+    const code = event.currentTarget.dataset.code;
+    if (this.data.cards.some(type => type.code === code)) this.selectInGroup(this.data.group, code);
   },
 
   setGroup(event) {
-    this.applyFilter({ group: event.currentTarget.dataset.group, filter: 'all' });
+    const group = event.currentTarget.dataset.group;
+    if (GROUP_CHIPS.some(chip => chip.code === group)) this.selectInGroup(group, this.data.selectedType && this.data.selectedType.code);
   },
 
-  changeFilter(event) {
-    this.applyFilter({ filter: event.detail.value, group: 'all' });
+  onPickType(event) {
+    const index = Number(event.detail.value);
+    if (!Number.isInteger(index) || index < 0 || index >= CONTENT.MBTI_TYPE_CONTENT.length) return;
+    const type = CONTENT.MBTI_TYPE_CONTENT[index];
+    this.selectInGroup(this.data.group === 'all' || type.group === this.data.group ? this.data.group : 'all', type.code);
+  },
+
+  stepType(event) {
+    const step = Number(event.currentTarget.dataset.step), cards = this.data.cards;
+    if ((step !== -1 && step !== 1) || !cards.length) return;
+    const next = (this.data.currentIndex + step + cards.length) % cards.length;
+    this.selectInGroup(this.data.group, cards[next].code);
+  },
+
+  onTypeSwipe(event) {
+    const detail = event.detail, cards = this.data.cards;
+    if (!detail || detail.source !== 'touch' || !Number.isInteger(detail.current) || detail.current < 0 || detail.current >= cards.length) return;
+    this.selectInGroup(this.data.group, cards[detail.current].code);
   },
 
   goTest() {
     wx.navigateTo({ url: '/pages/growth-intro/growth-intro?tool=mbti' });
   },
 
-  goCross(event) {
-    const code = event.currentTarget.dataset.code;
-    wx.redirectTo({ url: '/pages/via-mbti/via-mbti?code=' + code });
+  toggleSources() {
+    this.setData({ showSources: !this.data.showSources });
+  },
+
+  copySource() {
+    wx.setClipboardData({ data: this.data.selectedFigure.sourceUrl });
+  },
+
+  goCross() {
+    if (this.data.selectedType) wx.redirectTo({ url: '/pages/via-mbti/via-mbti?code=' + this.data.selectedType.code });
   },
 
   goViaIntro() {

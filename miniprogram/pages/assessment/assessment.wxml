@@ -8,25 +8,18 @@
       <text class="gk-head-tag">自我探索</text>
     </view>
     <view class="growth-catalog-hero">
-      <view class="gk-eyebrow">慢慢来，你值得被好好理解</view>
-      <view class="growth-hero-title">遇见，</view>
-      <view class="growth-hero-title">更好的你自己。</view>
-      <view class="growth-hero-copy">从偏好到优势，从熟悉的描述开始，<text class="growth-hero-copy-br"></text>多认识自己一点，也多理解别人一点。</view>
-      <view class="ui-companion growth-hero-mascot"></view>
+      <view class="growth-hero-title">探索自己</view>
+      <view class="growth-hero-copy">了解偏好，发现优势。</view>
+      <view class="growth-hero-art" aria-hidden="true"></view>
     </view>
 
     <button class="growth-explore-teaser" bindtap="focusExplore" id="growth-explore-teaser">
       <view class="growth-explore-copy">
-        <text class="growth-explore-eyebrow">不用先答题 · 先找一点共鸣</text>
-        <view class="growth-explore-title">这段描述，</view>
-        <view class="growth-explore-title">像你，还是像 TA？</view>
-        <text class="growth-explore-note">MBTI 16 型优点与盲点，先逛一逛 →</text>
+        <text class="growth-explore-eyebrow">无需答题</text>
+        <view class="growth-explore-title">你的偶像是哪一型？</view>
+        <text class="growth-explore-note">16 型名人图鉴，找找共鸣 →</text>
       </view>
-      <view class="growth-explore-art" aria-hidden="true">
-        <text class="growth-explore-chip">ENFP</text>
-        <text class="growth-explore-chip growth-explore-chip--mid">INTJ</text>
-        <text class="growth-explore-chip growth-explore-chip--low">INFP</text>
-      </view>
+      <view class="growth-explore-art" aria-hidden="true"></view>
     </button>
 
     <view wx:if="{{continueTool}}" class="growth-continue-card" bindtap="resumeTool" id="growth-continue-card">
@@ -45,24 +38,18 @@
     </view>
 
     <view class="gk-section-title">
-      <view class="gk-section-title-title">想更了解自己，再做一份自评</view>
+      <view class="gk-section-title-title">开始自测</view>
       <text class="gk-section-title-note">基础结果免费</text>
     </view>
     <view id="self-tools">
-      <button wx:for="{{tools}}" wx:key="id" class="growth-test-card" data-id="{{item.id}}" bindtap="tapTool">
-        <view class="gk-test-art {{item.id === 'mbti' ? 'gk-test-art--mbti' : item.id === 'via' ? 'gk-test-art--via' : 'gk-test-art--cross'}}">
-          <block wx:if="{{item.id === 'mbti'}}">
-            <view class="gk-petal"></view><view class="gk-petal gk-petal-2"></view><view class="gk-petal gk-petal-3"></view><view class="gk-petal gk-petal-4"></view>
-          </block>
-          <view wx:elif="{{item.id === 'via'}}" class="ui-icon ui-icon--leaf"></view>
-          <view wx:else class="ui-icon ui-icon--cards"></view>
-        </view>
+      <button wx:for="{{tools}}" wx:key="id" class="growth-test-card growth-test-card--{{item.id}}" data-id="{{item.id}}" bindtap="tapTool">
+        <view class="growth-tool-art growth-tool-art--{{item.id}}" aria-hidden="true"></view>
         <view class="gk-grow">
-          <view class="growth-test-card-name">{{item.name}}</view>
-          <view class="growth-test-card-desc">{{item.desc}}</view>
+          <view class="growth-test-card-kicker">{{item.name}}</view><view class="growth-test-card-name">{{item.id === 'mbti' ? '读懂你的偏好' : item.id === 'via' ? '看见你的长处' : 'VIA × MBTI 对照'}}</view>
+          <view class="growth-test-card-desc">{{item.id === 'mbti' ? '理解思考与选择的习惯' : item.id === 'via' ? '了解你的 24 项优势' : '16 型优势参考，非个人测评结论'}}</view>
           <view class="gk-tags">
             <text class="gk-tag {{item.id === 'via' ? 'gk-tag--aqua' : ''}}">{{item.statusLabel}}</text>
-            <text class="gk-tag gk-tag--gray">{{item.tag}}</text>
+            <text class="gk-tag gk-tag--gray">{{item.id === 'mbti' ? '40 题' : item.id === 'via' ? '72 题' : '16 型参考'}}</text>
           </view>
         </view>
         <view class="gk-chevron"></view>
@@ -70,7 +57,7 @@
     </view>
 
     <view class="gk-section-title">
-      <view class="gk-section-title-title">留给自己的发现</view>
+      <view class="gk-section-title-title">最近结果</view>
       <button class="gk-section-title-extra" bindtap="goReports">回看免费结果</button>
     </view>
     <block wx:if="{{recentTools.length}}">
@@ -85,7 +72,7 @@
         <view class="gk-chevron"></view>
       </button>
     </block>
-    <view wx:else class="gk-small">完成一项自评，你的发现会留在这里。</view>
+    <view wx:else class="gk-small">完成自评后，结果会显示在这里。</view>
     <button wx:if="{{hasPaid}}" class="growth-recent-row" bindtap="openPaidReport">
       <view class="gk-feature-icon gk-feature-icon--sm"><view class="ui-icon ui-icon--cards"></view></view>
       <view class="gk-grow">
@@ -94,7 +81,7 @@
       </view>
       <view class="gk-chevron"></view>
     </button>
-    <view class="gk-footer-note">参考阅读用来找共鸣，自评用来观察自己。<text class="growth-hero-copy-br"></text>结果是探索起点，允许你慢慢变化。</view>
+    <view class="gk-footer-note">参考阅读用来找共鸣，自评用来观察自己。<text class="growth-hero-copy-br"></text>是否符合你，还要回到日常经历里看。</view>
   </block>
 
   <!-- ===== 原有关系应对轻自测（逻辑不变）===== -->
@@ -138,7 +125,7 @@
         <view id="assessment-result-blind-spot" wx:if="{{result.possible_blind_spot}}" class="assessment-result-field"><view class="aichat-label">可能忽略的部分</view><view class="aichat-body">{{result.possible_blind_spot}}</view></view>
         <view id="assessment-result-reminder" wx:if="{{result.one_real_world_reminder}}" class="assessment-result-field"><view class="aichat-label">现实中的一个提醒</view><view class="aichat-body">{{result.one_real_world_reminder}}</view></view>
       </view>
-      <button id="assessment-continue" class="aichat-btn" bindtap="goToClarity">带着这个发现，理一理关系</button>
+      <button id="assessment-continue" class="aichat-btn" bindtap="goToClarity">带着这个发现，写下经历</button>
       <button id="assessment-share" class="aichat-btn aichat-btn--ghost" bindtap="goToShare">查看分享预览</button>
       <button class="assessment-previous" bindtap="backToCatalog">回到自测首页</button>
       <button class="assessment-previous" bindtap="restart">再认识自己一次</button>

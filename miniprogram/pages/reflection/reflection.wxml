@@ -16,14 +16,14 @@
       <view class="aichat-label">仍需验证的未知（每行一条）</view>
       <textarea id="reflection-unknowns" class="aichat-textarea" maxlength="1000" value="{{unknowns}}" data-key="unknowns" bindinput="onInput" placeholder="还不知道取消的具体原因。" />
     </view>
-    <button id="reflection-submit-1" class="aichat-btn" disabled="{{!canSubmit || submitting}}" loading="{{submitting}}" bindtap="reflect">提交第一轮</button>
+    <button id="reflection-submit-1" class="aichat-btn" disabled="{{!canSubmit || submitting}}" loading="{{submitting}}" bindtap="reflect">继续：想清边界与目标</button>
   </view>
 
   <view id="reflection-round-2" wx:if="{{!loading && !error && round === 2}}" class="aichat-card">
     <view class="aichat-title">第二轮：边界与目标</view>
     <view class="aichat-field">
       <view class="aichat-label">优先需要或边界</view>
-      <textarea id="reflection-priority" class="aichat-textarea" maxlength="300" value="{{priority}}" data-key="priority" bindinput="onInput" placeholder="我现在优先保护清晰和尊重的边界。" />
+      <textarea id="reflection-priority" class="aichat-textarea" maxlength="300" value="{{priority}}" data-key="priority" bindinput="onInput" placeholder="我希望安排变化时能提前知道，不想再临时空等。" />
     </view>
     <view class="aichat-field">
       <view class="aichat-label">由我能执行的目标</view>

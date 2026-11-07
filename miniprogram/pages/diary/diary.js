@@ -1,5 +1,11 @@
 const { store, syncTabBar, goHome } = require('../../app-store');
 const { getDiary, getExampleEntries, summarizeEntries, localDate, DIMENSIONS, MOODS } = require('../../diary-store');
+const { getPractice, setFlowIntent, takeFlowIntent } = require('../../practice-store');
+const LINE_FIELDS = [
+  { key: 'event', number: '01', title: '今天，哪件事让我有感觉？', placeholder: '写下一件具体的小事，不急着解释。' },
+  { key: 'feeling', number: '02', title: '我有什么感受，真正在意什么？', placeholder: '情绪、身体的感觉，或想被看见的需要。' },
+  { key: 'insight', number: '03', title: '我对自己有了什么新发现？', placeholder: '一句新的理解，或还想继续探索的问题。' }
+];
 
 function treeImage(branches) {
   const shapes = [
@@ -31,7 +37,7 @@ function treeImage(branches) {
 }
 
 function displayEntry(entry) {
-  const mood = MOODS.find(item => item.id === entry.mood) || MOODS[1];
+  const mood = MOODS.find(item => item.id === entry.mood) || { label: '未标注心情', color: '#a1acb8' };
   return {
     ...entry, moodLabel: mood.label, moodColor: mood.color,
     dateLabel: `${Number(entry.date.slice(5, 7))} 月 ${Number(entry.date.slice(8))} 日`,
@@ -45,7 +51,8 @@ Page({
   data: {
     panel: 'tree', editing: false, editorToken: '', viewingExample: false,
     entries: [], branches: [], dimensions: [], moods: MOODS,
-    draft: { id: '', date: '', mood: 'calm', content: '', dimensions: [] },
+    draft: { id: '', date: '', mood: '', content: '', dimensions: [], lines: {}, freeContent: '' },
+    lineFields: [], moreFields: false, freeWriting: false,
     today: '', days: 0, total: 0, week: [], treeImage: '',
     branchId: 'emotion', selectedBranch: null, detailId: '', detail: null, notice: '',
     letter: [
@@ -68,7 +75,18 @@ Page({
     }
     this.owner = owner;
     this.refresh();
+    if (this.data.editing) this.setData({ editorToken: String(++editorSequence) });
+    const intent = takeFlowIntent(owner, 'diary');
+    if (!intent) return;
+    if (intent.type === 'write') this.openEditor();
+    else {
+      const entry = intent.type === 'entry' && this.diary().get().entries.find(row => row.id === intent.id);
+      this.setData({ editing: false, editorToken: '', viewingExample: false, panel: 'journal', detailId: entry ? entry.id : '', notice: '' });
+      this.refresh(true);
+    }
   },
+
+  onHide() { this.setData({ editorToken: '' }); },
 
   goHome,
   currentOwner() {
@@ -83,12 +101,12 @@ Page({
   checkEditor(event) {
     if (!this.checkOwner()) return false;
     const dataset = event && event.currentTarget && event.currentTarget.dataset;
-    return this.data.editing && dataset && dataset.editor === this.data.editorToken;
+    return this.data.editing && this.data.editorToken && dataset && dataset.editor === this.data.editorToken;
   },
   diary() { return getDiary(this.currentOwner()); },
   refreshDraft(afterRender) {
     const draft = this.diary().get().draft;
-    this.setData({ draft, dimensions: DIMENSIONS.map(item => ({ ...item, selected: draft.dimensions.includes(item.id) })) }, afterRender);
+    this.setData({ draft, lineFields: LINE_FIELDS.map(item => ({ ...item, value: draft.lines[item.key] || '' })), dimensions: DIMENSIONS.map(item => ({ ...item, selected: draft.dimensions.includes(item.id) })) }, afterRender);
   },
   refresh(scrollToTop = false) {
     const entries = this.data.viewingExample ? getExampleEntries() : this.diary().get().entries;
@@ -131,10 +149,11 @@ Page({
   },
   openEditor() {
     if (!this.checkOwner()) return;
-    this.setData({ viewingExample: false, editing: true, editorToken: String(++editorSequence), detailId: '', notice: '' });
+    const draft = this.diary().get().draft;
+    this.setData({ viewingExample: false, editing: true, editorToken: String(++editorSequence), detailId: '', notice: '', freeWriting: Boolean(draft.freeContent), moreFields: Boolean(draft.mood || draft.dimensions.length) });
     this.refresh(true);
   },
-  closeEditor(event) { if (this.checkEditor(event)) this.setData({ editing: false, editorToken: '', notice: '' }); },
+  closeEditor(event) { if (!this.checkEditor(event)) return; this.refreshDraft(); this.setData({ editing: false, editorToken: '', notice: '' }); },
   writeFromBranch() {
     if (!this.checkOwner()) return;
     const draft = this.diary().get().draft;
@@ -143,10 +162,19 @@ Page({
   },
   onContent(event) {
     if (!this.checkEditor(event)) return;
-    this.diary().updateDraft({ content: event.detail.value });
+    this.diary().updateDraft({ freeContent: event.detail.value });
     this.refreshDraft();
     if (this.data.notice) this.setData({ notice: '' });
   },
+  onLine(event) {
+    if (!this.checkEditor(event)) return;
+    const key = event.currentTarget.dataset.key;
+    if (!LINE_FIELDS.some(field => field.key === key)) return;
+    this.diary().updateDraft({ lines: { [key]: event.detail.value } });
+    if (this.data.notice) this.setData({ notice: '' });
+  },
+  toggleFreeWriting(event) { if (this.checkEditor(event)) { this.refreshDraft(); this.setData({ freeWriting: !this.data.freeWriting }); } },
+  toggleMoreFields(event) { if (this.checkEditor(event)) { this.refreshDraft(); this.setData({ moreFields: !this.data.moreFields }); } },
   onDate(event) { if (!this.checkEditor(event)) return; this.diary().updateDraft({ date: event.detail.value }); this.refreshDraft(); },
   selectMood(event) { if (!this.checkEditor(event)) return; this.diary().updateDraft({ mood: event.currentTarget.dataset.id }); this.refreshDraft(); },
   toggleDimension(event) {
@@ -167,6 +195,22 @@ Page({
   },
   viewEntry(event) { if (!this.checkOwner()) return; this.setData({ detailId: event.currentTarget.dataset.id }); this.refresh(true); },
   closeEntry() { if (this.checkOwner()) this.setData({ detailId: '', detail: null }); },
+  goMicro() {
+    if (!this.checkOwner() || this.data.viewingExample) return;
+    const entry = this.diary().get().entries.find(row => row.id === this.data.detailId);
+    if (!entry) return;
+    const owner = this.owner;
+    const proceed = () => {
+      if (!this.checkOwner() || owner !== this.currentOwner()) return;
+      setFlowIntent(owner, { target: 'practice', type: 'plan' });
+      wx.switchTab({ url: '/pages/venting/venting' });
+    };
+    try { getPractice(owner).fromDiary(entry); proceed(); }
+    catch (error) {
+      if (error.code !== 'ACTIVE_PRACTICE') { this.setData({ notice: error.message }); return; }
+      wx.showModal({ title: '先继续已有的微行动？', content: '已有文字会保留，这篇觉察也会留在日记中。', confirmText: '继续微行动', cancelText: '回看觉察', success: result => { if (result.confirm) proceed(); } });
+    }
+  },
   editEntry(event) {
     if (!this.checkOwner()) return;
     if (this.data.viewingExample) return;

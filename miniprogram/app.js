@@ -6,7 +6,7 @@ const { getGrowth } = require('./growth-store');
 App({
   globalData: {
     appid: 'wx9a9d1af441eb953d',
-    apiBase: 'http://127.0.0.1:8080',
+    apiBase: 'http://127.0.0.1:18088',
     version: '0.0.1',
     store: store, // 暴露给 E2E evaluate 用（getApp().globalData.store）
     growth: getGrowth() // 自我探索流程状态（E2E evaluate 可用 getApp().globalData.growth）

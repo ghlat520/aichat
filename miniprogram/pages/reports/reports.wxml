@@ -5,9 +5,8 @@
     <text class="gk-head-tag">自我探索</text>
   </view>
 
-  <view class="gk-page-title">每一次发现，</view>
-  <view class="gk-page-title">都可以再回来看看。</view>
-  <view class="gk-lead">免费结果与已购报告，各自好好保存。</view>
+  <view class="gk-page-title">我的探索记录</view>
+  <view class="gk-lead">免费结果与已购报告，随时回看。</view>
   <view wx:if="{{notice}}" class="gk-notice">{{notice}}</view>
   <button class="gk-quiet" bindtap="restorePaid">微信登录并恢复已购报告</button>
 
@@ -53,8 +52,8 @@
 
   <view wx:if="{{(filter === 'paid' && !paidItems.length) || (filter !== 'paid' && !freeItems.length && !paidItems.length)}}" class="gk-empty">
     <view class="reports-empty-icon"><view class="ui-icon ui-icon--cards"></view></view>
-    <view class="gk-empty-title">{{filter === 'paid' ? (nextCursor ? '当前页暂无有效已购报告' : '暂未读取到已购报告') : '从一个小发现开始'}}</view>
-    <view class="gk-empty-text">{{filter === 'paid' ? '免费结果仍可完整查看。想继续探索时，再了解个人报告。' : '先选一项自测，按自己的节奏认识自己。'}}</view>
+    <view class="gk-empty-title">{{filter === 'paid' ? (nextCursor ? '当前页暂无有效已购报告' : '暂未读取到已购报告') : '你的第一份发现，还在前方'}}</view>
+    <view class="gk-empty-text">{{filter === 'paid' ? '免费结果仍可完整查看。想继续探索时，再了解个人报告。' : '先从一项自测开始，读懂自己的偏好，认出那些被忽略的长处。'}}</view>
     <button class="gk-primary" bindtap="goDiscover">去自测看看</button>
   </view>
 

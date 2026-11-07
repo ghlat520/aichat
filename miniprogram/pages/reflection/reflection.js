@@ -30,7 +30,7 @@ Page({
     this.setData({
       taskId,
       ownerSessionId: (store.getState().session || {}).sessionId || '',
-      error: taskId ? '' : '缺少任务，请先确认镜像'
+      error: taskId ? '' : '请先核对上一页的整理，再继续。'
     });
   },
 

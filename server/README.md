@@ -38,26 +38,29 @@ mvn -Dtest=RealMySqlV1ToV6IT -Daichat.mysql.it.enabled=true test
 
 该测试验证空库 V1→V6、Safety Evidence 的 UNIQUE/CHECK/FK，以及 8 个同键并发请求只推进一次 Case 并只留下 1 条命令记录。凭据只从调用环境传入，不得提交到仓库。
 
-本机与 aiinstock 共用 MySQL 时，复用 `aiinstock-mysql:3306` 实例和现有 `aiin_dev_dbuser1`，但应用必须使用独立 `aichat` schema，不得把 Flyway 指向 `aiin_dev_db01`。真实 MySQL 集成测试继续使用隔离的 `aichat_it` schema 和测试账号。aiinstock 本项目的 `scripts/local/docker-compose.override.yml` 已内置命名持久卷 `aiinstock-mysql-data`（数据走 Docker 具名卷，绕过 Docker Desktop 未共享 `/Applications/soft` 的限制），无需额外的外部 override：
+## 本地启动
+
+AIChat 本地端口固定为 **18088**，小程序请求 `http://127.0.0.1:18088`；8080 可以继续由其他应用使用。仅 `local` profile 绑定 loopback 地址，生产配置不受影响。
+
+在仓库根目录执行：
 
 ```bash
-# aiinstock 的 override.yml 会被 docker compose 自动加载，直接起 mysql 即可
-docker compose \
-  -f /Applications/soft/aiinstock-workspace/scripts/local/docker-compose.yml \
-  up -d mysql
-
-export AICHAT_DB_URL='jdbc:mysql://127.0.0.1:3306/aichat?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true'
-export AICHAT_DB_USERNAME='aiin_dev_dbuser1'
-# 先从 aiinstock 现有的本地 secret source 加载 MYSQL_PASSWORD；不要复制到 AIChat 仓库。
-export AICHAT_DB_PASSWORD="${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}"
-# 同时从本地 secret source 加载以下值；这里只做必填检查，不提供或落盘默认密钥。
-: "${AICHAT_SESSION_TOKEN_KEY:?AICHAT_SESSION_TOKEN_KEY is required}"
-: "${AICHAT_CONTENT_MASTER_KEY:?AICHAT_CONTENT_MASTER_KEY is required}"
-: "${AICHAT_CONTENT_KEY_VERSION:?AICHAT_CONTENT_KEY_VERSION is required}"
-mvn --batch-mode --no-transfer-progress spring-boot:run
+npm run server:local
 ```
 
-Keychain 服务 `aichat-local-mysql` 仅供隔离的 `aichat_it` 测试账号使用。当前复用的 `aiin_dev_dbuser1` 是仅限本地开发的 schema 级 `ALL PRIVILEGES` 授权，不构成生产最小权限或数据库级防篡改证据；`aiin_dev_db01` 仍不属于 AIChat 迁移范围，生产环境也不能复用本地账号、Compose secret 或该 Keychain 项。
+启动入口按 dotenv 格式读取现有的、被 Git 忽略的 `.env.local`，继承已有 `AICHAT_DB_*`、会话与内容密钥，并启用 `local` profile。不要直接 `source .env.local`：未加引号的 JDBC URL 中的 `&` 会被 shell 当作控制符。环境变量优先于文件；`AICHAT_ENV_FILE` 可指定已有配置文件路径。命令行固定本地绑定地址、已校验的 datasource/Flyway URL 与 aichat schema，避免 Spring 原生环境变量覆盖到其他库，并明确关闭真实虚拟支付。JDBC URL 中的空白或引号需先 URI 编码，用户名和密码继续使用独立字段。
+
+本机复用 `aiinstock-mysql:3306` 实例，但应用只连接独立 `aichat` schema；不新建或重置数据库，不把 Flyway 指向 `aiin_dev_db01`。保留原内容主密钥与 `AICHAT_CONTENT_KEY_VERSION`，不能随意换成新密钥。配置文件缺失时，从现有本地秘密配置恢复，勿复制测试密钥或在 Git 中存放凭据。
+
+预期配置检查：
+
+```bash
+curl --fail http://127.0.0.1:18088/api/v1/app-config
+```
+
+响应应属于 `RELATIONSHIP_CLARITY_CARD_V1`，而且本地所需功能开关已开启；这只是配置检查，在线倾诉仍需会话与互动链路验收。若设置 `AICHAT_PORT` 使用其他本地端口，需同步修改小程序 `app.js` 的 `apiBase`。本地倾诉与生成仍使用确定性 Stub，接入端口不代表接入真实 AI。
+
+Keychain 服务 `aichat-local-mysql` 仅供隔离的 `aichat_it` 测试账号使用。本地启动沿用 `.env.local` 的现有数据库账号，不构成生产最小权限或数据库级防篡改证据。`aiin_dev_db01` 不属于 AIChat 迁移范围，生产环境不得复用本地凭据。
 
 重新生成 Controller 和小程序 Client：
 

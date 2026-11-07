@@ -25,6 +25,6 @@ Page({
       wx.reLaunch({ url: '/pages/entry/entry' });
     }
   },
-  async tryExport() { try { await getApiClient().createPrivacyExport({ scope: 'all' }); } catch (e) { if (e && e.status === 501) { this.setData({ error: '数据导出功能开发中（G5）' }); } else { this.setData({ error: friendly(e) }); } } },
-  async tryDelete() { try { await getApiClient().createDeletionRequest({ scope: 'all' }); } catch (e) { if (e && e.status === 501) { this.setData({ error: '删除功能开发中（G5）' }); } else { this.setData({ error: friendly(e) }); } } }
+  async tryExport() { try { await getApiClient().createPrivacyExport({ scope: 'all' }); } catch (e) { if (e && e.status === 501) { this.setData({ error: '数据导出暂未开放。' }); } else { this.setData({ error: friendly(e) }); } } },
+  async tryDelete() { try { await getApiClient().createDeletionRequest({ scope: 'all' }); } catch (e) { if (e && e.status === 501) { this.setData({ error: '删除功能暂未开放。' }); } else { this.setData({ error: friendly(e) }); } } }
 });

@@ -2,17 +2,16 @@
   <view class="gk-head">
     <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
     <view class="gk-head-title">职业探索</view>
-    <text class="gk-head-tag">第二期</text>
+    <text class="gk-head-tag">探索演示</text>
   </view>
 
   <text class="gk-tag gk-tag--aqua">把偏好放回现实条件</text>
-  <view class="career-title">适合的方向，</view>
-  <view class="career-title">可以一步步试出来。</view>
-  <view class="gk-lead">在已有优势的基础上，再了解你的兴趣、重视的事和现实条件。补充这些信息不额外收费。</view>
+  <view class="career-title">探索工作方向</view>
+  <view class="gk-lead">结合兴趣、优势与现实条件，探索工作方向。补充信息免费。</view>
 
   <view class="gk-card">
-    <view class="gk-title-sm">你的基础画像已带入</view>
-    <view class="gk-small career-base-copy">性格特质、优势主题、两段确认经历，{{paid ? '及 16 型人格偏好。' : '本次未纳入 16 型人格。'}}</view>
+    <view class="gk-title-sm">探索依据</view>
+    <view class="gk-small career-base-copy">这里按已有测评与经历继续探索。具体采用哪些内容，以报告中的来源说明为准。</view>
   </view>
 
   <view class="gk-field-label career-chip-label">哪些事情会让你想继续了解？</view>
@@ -45,5 +44,5 @@
   <view class="gk-soft-note">未提供的条件会保持未知。结果会比较多个方向，并说明哪些还需要你亲自验证。</view>
 
   <button class="gk-primary" bindtap="careerPreview">{{careerPaid ? '查看我的职业报告' : upgradeLabel}}</button>
-  <view class="gk-footer-note">第二期交付原型；职业方向是探索线索，<text class="career-br"></text>不会只凭人格类型给出唯一答案。</view>
+  <view class="gk-footer-note">职业探索演示；职业方向是探索线索，<text class="career-br"></text>不会只凭人格类型给出唯一答案。</view>
 </view>

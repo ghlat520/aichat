@@ -2,6 +2,8 @@
 
 AIChat 是“关系清晰卡”微信小程序的独立工程。工程名与 Git 仓库名固定为 `aichat`；当前 P0 产品名仍为“关系清晰卡”。
 
+当前产品体验版冻结为 [V1 · 自有引力](docs/releases/V1.md)，Git 标签为 `v1.0.0`。
+
 ## 工程结构
 
 - `docs/`：PRD、MVP 产品规格、架构设计、领域语言和第三方仓库审计。
@@ -47,6 +49,10 @@ npm run e2e
 
 当前按 [P0 持续实施目标](docs/P0_IMPLEMENTATION_GOAL.md) 分阶段交付。已经实现 Public 配置/安全资源、匿名 Visitor 会话、18+ 同意、数据库令牌鉴权，Clarity 任务/六字段的 PII 遮蔽、Envelope Encryption 和共享 S1/S2/S3 原型安全策略，默认关闭的原创 8 题 Assessment、确定性计分、脱敏分享预览和核心映射，默认关闭的五段镜像、两轮结构化反思、`deterministic-stub-v1` 密封完整卡和免费安全摘要，默认关闭的受控 8 回复/10 分钟深夜倾诉、结构化总结确认和 `VENT` 核心映射，以及不读取原文的统一安全证据和 Operator 复核队列本地闭环；其余能力仍按 Goal 状态实施，未实现接口保持显式 `501`，不会伪装成功。
 
-觉察日记体验版位于“自测”右侧，底部导航依次为：首页、自测、觉察日记、说一说、我的；关系清晰卡由“我的”进入。日记支持填写、回看、编辑、心情和六个觉察维度标注，树枝按主动标注的记录数变化，不代表心理评分。虚构示例与个人记录分开，回信明确标为示例，尚未接入真实 AI。体验记录和草稿仅在本次小程序运行内存中暂存；切换页面保留，重启或身份变化清除，不写本机 storage、不上传。行为测试为 `node --test miniprogram/diary-store.test.mjs`，也包含在 `npm run test:store` 中；真实 AI、长期保存与跨设备同步不在此体验版范围。
+浏览器设计原型位于 `docs/ui/self-growth-prototype.html`，微信模拟器渲染的是 `miniprogram/` 中的原生 WXML/WXSS/JS；修改 HTML 原型不会自动同步原生页面。开发者工具应打开 `miniprogram/`，首页为 `pages/entry/entry`，修改原生 JS 后需编译并验证实际页面。
+
+底部导航依次为：首页、自测、觉察日记、说一说、我的。“我的关系卡”可见入口已移除。首页串起探索、觉察、自我驱动与复盘，并提供十二星座观察问题。日常默认采用“三行觉察 → 一个微行动 → 三问复盘”；说一说可按需展开五节点深度练习，两种模式共享输入。保存微行动只代表计划已准备好，实际尝试由用户复盘记录。原有在线倾诉保留为说一说的次级入口，与本地练习分开。
+
+日记支持保存、回看、编辑、可选心情和六个觉察维度；虚构示例与个人记录分开。日记和日常练习仅在本次小程序运行内存中暂存，切换页面保留，重启或身份变化清除，不写本机 storage、不上传。深度反馈使用固定引导，尚未接入真实 AI。行为检查包含在 `npm run test:store`；真实 AI、长期保存与跨设备同步不在此体验版范围。
 
 本仓库不表示微信公开上线、真实支付、生产 AI 服务、真实 Operator/人工复核或合规审批已经完成。生产启动必须通过环境变量提供 `AICHAT_DB_URL`、`AICHAT_DB_USERNAME`、`AICHAT_DB_PASSWORD`、至少 32 字节 Base64 编码的 `AICHAT_SESSION_TOKEN_KEY`、恰好 32 字节 Base64 编码的 `AICHAT_CONTENT_MASTER_KEY` 和 `AICHAT_CONTENT_KEY_VERSION`；Assessment、Generation 与 Venting 即使代码就绪也默认关闭，只有受控环境分别显式设置 `AICHAT_FEATURE_ASSESSMENT_ENABLED=true`、`AICHAT_FEATURE_GENERATION_ENABLED=true`、`AICHAT_FEATURE_VENTING_ENABLED=true` 才开放。当前完整卡和倾诉回复只由本地确定性 Stub 生成，生产 Operator 身份仍默认拒绝；权益领域完成前 `GET /reports/{id}` 继续显式不可用。测试使用隔离的 H2 MySQL 模式数据库、非生产测试密钥和仅测试上下文可见的 Operator 身份。

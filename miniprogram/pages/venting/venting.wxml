@@ -1,11 +1,69 @@
 <import src="../../templates/preview.wxml" />
+<view wx:if="{{workspaceMode === 'growth'}}" id="practice-page" class="container ui-tab-page gk-screen practice-page">
+  <view class="gk-head"><button class="ui-back" bindtap="goHome" aria-label="返回首页"><view class="ui-icon ui-icon--back"></view></button><view class="gk-head-title">说一说</view><text class="gk-head-tag">{{practice.mode === 'deep' ? '深度练习' : '轻量成长'}}</text></view>
+  <view class="practice-mode"><text>{{practice.mode === 'deep' ? '五步梳理' : '简短练习'}}</text><button id="practice-mode-switch" data-action="{{practice.mode === 'deep' ? 'mode-light' : 'mode-deep'}}" data-editor="{{practiceEditorToken}}" bindtap="practiceAction">{{practice.mode === 'deep' ? '回到简短练习' : '展开五步梳理'}}<text> ↗</text></button></view>
+  <view wx:if="{{practice.mode === 'light'}}" class="practice-light-flow">
+    <button data-action="diary" data-editor="{{practiceEditorToken}}" bindtap="practiceAction">三行觉察</button><text>›</text>
+    <button class="{{!practice.reviewView ? 'practice-flow-active' : ''}}" data-action="light-plan" data-editor="{{practiceEditorToken}}" bindtap="practiceAction">一个微行动</button><text>›</text>
+    <button class="{{practice.reviewView ? 'practice-flow-active' : ''}}" data-action="light-review" data-editor="{{practiceEditorToken}}" bindtap="practiceAction">三问复盘</button>
+  </view>
+  <view wx:else class="practice-deep-flow"><button wx:for="{{practice.stages}}" wx:key="index" class="{{item.selected ? 'practice-flow-active' : ''}} {{item.disabled ? 'practice-stage-disabled' : ''}}" disabled="{{item.disabled}}" data-action="stage" data-value="{{item.index}}" data-editor="{{practiceEditorToken}}" bindtap="practiceAction"><text>{{item.index + 1}}</text>{{item.title}}</button></view>
+  <view class="practice-hero">
+    <view class="practice-hero-copy"><view class="practice-eyebrow">{{practice.mode === 'deep' ? '反馈 · 练习 · 行动' : practice.reviewView ? '回看一步，更懂自己' : '自我驱动 · 一个微行动'}}</view><view class="practice-title">{{practice.title}}</view><view class="practice-description">{{practice.description}}</view></view>
+    <view class="practice-hero-art" style="background-image: url('{{practice.art}}');" role="img" aria-label="把理解带入行动的手绘插画"></view>
+  </view>
+  <button wx:if="{{practice.source && !practice.reviewView}}" class="practice-source" data-action="source" data-editor="{{practiceEditorToken}}" bindtap="practiceAction" aria-label="回看这次微行动来源的觉察"><view class="practice-source-head"><text>从这次觉察出发</text><text>回看 ↗</text></view><view class="practice-source-excerpt">{{practice.source.content}}</view></button>
+  <view wx:if="{{practice.screen === 'plan'}}" id="practice-plan-saved" class="practice-action-card">
+    <text class="practice-card-kicker">我的微行动</text><view class="practice-action-title">{{practice.current.what}}</view>
+    <view class="practice-action-detail"><text>开始的时机</text><view>{{practice.current.when}}</view></view>
+    <view wx:if="{{practice.current.backup}}" class="practice-action-detail"><text>遇到阻力时</text><view>{{practice.current.backup}}</view></view>
+    <view wx:if="{{practice.current.criterion}}" class="practice-action-detail"><text>我设定的完成标准</text><view>{{practice.current.criterion}}</view></view>
+  </view>
+  <view wx:if="{{practice.reviewView && practice.planReady}}" class="practice-current-action"><text>这次的微行动</text><view>{{practice.current.what}}</view></view>
+  <view wx:for="{{practice.quotes}}" wx:key="title" class="practice-quote"><text>{{item.title}}</text><view>{{item.text}}</view></view>
+  <block wx:if="{{practice.showGoals}}">
+    <view class="practice-field-heading">行动目标</view>
+    <view class="practice-goals"><button wx:for="{{practice.directions}}" wx:key="id" class="{{item.selected ? 'practice-option-selected' : ''}}" data-action="goal" data-value="{{item.id}}" data-editor="{{practiceEditorToken}}" bindtap="practiceAction" aria-label="{{item.name}}，{{item.selected ? '已选择' : '未选择'}}">{{item.name}}</button></view>
+  </block>
+  <view wx:if="{{practice.showFeedback}}" class="practice-feedback"><text class="practice-card-kicker">反馈建议</text><view>{{practice.direction.angle}}</view><text class="practice-card-kicker">待确认</text><view>{{practice.direction.question}}</view><text class="practice-evidence-note">这是所选方向的练习提示，可以认同或修正。</text></view>
+  <view wx:if="{{practice.showRehearsal}}" class="practice-pattern">{{practice.direction.pattern}}</view>
+  <view wx:for="{{practice.fields}}" wx:key="key" class="practice-field">
+    <view class="practice-field-label">{{item.title}}<text wx:if="{{item.optional}}">选填</text></view>
+    <textarea id="practice-field-{{item.key}}" class="practice-field-input practice-field-input--{{item.key}}" auto-height="{{true}}" value="{{item.value}}" data-key="{{item.key}}" data-editor="{{practiceEditorToken}}" bindinput="onPracticeField" maxlength="{{item.maxlength}}" placeholder="{{item.placeholder}}" placeholder-class="practice-placeholder" cursor-spacing="110" adjust-position="{{true}}" aria-label="{{item.title}}" />
+  </view>
+  <block wx:if="{{practice.showRehearsal}}">
+    <button class="practice-inline" data-action="scaffold" data-editor="{{practiceEditorToken}}" bindtap="practiceAction">给我一个练习起点</button>
+    <view class="practice-check"><text>读一遍，再检查</text><view>具体到一件事，不急着下结论。</view><view>说清自己在意的需要或条件。</view><view>留出可以回应和调整的空间。</view></view>
+  </block>
+  <view wx:if="{{practice.showOutcome && practice.mode === 'deep'}}" class="practice-outcome-section"><view class="practice-field-label">这一步，实际进行到哪里？</view><view class="practice-outcomes"><button wx:for="{{practice.outcomes}}" wx:key="id" class="{{item.selected ? 'practice-option-selected' : ''}}" data-action="outcome" data-value="{{item.id}}" data-editor="{{practiceEditorToken}}" bindtap="practiceAction">{{item.label}}</button></view></view>
+  <block wx:if="{{practice.extraFields.length || (practice.showOutcome && practice.mode === 'light')}}">
+    <button id="practice-extra" class="practice-expand" data-action="extra" data-editor="{{practiceEditorToken}}" bindtap="practiceAction" aria-expanded="{{practiceExtra}}"><text>{{practice.showOutcome ? '补充这次尝试的进度' : practice.extraTitle}}</text><text>{{practiceExtra ? '收起 −' : '选填 +'}}</text></button>
+    <view wx:if="{{practiceExtra}}" class="practice-extra-body">
+      <view wx:for="{{practice.extraFields}}" wx:key="key" class="practice-field"><view class="practice-field-label">{{item.title}}<text>选填</text></view><textarea id="practice-field-{{item.key}}" class="practice-field-input" auto-height="{{true}}" value="{{item.value}}" data-key="{{item.key}}" data-editor="{{practiceEditorToken}}" bindinput="onPracticeField" maxlength="{{item.maxlength}}" placeholder="{{item.placeholder}}" placeholder-class="practice-placeholder" cursor-spacing="110" adjust-position="{{true}}" aria-label="{{item.title}}" /></view>
+      <view wx:if="{{practice.showOutcome}}" class="practice-outcomes"><button wx:for="{{practice.outcomes}}" wx:key="id" class="{{item.selected ? 'practice-option-selected' : ''}}" data-action="outcome" data-value="{{item.id}}" data-editor="{{practiceEditorToken}}" bindtap="practiceAction">{{item.label}}</button></view>
+    </view>
+  </block>
+  <view wx:if="{{practiceError}}" id="practice-error" class="aichat-warning">{{practiceError}}</view>
+  <button wx:if="{{practice.primary}}" id="practice-primary" class="gk-primary" data-action="{{practice.primary.action}}" data-editor="{{practiceEditorToken}}" bindtap="practiceAction">{{practice.primary.label}}</button>
+  <button wx:if="{{practice.secondary}}" id="practice-secondary" class="gk-secondary" data-action="{{practice.secondary.action}}" data-editor="{{practiceEditorToken}}" bindtap="practiceAction">{{practice.secondary.label}}</button>
+  <view wx:if="{{practice.helper}}" class="practice-helper">{{practice.helper}}</view>
+  <button id="practice-home" class="gk-quiet" bindtap="goHome">回到首页，稍后继续</button>
+  <block wx:if="{{practice.history.length}}">
+    <button class="practice-expand" data-action="history" data-editor="{{practiceEditorToken}}" bindtap="practiceAction"><text>回看此前 {{practice.history.length}} 次复盘</text><text>{{practiceHistory ? '收起 −' : '展开 +'}}</text></button>
+    <view wx:if="{{practiceHistory}}" class="practice-history"><view wx:for="{{practice.history}}" wx:key="id"><text>{{item.what}}</text><view>{{item.actual}}</view><view>{{item.result}}</view><view>下一小步：{{item.next}}</view></view></view>
+  </block>
+  <view class="practice-local-note">本次练习仅临时保留文字，重启或切换身份后清除。反馈为固定引导，尚未接入 AI。</view>
+  <button class="practice-online-link" data-editor="{{practiceEditorToken}}" bindtap="openOnline">想先聊聊心里的事 ↗</button>
+</view>
+<block wx:else>
 <view id="venting-page" class="container ui-tab-page gk-screen venting-page">
   <view class="gk-head">
     <button class="ui-back" bindtap="goHome" aria-label="返回首页"><view class="ui-icon ui-icon--back"></view></button>
     <view class="gk-head-title">先说一说</view>
-    <text class="gk-head-tag">原有入口</text>
+    <text class="gk-head-tag">在线倾诉</text>
   </view>
-  <view class="venting-intro"><view class="venting-avatar"><view class="ui-icon ui-icon--chat"></view></view><view><view class="venting-intro-title">一个慢慢说话的地方</view><view class="venting-intro-note">从你愿意说的地方开始</view></view></view>
+  <button class="gk-text-link" bindtap="closeOnline">返回微行动与复盘</button>
+  <view class="venting-intro"><view class="venting-avatar"><view class="ui-icon ui-icon--chat"></view></view><view><view class="venting-intro-title">心里的事，可以慢慢说</view><view class="venting-intro-note">从你愿意说的地方开始</view></view></view>
   <view wx:if="{{sessionHidden}}" class="aichat-warning">这段对话属于之前的会话，当前身份无法显示。</view>
   <button wx:if="{{sessionHidden}}" class="gk-quiet" bindtap="restart">开始新的倾诉</button>
   <block wx:else>
@@ -16,7 +74,7 @@
     <view id="venting-messages" class="venting-messages">
       <view class="venting-bubble"><view>嗨，我在这里。</view><view>不必把话想好再说。今天，有什么事让你放不下？</view></view>
       <view id="vent-message-{{index}}" class="venting-message-row {{item.role === 'user' ? 'venting-message-row--user' : ''}}" wx:for="{{messages}}" wx:key="index"><view class="venting-bubble {{item.role === 'user' ? 'venting-bubble--user' : ''}}">{{item.text}}</view></view>
-      <view id="venting-limit" wx:if="{{limitReached}}" class="ui-quiet-note">这一轮先到这里，给自己一点整理的空间。</view>
+      <view id="venting-limit" wx:if="{{limitReached}}" class="ui-quiet-note">本轮对话已结束。可以整理刚才的话，也可以重新开始。</view>
       <button id="venting-finish" wx:if="{{aiTurnsUsed > 0}}" class="venting-finish" disabled="{{finishing}}" loading="{{finishing}}" bindtap="finish">整理一下刚才的话</button>
       <button id="venting-restart" wx:if="{{limitReached}}" class="venting-finish" bindtap="restart">开始新的倾诉</button>
     </view>
@@ -25,11 +83,11 @@
       <button id="venting-send" class="venting-send" disabled="{{loading || sending || limitReached || !ventSessionId}}" loading="{{sending}}" bindtap="send" aria-label="发送心事">→</button>
     </view>
     <button wx:if="{{error && !ventSessionId}}" class="gk-quiet" bindtap="restart">重新开始</button>
-    <view class="gk-footer-note">本轮为对话界面演示，沿用原有倾诉入口。</view>
-    <button class="gk-secondary" bindtap="goToClarity">想整理一下这段关系</button>
+    <view class="gk-footer-note">当前为在线体验，回复采用固定模板。你可以修改整理结果，保留自己的理解。</view>
+    <button class="gk-secondary" bindtap="goToClarity">把这件事写下来，再理一理</button>
   </view>
   <view id="venting-summary" wx:if="{{summary}}" class="aichat-card">
-    <view class="aichat-title">把刚才的话，留下一点</view>
+    <view class="aichat-title">记录这次对话</view>
     <view class="aichat-field"><view class="aichat-label">关系场景</view><input id="venting-summary-context" class="aichat-input" value="{{summary.context}}" data-key="context" bindinput="onSummaryInput" /></view>
     <view class="aichat-field"><view class="aichat-label">观察到的事实</view><textarea id="venting-summary-observed" class="aichat-textarea" value="{{summary.observed_fact}}" data-key="observed_fact" bindinput="onSummaryInput" /></view>
     <view class="aichat-field"><view class="aichat-label">反复出现的想法</view><textarea id="venting-summary-thought" class="aichat-textarea" value="{{summary.looping_thought}}" data-key="looping_thought" bindinput="onSummaryInput" /></view>
@@ -38,9 +96,10 @@
     <view class="aichat-field"><view class="aichat-label">当前目标</view><textarea id="venting-summary-goal" class="aichat-textarea" value="{{summary.current_goal}}" data-key="current_goal" bindinput="onSummaryInput" /></view>
     <view class="aichat-field"><view class="aichat-label">当前清晰度（0–10）</view><input id="venting-summary-clarity" class="aichat-input" type="number" value="{{summary.clarity_pre}}" data-key="clarity_pre" bindinput="onSummaryInput" /></view>
     <button id="venting-confirm" class="aichat-btn" disabled="{{confirming || confirmedTaskId}}" loading="{{confirming}}" bindtap="confirmSummary">保存这次整理</button>
-    <button id="venting-to-mirror" wx:if="{{confirmedTaskId}}" class="aichat-btn" bindtap="goToMirror">继续镜像确认</button>
+    <button id="venting-to-mirror" wx:if="{{confirmedTaskId}}" class="aichat-btn" bindtap="goToMirror">继续核对这次整理</button>
   </view>
   <button wx:if="{{summary}}" class="aichat-btn aichat-btn--ghost" bindtap="restart">开始新的倾诉</button>
   </block>
   <view id="venting-bottom"></view>
 </view>
+</block>

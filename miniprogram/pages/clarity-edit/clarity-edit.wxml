@@ -1,7 +1,7 @@
 <import src="../../templates/preview.wxml" />
 <view id="clarity-page" class="container">
   <template is="page-head" data="{{title:'整理一段关系'}}" />
-  <view class="ui-page-lede"><view>先留下一件具体的小事，</view><view>再慢慢分清，哪些是事实，哪些是感受。</view></view>
+  <view class="ui-page-lede"><view>先留下一件具体的小事，</view><view>看看发生了什么，也看看自己在意什么。</view></view>
   <view wx:if="{{sessionHidden}}" class="aichat-warning">这份草稿属于之前的会话，当前身份无法显示。</view>
   <block wx:else>
   <view id="clarity-loading" wx:if="{{loading}}" class="aichat-muted">正在准备…</view>
@@ -16,6 +16,6 @@
     <button id="clarity-submit" class="aichat-btn" disabled="{{!canSubmit || saving}}" loading="{{saving}}" bindtap="submit">把这段关系理一理</button>
   </view>
   <view id="clarity-error" wx:if="{{error}}" class="aichat-warning">{{error}}</view>
-  <view id="clarity-saved" wx:if="{{saved}}" class="aichat-card clarity-saved"><view class="aichat-title">把心事留下一点，就很好</view><view class="aichat-muted">接下来，看看哪些被理解了，哪些还想再说清楚。</view><button id="clarity-to-mirror" class="aichat-btn" bindtap="goToMirror">看看这次整理</button></view>
+  <view id="clarity-saved" wx:if="{{saved}}" class="aichat-card clarity-saved"><view class="aichat-title">这段经历已保存</view><view class="aichat-muted">接下来可以逐段核对；不符合你的意思，就直接改。</view><button id="clarity-to-mirror" class="aichat-btn" bindtap="goToMirror">看看这次整理</button></view>
   </block>
 </view>

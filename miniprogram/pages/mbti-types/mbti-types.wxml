@@ -1,63 +1,23 @@
-<view class="container gk-screen">
-  <view class="gk-head">
-    <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
-    <view class="gk-head-title">MBTI 16 型优缺点</view>
-    <text class="gk-head-tag">先看看</text>
+<view id="types-page" class="types-page">
+  <view class="te-page-head"><button class="ui-back" bindtap="goBack" aria-label="返回自测"><view class="ui-icon ui-icon--back"></view></button><view>16 型名人图鉴</view></view>
+  <view class="te-intro"><view class="te-intro-title">从名人认识 16 型</view><view class="te-intro-copy">左右滑动，查看人物与优缺点。</view></view>
+  <view class="te-groups" aria-label="按类型分组"><button wx:for="{{groupChips}}" wx:key="code" id="type-group-{{item.code}}" class="te-chip {{group === item.code ? 'te-chip--selected' : ''}}" data-group="{{item.code}}" bindtap="setGroup" aria-pressed="{{group === item.code}}">{{item.label}}</button></view>
+
+  <swiper id="type-deck" class="te-deck" circular="{{true}}" current="{{currentIndex}}" previous-margin="180rpx" next-margin="180rpx" duration="220" bindchange="onTypeSwipe" aria-label="MBTI 类型，左右滑动切换">
+    <swiper-item wx:for="{{cards}}" wx:key="code" class="te-deck-item {{index === currentIndex ? 'te-deck-item--selected' : ''}}"><button id="type-card-{{item.code}}" class="te-card te-family-{{item.group}} {{index === currentIndex ? 'te-card--selected' : cardOffsets[index] < 0 ? 'te-card--before' : 'te-card--after'}}" data-code="{{item.code}}" bindtap="selectType" aria-label="{{item.code}} {{item.name}}，{{index === currentIndex ? '当前选择' : '点击选择'}}" aria-pressed="{{index === currentIndex}}" aria-hidden="{{cardOffsets[index] < -1 || cardOffsets[index] > 1}}"><view class="te-card-family">{{item.groupLabel}}</view><view class="te-card-code">{{item.code}}</view><view class="te-card-name">{{item.name}}</view><image class="te-card-portrait" src="{{item.portrait}}" mode="aspectFill" aria-label="{{item.figure.name}}的肖像" /><view class="te-card-alias">{{item.figure.name}}</view><view class="te-card-caption">人物联想</view><view wx:if="{{index === currentIndex}}" class="te-card-check" aria-hidden="true"><view class="ui-icon ui-icon--check"></view></view></button></swiper-item>
+  </swiper>
+
+  <view class="te-deck-controls"><button id="type-prev" class="te-arrow" data-step="-1" bindtap="stepType" aria-label="上一个类型"><view class="ui-icon ui-icon--back"></view></button><view id="type-position" class="te-position">{{currentIndex + 1}} / {{visibleCount}}<text>左右滑动切换</text></view><button id="type-next" class="te-arrow" data-step="1" bindtap="stepType" aria-label="下一个类型"><view class="ui-icon ui-icon--next"></view></button></view>
+  <picker id="type-picker" class="te-picker" range="{{typeOptions}}" range-key="label" value="{{pickerIndex}}" bindchange="onPickType" aria-label="按四字母查找类型"><view class="te-picker-row"><text>按四字母查找</text><view>{{selectedType.code}}<view class="ui-icon ui-icon--next"></view></view></view></picker>
+
+  <view wx:if="{{selectedType}}" id="type-detail" class="te-detail te-family-{{selectedType.group}}">
+    <view class="te-detail-head"><view>{{selectedType.code}} 优缺点</view><text>{{selectedType.name}}</text></view>
+    <view class="te-sides"><view id="type-strengths" class="te-side"><view class="te-side-title">优点</view><view wx:for="{{selectedType.up}}" wx:key="*this" class="te-point">{{item}}</view></view><view id="type-blindspots" class="te-side te-side--blindspots"><view class="te-side-title">缺点</view><view wx:for="{{selectedType.dn}}" wx:key="*this" class="te-point">{{item}}</view></view></view>
   </view>
-
-  <view class="te-intro">
-    <text class="gk-tag">不用先答题</text>
-    <view class="te-intro-title">从一段熟悉的描述，</view>
-    <view class="te-intro-title">认识自己，也理解别人。</view>
-    <view class="te-intro-copy">每种倾向都有两面。先找共鸣，再带着好奇去探索。</view>
-  </view>
-
-  <view class="te-modes">
-    <button class="te-mode {{mode === 'self' ? 'te-mode--selected' : ''}}" data-mode="self" bindtap="setMode">先看看自己</button>
-    <button class="te-mode {{mode === 'other' ? 'te-mode--selected' : ''}}" data-mode="other" bindtap="setMode">也看看 TA</button>
-  </view>
-  <view class="te-guidance">{{guidance}}</view>
-
-  <view class="te-select">想先了解哪一型？
-    <picker range="{{filterOptions}}" range-key="label" value="{{filter}}" bindchange="changeFilter" aria-label="选择 MBTI 类型">
-      <view class="te-select-value">{{filter === 'all' ? '全部 16 型' : filter + ' 型'}}<text class="te-select-arrow">▾</text></view>
-    </picker>
-  </view>
-
-  <view class="te-groups">
-    <button wx:for="{{groupChips}}" wx:key="code" class="te-chip {{group === item.code ? 'te-chip--selected' : ''}}" data-group="{{item.code}}" bindtap="setGroup">{{item.label}}</button>
-  </view>
-
-  <view class="te-note">以下为提供资料中的通行解读，不等于你的测评结果。优点与盲点会随情境、经历和成长而变化，不用于心理诊断或给别人下定论。</view>
-  <view class="te-count">当前展示 {{visibleCount}} 型</view>
-
-  <view class="te-list">
-    <view wx:for="{{cards}}" wx:key="code" class="te-card">
-      <view class="te-card-head">
-        <view>
-          <view class="te-card-code">{{item.code}} <text class="te-card-name">{{item.name}}</text></view>
-          <view class="te-card-alias">{{item.alias}}</view>
-        </view>
-        <text class="gk-tag te-card-badge">{{item.groupLabel}}</text>
-      </view>
-      <view class="te-up">
-        <view class="te-sub-title te-sub-title--up">自然发挥的优点</view>
-        <view wx:for="{{item.up}}" wx:for-item="point" wx:key="*this" class="te-point te-point--up">{{point}}</view>
-      </view>
-      <view class="te-dn">
-        <view class="te-sub-title te-sub-title--dn">需要留意的盲点</view>
-        <view wx:for="{{item.dn}}" wx:for-item="point" wx:key="*this" class="te-point te-point--dn">{{point}}</view>
-      </view>
-      <view class="te-card-foot">
-        <button class="te-link" bindtap="goTest">做 MBTI 性格测试</button>
-        <button class="te-link" data-code="{{item.code}}" bindtap="goCross">对照 VIA 优势</button>
-      </view>
-    </view>
-  </view>
-
-  <view class="te-note">有共鸣，不代表被一种类型定义。你也可以通过自评，看看日常偏好和性格优势是否呼应。</view>
-
-  <button class="gk-primary" bindtap="goTest">开始 MBTI 性格测试</button>
-  <button class="gk-secondary" bindtap="goViaIntro">了解 VIA 性格优势</button>
-  <button class="gk-secondary" bindtap="goDiscover">返回自测首页</button>
+  <view class="te-guidance">想了解自己的类型？试试 MBTI 自评。</view>
+  <button id="type-test" class="te-primary" bindtap="goTest">开始 MBTI 自评</button>
+  <button id="type-cross" class="te-secondary" bindtap="goCross">对照 {{selectedType.code}} 的 VIA 优势</button>
+  <view class="te-note">类型与人物仅作参考，非本人测评结果。</view>
+  <button id="type-source-toggle" class="te-source-toggle" bindtap="toggleSources" aria-expanded="{{showSources}}">{{showSources ? '收起肖像来源' : '肖像来源'}}</button>
+  <view wx:if="{{showSources}}" id="type-photo-source" class="te-sources"><view>{{selectedFigure.name}} · {{selectedFigure.author}}</view><view>{{selectedFigure.license}} · 原图未改动，按展示框裁切</view><view>{{selectedFigure.sourceUrl}}</view><view wx:if="{{selectedFigure.licenseUrl}}">{{selectedFigure.licenseUrl}}</view><button class="te-source-copy" bindtap="copySource">复制来源链接</button></view>
 </view>

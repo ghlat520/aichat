@@ -14,11 +14,11 @@
       <view class="ui-companion invite-hero-mascot"></view>
     </view>
     <view class="invite-start">
-      <view class="invite-start-title">如果今天有点难，先在这里坐一会儿。</view>
+      <view class="invite-start-title">先读一段经历</view>
       <view class="invite-start-copy">读读他走过的那段路，再给自己留一小步。<text class="invite-br"></text>不急着填写什么，也可以先静静看一看。</view>
       <button class="gk-primary" bindtap="startInvited">读读这段经历</button>
     </view>
-    <button class="gk-secondary" bindtap="goDiscover">也想和自己更近一点</button>
+    <button class="gk-secondary" bindtap="goDiscover">看看我的偏好与优势</button>
   </block>
 
   <!-- 名人挑战 / 偏好 / 优势海报直达 -->
@@ -31,11 +31,10 @@
         <view class="gk-rocket invite-hero-rocket"></view>
       </block>
       <block wx:else>
-        <view class="invite-hero-title">你的偏好与优势，</view>
-        <view class="invite-hero-title">也值得被看见。</view>
+        <view class="invite-hero-title">探索偏好与优势</view>
         <view class="ui-companion invite-hero-mascot"></view>
       </block>
-      <view class="invite-hero-copy">{{pickLine || '从一个轻入口，慢慢看见更丰富的自己。'}}</view>
+      <view class="invite-hero-copy">{{pickLine || '从日常选择出发，看看自己的偏好与优势。'}}</view>
     </view>
     <view wx:if="{{isTopic}}" class="gk-tiny invite-topic-note">公开言行讨论，类型为推测。没有已证实的人格答案。</view>
 
@@ -47,7 +46,7 @@
         <text class="gk-tag gk-tag--aqua">基础结果免费</text>
         <text class="gk-tag gk-tag--gray">{{entryTag}}</text>
       </view>
-      <button class="gk-primary invite-start-btn" bindtap="startInvited">开始我的小探索</button>
+      <button class="gk-primary invite-start-btn" bindtap="startInvited">开始自测</button>
       <button class="gk-quiet" bindtap="invitedIntro">先看看介绍与免费内容</button>
     </view>
 

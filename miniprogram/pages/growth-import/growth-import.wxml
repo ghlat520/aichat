@@ -5,9 +5,8 @@
     <text class="gk-head-tag">自我探索</text>
   </view>
 
-  <view class="gk-page-title">带着已经发现的自己，</view>
-  <view class="gk-page-title">继续往前。</view>
-  <view class="gk-lead">如果你已经做过测评，可以录入结果。它会保留原来的来源与日期。</view>
+  <view class="gk-page-title">录入已有结果</view>
+  <view class="gk-lead">录入已有测评结果，保留来源与日期。</view>
 
   <text class="gk-tag">{{toolId === 'mbti' ? '认识我的性格偏好' : toolId === 'traits' ? '看见我的性格底色' : '发现我身上的优势'}}</text>
 

@@ -1,34 +1,60 @@
-/* MBTI 16 型优缺点（2026-11-03 原型 V2 mbti-types 屏，px×2→rpx）*/
-.te-intro { margin: 36rpx 0 44rpx; }
-.te-intro-title { font-size: 50rpx; font-weight: 550; line-height: 1.7; letter-spacing: -1rpx; margin-top: 30rpx; }
-.te-intro-copy { font-size: 24rpx; line-height: 1.9; color: #91a0b6; margin-top: 22rpx; }
-.te-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 16rpx; margin: 42rpx 0 24rpx; }
-.te-mode { padding: 22rpx; border: 1rpx solid var(--ui-line, #e9edf5); border-radius: 20rpx; color: #96a1b7; background: #ffffff; font-size: 24rpx; margin: 0; line-height: 1.6; }
-.te-mode::after { border: 0; }
-.te-mode--selected { background: #eaf0fc; border-color: #c9d4ee; color: #6a7fb6; }
-.te-guidance { font-size: 20rpx; color: #96a3b8; line-height: 1.95; margin: 26rpx 0 40rpx; }
-.te-select { font-size: 22rpx; line-height: 1.9; color: #8c99b2; display: block; }
-.te-select-value { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 84rpx; margin-top: 16rpx; border: 1rpx solid #e0e6f2; background: #ffffff; border-radius: 20rpx; padding: 18rpx 22rpx; color: #7588b1; font-size: 24rpx; box-sizing: border-box; }
-.te-select-arrow { color: #a5afc0; margin-left: 12rpx; }
-.te-groups { display: flex; gap: 10rpx; flex-wrap: wrap; margin: 30rpx 0; }
-.te-chip { font-size: 20rpx; color: #9ba6ba; background: #ffffff; border: 1rpx solid var(--ui-line, #e9edf5); border-radius: 16rpx; padding: 14rpx 16rpx; line-height: 1.8; margin: 0; }
-.te-chip::after { border: 0; }
-.te-chip--selected { color: #7184b7; background: #edf1fc; border-color: #d0d9ef; }
-.te-note { font-size: 20rpx; color: #96a3b8; line-height: 1.95; margin: 26rpx 0 40rpx; }
-.te-count { font-size: 20rpx; color: #9aa7bb; margin: 38rpx 0 22rpx; }
-.te-list { display: grid; gap: 34rpx; }
-.te-card { padding: 44rpx 36rpx; background: #ffffff; border: 1rpx solid var(--ui-line, #e9edf5); border-radius: 34rpx; }
-.te-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18rpx; padding-bottom: 34rpx; border-bottom: 1rpx solid var(--ui-line, #e9edf5); }
-.te-card-code { font-size: 46rpx; font-weight: 550; letter-spacing: 2rpx; color: #7488b9; line-height: 1.5; }
-.te-card-name { font-size: 26rpx; letter-spacing: 0; color: #8290a9; margin-left: 10rpx; }
-.te-card-alias { font-size: 20rpx; color: #9ca7bb; margin-top: 14rpx; line-height: 1.8; }
-.te-card-badge { flex-shrink: 0; white-space: nowrap; font-size: 20rpx; line-height: 1.8; }
-.te-sub-title { font-size: 24rpx; font-weight: 500; line-height: 1.9; margin: 36rpx 0 20rpx; }
-.te-sub-title--up { color: #7d9f98; }
-.te-sub-title--dn { color: #9a8cae; }
-.te-point { font-size: 24rpx; line-height: 1.95; color: #8694ab; padding-left: 32rpx; margin-bottom: 14rpx; overflow-wrap: anywhere; position: relative; }
-.te-point--up::before { content: '·'; position: absolute; left: 10rpx; color: #a2c3ba; }
-.te-point--dn::before { content: '·'; position: absolute; left: 10rpx; color: #b5a9c8; }
-.te-card-foot { display: flex; justify-content: space-between; gap: 24rpx; border-top: 1rpx solid var(--ui-line, #e9edf5); padding-top: 32rpx; margin-top: 40rpx; }
-.te-link { font-size: 22rpx; line-height: 1.8; color: #6577dc; background: transparent; padding: 0; margin: 0; }
-.te-link::after { border: 0; }
+page { background:#f6f8fc; }
+.types-page { --te-ink:#25354b; --te-muted:#62718a; --te-brand:#3155d9; --te-line:#dce5f2; --te-accent:#3155d9; --te-wash:#e8eeff; color:var(--te-ink); padding:20rpx 32rpx 60rpx; box-sizing:border-box; }
+.te-page-head { display:flex; align-items:center; gap:8rpx; min-height:44px; font-size:16px; font-weight:600; }
+.te-page-head .ui-back { margin:0; background:transparent; }
+.te-intro { margin:10rpx 4rpx 18rpx; }
+.te-intro-title { font-size:20px; line-height:1.45; font-weight:600; letter-spacing:-.4px; }
+.te-intro-copy { margin-top:6rpx; font-size:13px; line-height:1.7; color:var(--te-muted); }
+.te-groups { display:flex; align-items:center; gap:8rpx; margin-bottom:12rpx; }
+.te-chip { flex:1; min-width:0; min-height:44px; padding:10px 2px; margin:0; border:1px solid transparent; border-radius:14px; background:transparent; font-size:12px; line-height:22px; white-space:nowrap; color:var(--te-muted); }
+.te-chip--selected { color:var(--te-brand); background:#e8eeff; border-color:#ccd8fa; font-weight:600; }
+.te-chip::after,.te-card::after,.te-arrow::after,.te-primary::after,.te-secondary::after { border:0; }
+.te-family-NT { --te-accent:#3155d9; --te-wash:#e8eeff; }
+.te-family-NF { --te-accent:#247b70; --te-wash:#e2f3ed; }
+.te-family-SJ { --te-accent:#a5653d; --te-wash:#fbe9df; }
+.te-family-SP { --te-accent:#7454ad; --te-wash:#eee5fa; }
+.te-deck { height:294px; margin:0 -16rpx; perspective:900px; }
+.te-deck-item { overflow:visible; z-index:1; }
+.te-deck-item--selected { z-index:3; }
+.te-card { position:relative; display:flex; flex-direction:column; align-items:center; width:calc(100% + 88px); height:274px; box-sizing:border-box; padding:14px 12px 12px; margin:8px -44px 0; border:1.5px solid transparent; border-radius:28px; text-align:center; background:var(--te-wash); color:var(--te-ink); line-height:1.4; box-shadow:0 7px 16px rgba(37,53,75,.08); transform-origin:center center; transition:transform 220ms,opacity 220ms,border-color 220ms; opacity:.58; }
+.te-card--before { transform:perspective(700px) rotateY(18deg) rotateZ(-2deg) scale(.88); }
+.te-card--after { transform:perspective(700px) rotateY(-18deg) rotateZ(2deg) scale(.88); }
+.te-card--selected { transform:perspective(700px) rotateY(0) scale(1); opacity:1; border-color:var(--te-accent); }
+.te-card-family { font-size:12px; line-height:1.4; color:var(--te-accent); }
+.te-card-code { font-size:40px; line-height:1.05; font-weight:650; letter-spacing:1px; margin-top:6px; }
+.te-card-name { font-size:17px; line-height:1.4; font-weight:500; margin-top:3px; }
+.te-card-portrait { width:112px; height:108px; flex-shrink:0; margin-top:6px; border-radius:17px; background:#fff; }
+.te-card-alias { max-width:100%; font-size:13px; line-height:1.5; color:var(--te-ink); font-weight:500; margin-top:6px; }
+.te-card-caption { font-size:10px; line-height:1.4; color:var(--te-accent); margin-top:2px; }
+.te-card-check { position:absolute; top:14px; right:12px; display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:#fff; color:var(--te-accent); }
+.te-card-check .ui-icon { width:10px; height:6px; border-left:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:rotate(-45deg); background:none; margin-top:-3px; }
+.te-deck-controls { display:flex; align-items:center; justify-content:center; gap:28px; margin-top:2px; }
+.te-arrow { display:flex; align-items:center; justify-content:center; min-width:44px; height:44px; padding:12px; margin:0; background:transparent; color:var(--te-brand); }
+.te-arrow .ui-icon { width:20px; height:20px; }
+.te-position { text-align:center; font-size:14px; line-height:1.5; font-variant-numeric:tabular-nums; }
+.te-position text { display:block; font-size:11px; color:var(--te-muted); }
+.te-picker { display:block; margin:10rpx 0 24rpx; }
+.te-picker-row { display:flex; align-items:center; justify-content:space-between; min-height:44px; padding:0 4px; font-size:13px; color:var(--te-muted); }
+.te-picker-row>view { display:flex; align-items:center; gap:7px; color:var(--te-brand); }
+.te-picker-row .ui-icon { width:14px; height:14px; transform:rotate(90deg); }
+.te-detail { padding:20px 16px; border:1px solid var(--te-line); border-radius:24px; background:#fff; }
+.te-detail-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:16px; font-size:18px; line-height:1.5; font-weight:600; }
+.te-detail-head text { font-size:13px; color:var(--te-muted); font-weight:400; }
+.te-sides { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; }
+.te-side { min-width:0; }
+.te-side--blindspots { padding-left:14px; border-left:1px dashed #ccd8e6; }
+.te-side-title { margin-bottom:12px; font-size:14px; line-height:1.7; font-weight:600; color:#247b70; }
+.te-side--blindspots .te-side-title { color:#7454ad; }
+.te-point { position:relative; padding-left:10px; margin-bottom:12px; font-size:14px; line-height:1.75; color:var(--te-ink); overflow-wrap:break-word; }
+.te-point:last-child { margin-bottom:0; }
+.te-point::before { content:''; position:absolute; left:0; top:.7em; width:3px; height:3px; border-radius:50%; background:var(--te-accent); opacity:.65; }
+.te-guidance,.te-note { margin:24px 2px 16px; font-size:12px; line-height:1.8; color:var(--te-muted); }
+.te-primary,.te-secondary { width:100%; min-height:48px; padding:12px 16px; margin:12px 0 0; border-radius:16px; font-size:14px; line-height:1.7; font-weight:500; }
+.te-primary { background:var(--te-brand); color:#fff; }
+.te-secondary { background:#fff; border:1px solid var(--te-line); color:var(--te-brand); }
+.te-note { margin-top:18px; }
+.te-source-toggle,.te-source-copy { padding:0; margin:0; background:transparent; font-size:12px; line-height:44px; color:var(--te-brand); text-align:left; }
+.te-source-toggle::after,.te-source-copy::after { border:0; }
+.te-sources { font-size:12px; line-height:1.8; color:var(--te-muted); overflow-wrap:anywhere; }
+.types-page button:focus-visible { outline:3px solid #9db3ef; outline-offset:3px; }
+@media(prefers-reduced-motion:reduce) { .te-card { transition:none; } }

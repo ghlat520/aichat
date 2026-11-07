@@ -46,7 +46,7 @@ Page({
     }
     getGrowth().submitCalibration(this.data.text);
     this.onShow();
-    wx.showToast({ title: '修订版 v1.1 已保存，原版仍可查看', icon: 'none' });
+    wx.showToast({ title: '本次校准练习已完成', icon: 'none' });
   },
 
   openReport() {

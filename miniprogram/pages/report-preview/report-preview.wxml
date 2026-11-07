@@ -2,7 +2,8 @@
   <view class="gk-head">
     <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
     <view class="gk-head-title">个人优势说明书</view>
-    <text class="gk-head-tag">报告预览</text>
+    <button wx:if="{{state === 'ready'}}" id="preview-poster" class="gk-head-share" bindtap="goShare">生成海报</button>
+    <text wx:else class="gk-head-tag">报告预览</text>
   </view>
 
   <!-- 准备中 / 失败 -->
@@ -33,27 +34,27 @@
   <!-- 就绪 -->
   <block wx:else>
     <view class="report-book">
-      <text class="gk-tag gk-tag--white">为你整理 · 预览样例</text>
-      <view class="report-book-title">一份懂你的说明书，</view>
-      <view class="report-book-title">陪你把发现用回生活。</view>
-      <view class="report-book-owner">结合你的测评、两段经历与{{goalsText}}目标</view>
+      <text class="gk-tag gk-tag--white">个人优势说明书 · 样例预览</text>
+      <view class="report-book-title">了解优势，找到方向</view>
+      <view class="report-book-owner">看清长处与消耗，找到可以尝试的一步。</view>
       <view class="report-book-decoration"></view>
     </view>
 
     <view class="gk-card">
       <view class="gk-between">
-        <view class="gk-title-sm">先看一段，与你有关的分析</view>
-        <text class="gk-tag gk-tag--aqua">个人化片段</text>
+        <view class="gk-title-sm">内容样例</view>
+        <text class="gk-tag gk-tag--aqua">结合经历的样例</text>
       </view>
-      <view class="gk-small preview-fragment-copy">"梳理信息"可能是你值得发展的优势。它不只来自一项测评，也体现在你如何把模糊的事变得可以行动。</view>
+      <view class="gk-small preview-fragment-copy">内容样例：“{{previewFragment.strength}}”体现在{{previewFragment.description}}阅读时，可对照自己的实际经历。</view>
       <view class="gk-evidence">
         <view class="gk-evidence-label">{{confirmed ? '本人确认的经历 1' : '示例经历 1'}}</view>
         <text>"{{experienceAction}}"</text>
       </view>
-      <view class="gk-small">这项优势更适合有思考空间、目标可以澄清的协作场景；如果频繁替所有人整理，你也可能承担过多。</view>
+      <view class="gk-small">适用场景：{{previewFragment.context}}</view>
+      <view class="gk-small">留意盲点：{{previewFragment.boundary}}</view>
     </view>
 
-    <view class="gk-section-title"><view class="gk-section-title-title">完整说明书，你会得到</view></view>
+    <view class="gk-section-title"><view class="gk-section-title-title">报告内容</view></view>
     <view class="gk-card preview-chapter-card">
       <view wx:for="{{chapters}}" wx:key="*this" class="preview-chapter">
         <text class="preview-chapter-num">{{index < 9 ? '0' : ''}}{{index + 1}}</text>
@@ -63,9 +64,9 @@
     </view>
 
     <view class="preview-benefits">
-      <view class="preview-benefit"><view class="preview-benefit-strong">8 章完整内容</view>结合真实经历</view>
-      <view class="preview-benefit"><view class="preview-benefit-strong">1 次集中校准</view>修正不符合的解读</view>
-      <view class="preview-benefit"><view class="preview-benefit-strong">7 天内 1 次复盘</view>把发现用回生活</view>
+      <view class="preview-benefit"><view class="preview-benefit-strong">看见自己的长处</view>8 章内容，附经历依据</view>
+      <view class="preview-benefit"><view class="preview-benefit-strong">对照真实的自己</view>记下不符合的解读</view>
+      <view class="preview-benefit"><view class="preview-benefit-strong">试着用进生活</view>可选练习与行动复盘</view>
     </view>
 
     <view class="gk-purchase-box">
@@ -76,7 +77,7 @@
         </view>
         <text class="gk-tag gk-tag--aqua">报告已就绪</text>
       </view>
-      <button class="gk-primary" bindtap="{{canReadBase ? 'openReport' : 'buyBase'}}">{{canReadBase ? '打开已购报告' : '购买个人优势说明书'}}</button>
+      <button class="gk-primary" bindtap="{{canReadBase ? 'openReport' : 'buyBase'}}">{{canReadBase ? '打开已购报告' : '查看购买内容 · ¥29.90'}}</button>
       <button wx:if="{{canReadBase}}" class="gk-secondary" bindtap="buyBase">核对本次输入的购买状态</button>
       <button class="gk-quiet" bindtap="backToPortrait">继续免费使用</button>
       <view class="gk-between preview-box-links">
@@ -84,6 +85,6 @@
         <button class="gk-text-link" bindtap="purchaseInfo">购买与售后说明</button>
       </view>
     </view>
-    <view class="gk-footer-note">免费基础结果可继续查看。<text class="preview-br"></text>金额以购买确认页的最新报价为准，付款后解锁本次快照。</view>
+    <view class="gk-footer-note">免费基础结果可继续查看。<text class="preview-br"></text>金额以购买确认页的最新报价为准，当前内容采用报告模板；本机校准与复盘练习不会改写已购报告。付款后可重复查看本次报告。</view>
   </block>
 </view>

@@ -55,7 +55,7 @@
     <view class="vq-sheet" catchtap="preventScroll">
       <view class="vq-sheet-grip"></view>
       <view class="vq-sheet-title">本轮选择已保留</view>
-      <view class="vq-sheet-copy">已作答 {{answeredCount}} / 72 题，稍后可以继续。作答进度保存在本机，换时间回来都在。</view>
+      <view class="vq-sheet-copy">已作答 {{answeredCount}} / 72 题，稍后可以继续。作答进度保存在本机，可从自测首页继续。</view>
       <button class="gk-primary" bindtap="keepProgress">返回自测，稍后继续</button>
       <button class="gk-quiet" bindtap="closeSheet">继续作答</button>
     </view>

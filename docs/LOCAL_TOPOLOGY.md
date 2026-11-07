@@ -7,12 +7,12 @@
 
 | 进程 | 角色 | 端口（默认/待定） | 启动方式 | 依赖 |
 |------|------|----------------|---------|------|
-| MySQL 8 | 业务库 | 3306 | 本地 Docker / 宿主 | Flyway V1-V6 迁移 |
-| aichat-server | Spring Boot 单体 | 8080（待 application.properties 确认，未显式配 server.port） | `mvn -f server/pom.xml spring-boot:run` 或 `java -jar` | MySQL + 环境变量 |
+| MySQL 8 | 业务库 | 3306 | 本地 Docker / 宿主 | Flyway V1-V7 已应用 |
+| aichat-server | Spring Boot 单体 | 18088（local profile；只绑定 127.0.0.1） | `npm run server:local` | MySQL + 环境变量 |
 | 微信开发者工具 | 小程序宿主 | 自动 | 微信开发者工具 CLI / IDE | 指向 `miniprogram/` 目录 |
 | 微信工具自动化 + CDP | E2E | 9420 / 9222 | `scripts/e2e/*.mjs` | server 起来 + Stable 2.01.2510290 |
 
-> ⚠️ `application.properties` 未显式设 `server.port`，默认 8080，需启动时确认。`spring.flyway.clean-disabled=true`（不允许 Flyway clean）。
+> `application-local.properties` 设置独立端口 18088；启动入口用命令行参数明确端口及 loopback 绑定。8080 当前属于 moneyprinterturbo-api，保持运行。`spring.flyway.clean-disabled=true`（不允许 Flyway clean）。
 
 ## 2. 环境变量清单（启动必需，缺一不可）
 
@@ -46,13 +46,17 @@
 ## 5. 小程序 ↔ 后端连通
 
 - 小程序通过 `wx-transport.ts` 调后端（`wx.request` 封装）。
-- 本地开发：微信开发者工具需配"不校验合法域名"或本地证书，指向 `http://localhost:8080`。
+- 本地开发：微信开发者工具需配"不校验合法域名"或本地证书，指向 `http://127.0.0.1:18088`。
 - 原生小程序 E2E 已选微信开发者工具自动化端口（9420）+ 页面渲染 CDP（9222）；不走 Web 模式。
 
 ## 6. 待确认项（Phase 2 前必须落实）
 
-- [ ] `server.port` 实际值（默认 8080 待确认）
-- [ ] 本地 MySQL 是否已起、是否已建 `aichat` 库
-- [ ] 三个测试密钥的生成方式（openssl rand -base64 32 / 48）
+- [x] `server.port` 实际为 18088，仅监听 127.0.0.1；最终 Java PID 51924
+- [x] MySQL 8 已运行，aichat 已成功应用 V1–V7
+- [x] 沿用 .env.local 原密钥；123/123 行 wrapped DEK 认证成功，不生成替代密钥
 - [x] 微信开发者工具 Stable 2.01.2510290 已安装，CLI / 自动化端口可用
 - [x] 小程序 E2E 已选微信开发者工具自动化 + CDP
+
+本地配置从被 Git 忽略的 .env.local 通过 Node 内置 parseEnv 读取，环境变量优先；不执行 shell source。MySQL JDBC 直连 127.0.0.1:3306，不经过 HTTP 代理；现有开发者工具允许本地请求。此次不访问外部 AI 或支付服务。
+
+最终实际路径：小程序 apiBase=127.0.0.1:18088 → AIChat Java PID 51924（local）→ MySQL 127.0.0.1:3306/aichat；Flyway v7 无待迁移。API 10 项与原生模拟器 7 项通过。

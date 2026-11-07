@@ -1,37 +1,43 @@
 <import src="../../templates/preview.wxml" />
-<view id="profile-page" class="container ui-tab-page gk-screen">
+<view id="profile-page" class="container ui-tab-page gk-screen profile-space">
   <template is="page-head" data="{{title:'我的空间'}}" />
-  <view class="profile-welcome"><view class="profile-avatar"><view class="ui-icon ui-icon--user"></view></view><view><view class="profile-name">你好，探索中的你</view><view class="aichat-muted">每一次认真面对，都算数。</view></view></view>
-  <view class="profile-stats">
-    <view class="profile-stat"><view class="profile-stat-value">{{growthStats.results}}</view><text>自测结果</text></view>
-    <view class="profile-stat"><view class="profile-stat-value">{{growthStats.reports}}</view><text>个人报告</text></view>
-    <view class="profile-stat"><view class="profile-stat-value">{{growthStats.reflections}}</view><text>行动复盘</text></view>
-  </view>
-  <view class="gk-card profile-identity-card">
-    <view class="gk-between">
-      <view class="gk-title-sm">微信身份</view>
-      <text class="gk-tag {{identityBound ? '' : 'gk-tag--gray'}}">{{identityLabel}}</text>
+  <view class="profile-overview">
+    <view class="profile-person"><view><view class="profile-greeting">你好，</view><view class="profile-name">探索中的你</view></view><view class="profile-portrait"><view class="ui-icon ui-icon--user"></view></view></view>
+
+    <view class="profile-stats">
+      <view class="profile-stat"><view class="profile-stat-value">{{growthStats.results}}</view><text>自测结果</text></view>
+      <view class="profile-stat"><view class="profile-stat-value">{{growthStats.reports}}</view><text>个人报告</text></view>
+      <view class="profile-stat"><view class="profile-stat-value">{{growthStats.reflections}}</view><text>行动复盘</text></view>
     </view>
-    <view class="gk-small profile-identity-hint">{{identityHint}}</view>
-    <button wx:if="{{!identityBound}}" class="gk-primary" loading="{{identityBusy}}" disabled="{{identityBusy}}" bindtap="bindWechat">微信登录</button>
-    <button wx:else class="gk-quiet" bindtap="logoutWechat">退出登录</button>
+  </view>
+  <button class="profile-next" bindtap="{{growthStats.reports ? 'openReport' : 'goDiscover'}}">
+    <view class="profile-next-title">越来越懂自己的你</view>
+    <view class="profile-next-copy">{{growthStats.reports ? '重读自己的长处，选一个今天用得上的小练习。' : '从偏好、长处与真实经历里，认出自己的模样。'}}</view>
+    <view class="profile-next-action">{{growthStats.reports ? '打开我的说明书' : '继续认识自己'}}<view class="ui-icon ui-icon--next"></view></view>
+  </button>
+  <view class="profile-section-title">我的记录</view>
+  <view class="profile-links">
+    <button class="profile-link" bindtap="goGrowthReports"><view class="profile-link-icon"><view class="ui-icon ui-icon--cards"></view></view><view class="profile-link-copy"><view class="profile-link-title">我的报告</view><view class="profile-link-note">免费结果与已购报告</view></view><view class="ui-icon ui-icon--next profile-chevron"></view></button>
+    <button class="profile-link" bindtap="goGrowthReflection"><view class="profile-link-icon profile-link-icon--aqua"><view class="ui-icon ui-icon--leaf"></view></view><view class="profile-link-copy"><view class="profile-link-title">我的成长记录</view><view class="profile-link-note">{{growthStats.reflections ? '已有一次行动复盘' : '小练习与复盘'}}</view></view><view class="ui-icon ui-icon--next profile-chevron"></view></button>
+    <button class="profile-link" bindtap="goSavedVoices"><view class="profile-link-icon profile-link-icon--pink"><view class="ui-icon ui-icon--heart"></view></view><view class="profile-link-copy"><view class="profile-link-title">留给自己的力量</view><view class="profile-link-note">{{growthStats.savedVoices ? growthStats.savedVoices + ' 句已留好' : '给正在努力的你'}}</view></view><view class="ui-icon ui-icon--next profile-chevron"></view></button>
+  </view>
+  <view class="profile-section-title">更多探索</view>
+  <view class="profile-links">
+    <button class="profile-link" id="profile-relationship-entry" bindtap="goRelationshipTest"><view class="profile-link-icon profile-link-icon--pink"><view class="ui-icon ui-icon--heart"></view></view><view class="profile-link-copy"><view class="profile-link-title">关系轻自测</view><view class="profile-link-note">8 题 · 认识沟通习惯</view></view><view class="ui-icon ui-icon--next profile-chevron"></view></button>
+  </view>
+  <view class="profile-section-title">服务与设置</view>
+  <view class="profile-links">
+    <button class="profile-link" bindtap="goOrder"><view class="profile-link-icon"><view class="ui-icon ui-icon--test"></view></view><view class="profile-link-copy"><view class="profile-link-title">订单与售后</view><view class="profile-link-note">购买和处理进度</view></view><view class="ui-icon ui-icon--next profile-chevron"></view></button>
+    <button class="profile-link" bindtap="goPrivacy"><view class="profile-link-icon profile-link-icon--aqua"><view class="ui-icon ui-icon--shield"></view></view><view class="profile-link-copy"><view class="profile-link-title">隐私与数据</view><view class="profile-link-note">了解记录如何保存</view></view><view class="ui-icon ui-icon--next profile-chevron"></view></button>
+  </view>
+  <view class="profile-identity-card">
+    <view class="profile-identity-header"><view class="profile-link-copy"><view class="profile-link-title">微信身份</view><view class="profile-link-note">{{identityLabel}}</view></view>
+      <button wx:if="{{!identityBound}}" class="profile-identity-action" loading="{{identityBusy}}" disabled="{{identityBusy}}" bindtap="bindWechat">微信登录</button>
+      <button wx:else class="profile-identity-action profile-identity-action--quiet" bindtap="logoutWechat">退出登录</button>
+    </view>
+    <view class="profile-identity-hint">{{identityHint}}</view>
     <view wx:if="{{identityNotice}}" class="gk-notice">{{identityNotice}}</view>
-    <view wx:if="{{identityBound}}" class="ui-quiet-note profile-identity-note">退出仅清除本机登录信息，服务器会话将在到期后自动失效。</view>
+    <view wx:if="{{identityBound}}" class="profile-identity-hint">退出仅清除本机登录信息，服务器会话将在到期后自动失效。</view>
   </view>
-  <view class="gk-card profile-growth-card">
-    <view class="gk-between">
-      <view class="gk-title-sm">我的探索，还在继续</view>
-      <text class="gk-tag">按自己的节奏</text>
-    </view>
-    <view class="gk-small profile-growth-copy">{{growthStats.reports ? '一份说明书，一个小练习。带回生活，再看看有哪些变化。' : '了解偏好只是开始，真实经历会让你看见更丰富的自己。'}}</view>
-    <button class="gk-primary" bindtap="{{growthStats.reports ? 'openReport' : 'goDiscover'}}">{{growthStats.reports ? '打开我的说明书' : '继续认识自己'}}</button>
-  </view>
-  <button class="ui-menu-row" bindtap="goGrowthReports"><view class="ui-icon ui-icon--cards"></view><text>我的报告</text><text class="profile-menu-note">免费结果与已购报告</text><view class="ui-icon ui-icon--next ui-chevron"></view></button>
-  <button class="ui-menu-row" bindtap="goGrowthReflection"><view class="ui-icon ui-icon--leaf"></view><text>我的成长记录</text><text class="profile-menu-note">{{growthStats.reflections ? '已有一次行动复盘' : '小练习与复盘'}}</text><view class="ui-icon ui-icon--next ui-chevron"></view></button>
-  <button class="ui-menu-row" bindtap="goOrder"><view class="ui-icon ui-icon--test"></view><text>订单与售后</text><text class="profile-menu-note">购买和处理进度</text><view class="ui-icon ui-icon--next ui-chevron"></view></button>
-  <button class="ui-menu-row" id="profile-relationship-entry" bindtap="goRelationshipTest"><view class="ui-icon ui-icon--heart"></view><text>关系轻自测</text><text class="profile-menu-note">8 题 · 认识沟通习惯</text><view class="ui-icon ui-icon--next ui-chevron"></view></button>
-  <button class="ui-menu-row" bindtap="goCards"><view class="ui-icon ui-icon--cards"></view><text>我的关系清晰卡</text><text class="profile-menu-note">原有关系整理</text><view class="ui-icon ui-icon--next ui-chevron"></view></button>
-  <button class="ui-menu-row" bindtap="goSavedVoices"><view class="ui-icon ui-icon--heart"></view><text>留给自己的力量</text><text class="profile-menu-note">{{growthStats.savedVoices ? growthStats.savedVoices + ' 句已留好' : '给正在努力的你'}}</text><view class="ui-icon ui-icon--next ui-chevron"></view></button>
-  <button class="ui-menu-row" bindtap="goPrivacy"><view class="ui-icon ui-icon--shield"></view><text>隐私与数据</text><view class="ui-icon ui-icon--next ui-chevron"></view></button>
-  <view class="ui-quiet-note profile-footer">认识自己，也给自己留一点空间。</view>
+  <view class="profile-footer">认识自己，也给自己留一点空间。</view>
 </view>

@@ -2,6 +2,7 @@
 // 展示个性化片段、完整目录、一次性价格和服务范围；准备中不出现购买入口。
 const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
+const { currentReportOwner, openReportPoster } = require('../../report-poster');
 
 const PREPARE_DELAY = 1500;
 
@@ -12,8 +13,18 @@ Page({
     goalsText: '协作',
     experienceAction: '',
     confirmed: false,
-    canReadBase: false
+    canReadBase: false,
+    previewFragment: {
+      strength: '梳理信息',
+      description: '把模糊任务列成清楚的步骤。',
+      context: '有思考空间、目标可以澄清的协作场景。',
+      boundary: '频繁替所有人整理时，留意承担过多。'
+    }
   },
+
+  onLoad() { this.reportPosterOwner = currentReportOwner(); },
+
+  goShare() { openReportPoster('growth-preview', this.data, this.reportPosterOwner); },
 
   onShow() {
     const growth = getGrowth();

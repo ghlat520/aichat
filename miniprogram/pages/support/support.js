@@ -25,5 +25,5 @@ Page({
       wx.reLaunch({ url: '/pages/entry/entry' });
     }
   },
-  async tryCreate() { try { await getApiClient().createSupportTicket({}); } catch (e) { if (e && e.status === 501) { this.setData({ error: '售后工单功能开发中（G5）' }); } else { this.setData({ error: friendly(e) }); } } }
+  async tryCreate() { try { await getApiClient().createSupportTicket({}); } catch (e) { if (e && e.status === 501) { this.setData({ error: '售后反馈暂未开放，当前未创建工单。' }); } else { this.setData({ error: friendly(e) }); } } }
 });

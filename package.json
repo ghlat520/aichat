@@ -4,6 +4,8 @@
   "private": true,
   "description": "aichat 小程序 E2E 测试（miniprogram-automator 驱动，仅测试依赖）",
   "scripts": {
+    "sync:growth-ui": "node scripts/sync-growth-ui.mjs",
+    "server:local": "node scripts/start-local-server.mjs",
     "e2e": "node scripts/e2e/run-all.mjs",
     "smoke:pages": "node scripts/e2e/smoke-pages.mjs",
     "e2e:canary:shot": "E2E_FAULT=shot node scripts/e2e/run-all.mjs",

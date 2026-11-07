@@ -1,6 +1,6 @@
 <import src="../../templates/preview.wxml" />
 <view id="support-page" class="container">
   <template is="page-head" data="{{title:'帮助与反馈'}}" />
-  <view class="ui-page-lede">遇到问题时，从这里告诉我们。</view>
-  <view id="support-stub" class="aichat-warning">{{error || '该模块依赖后端 ' + 'G5' + ' 实现，本轮为骨架占位。'}}</view>
+  <view class="ui-page-lede">报告打不开，或对购买有疑问？先到原订单，查看处理进度与售后入口。</view>
+  <view id="support-stub" class="aichat-warning">{{error || '本页暂不能提交反馈。已有订单可到“我的 → 订单与售后”查看并登记诉求。'}}</view>
 </view>

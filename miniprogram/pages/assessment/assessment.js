@@ -160,7 +160,7 @@ Page({
     const currentId = (store.getState().session || {}).sessionId;
     const sessionHidden = !!this.data.ownerSessionId && this.data.ownerSessionId !== currentId;
     this.setData({ mode: 'relationship', sessionHidden });
-    wx.setNavigationBarTitle({ title: '关系清晰卡' });
+    wx.setNavigationBarTitle({ title: '自有引力' });
     if (!sessionHidden) this.enterRelationshipFlow();
   },
 

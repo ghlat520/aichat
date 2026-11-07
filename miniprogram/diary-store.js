@@ -20,11 +20,11 @@ function localDate(date = new Date()) {
 }
 
 function emptyDraft() {
-  return { id: '', date: localDate(), mood: 'calm', content: '', dimensions: [] };
+  return { id: '', date: localDate(), mood: '', content: '', dimensions: [], lines: { event: '', feeling: '', insight: '' }, freeContent: '' };
 }
 
 function copyEntry(entry) {
-  return { ...entry, dimensions: [...entry.dimensions] };
+  return { ...entry, dimensions: [...entry.dimensions], ...(entry.lines ? { lines: { ...entry.lines } } : {}), ...(entry.inspiration ? { inspiration: { ...entry.inspiration } } : {}) };
 }
 
 function createDiaryStore() {
@@ -37,10 +37,24 @@ function createDiaryStore() {
       return { entries: entries.map(copyEntry), draft: copyEntry(draft) };
     },
     updateDraft(patch) {
-      for (const field of ['date', 'mood', 'content', 'dimensions']) {
-        if (Object.prototype.hasOwnProperty.call(patch, field)) {
-          draft[field] = field === 'dimensions' ? [...patch[field]] : patch[field];
+      for (const field of ['date', 'mood', 'dimensions']) {
+        if (Object.prototype.hasOwnProperty.call(patch, field)) draft[field] = field === 'dimensions' ? [...patch[field]] : String(patch[field] || '');
+      }
+      if (Object.prototype.hasOwnProperty.call(patch, 'inspiration')) draft.inspiration = patch.inspiration ? { source: String(patch.inspiration.source || ''), question: String(patch.inspiration.question || '') } : undefined;
+      if (Object.prototype.hasOwnProperty.call(patch, 'content')) draft.freeContent = String(patch.content || '');
+      if (Object.prototype.hasOwnProperty.call(patch, 'freeContent')) draft.freeContent = String(patch.freeContent || '');
+      if (Object.prototype.hasOwnProperty.call(patch, 'lines')) {
+        if (!patch.lines || typeof patch.lines !== 'object' || Array.isArray(patch.lines)) throw new Error('请使用三行觉察的有效字段');
+        for (const key of ['event', 'feeling', 'insight']) if (Object.prototype.hasOwnProperty.call(patch.lines, key)) {
+          const value = String(patch.lines[key] || '');
+          if (value.length > 600) throw new Error('每行请控制在 600 字以内');
+          draft.lines[key] = value;
         }
+      }
+      if (['content', 'freeContent', 'lines'].some(field => Object.prototype.hasOwnProperty.call(patch, field))) {
+        const titles = { event: '发生的事', feeling: '感受与在意', insight: '新的发现' };
+        const lines = Object.entries(draft.lines).filter(([, value]) => value.trim()).map(([key, value]) => `${titles[key]}：${value.trim()}`);
+        draft.content = lines.length ? [...lines, ...(draft.freeContent.trim() ? [draft.freeContent] : [])].join('\n\n') : draft.freeContent;
       }
     },
     save() {
@@ -51,9 +65,9 @@ function createDiaryStore() {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(draft.date) || Number.isNaN(date.getTime()) || localDate(date) !== draft.date || draft.date > localDate()) {
         throw new Error('请选择今天或之前的有效日期。');
       }
-      if (!MOODS.some(mood => mood.id === draft.mood)) throw new Error('请重新选择此刻的心情。');
+      if (draft.mood && !MOODS.some(mood => mood.id === draft.mood)) throw new Error('请重新选择此刻的心情。');
       const dimensions = [...new Set(draft.dimensions)].filter(id => DIMENSIONS.some(dimension => dimension.id === id));
-      const entry = { ...draft, dimensions, content, id: draft.id || `diary-${Date.now()}-${++sequence}` };
+      const entry = { ...copyEntry(draft), dimensions, content, id: draft.id || `diary-${Date.now()}-${++sequence}` };
       const index = entries.findIndex(item => item.id === entry.id);
       if (index < 0) entries.unshift(entry);
       else entries[index] = entry;
@@ -64,7 +78,7 @@ function createDiaryStore() {
     edit(id) {
       const entry = entries.find(item => item.id === id);
       if (!entry) throw new Error('这篇记录已不在本次体验中，请返回日记列表。');
-      draft = copyEntry(entry);
+      draft = { ...emptyDraft(), ...copyEntry(entry), lines: entry.lines ? { ...entry.lines } : { event: '', feeling: '', insight: '' }, freeContent: entry.freeContent === undefined ? entry.content : entry.freeContent };
     }
   };
 }

@@ -2,7 +2,7 @@
   <view class="gk-head">
     <button class="ui-back" bindtap="goBack" aria-label="返回自测首页"><view class="ui-icon ui-icon--back"></view></button>
     <view class="gk-head-title">{{toolShort}}结果</view>
-    <text class="gk-head-tag">{{isMbti ? '免费结果' : '基础免费'}}</text>
+    <button id="result-poster" class="gk-head-share" bindtap="shareResult">生成海报</button>
   </view>
 
   <block wx:if="{{isMbti}}">
@@ -81,7 +81,7 @@
     <view class="result-cover">
       <text class="gk-tag gk-tag--white">{{sourceLabel}}</text>
       <view class="result-cover-heading-lg">{{cover.headingFirst}}</view>
-      <view class="result-cover-heading-lg">{{cover.headingSecond}}</view>
+      <view wx:if="{{cover.headingSecond}}" class="result-cover-heading-lg">{{cover.headingSecond}}</view>
       <view class="result-cover-sub">{{cover.sub}}</view>
     </view>
 
@@ -118,17 +118,16 @@
     </view>
 
     <view class="gk-card">
-      <view class="gk-title-sm">带回日常的一点提示</view>
+      <view class="gk-title-sm">日常建议</view>
       <view class="gk-small result-tip-copy">沟通前给自己一点整理时间。先说清"我在意什么"，再听听对方在意的部分，留意这样做是否让交流更顺畅。</view>
       <view class="gk-tiny result-tip-note">这是基础练习，不要求你改变成某一种性格。结果会受情境与作答时状态影响。</view>
     </view>
 
-    <view class="result-free-banner">这份基础结果可以完整查看、保存和分享，继续免费使用也没关系。</view>
+    <view class="result-free-banner">基础结果可免费完整查看、保存和分享，是否继续探索由你决定。</view>
 
     <button class="gk-primary" bindtap="exploreExperiences">结合我的经历，继续探索优势</button>
     <button class="gk-secondary" bindtap="otherTests">先看看其他测评</button>
     <view class="gk-button-pair">
-      <button class="gk-text-link" bindtap="shareResult">分享基础结果</button>
       <button class="gk-text-link" bindtap="retest">重新测评</button>
     </view>
   </block>

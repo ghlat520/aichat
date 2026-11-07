@@ -2,6 +2,7 @@
 // 三题均分排序：Top 5 + 完整 24 项；样例（preview）与实际作答独立，浏览样例不写入完成记录。
 const { getGrowth } = require('../../growth-store');
 const CONTENT = require('../../growth-content');
+const { currentReportOwner, openReportPoster } = require('../../report-poster');
 
 Page({
   data: {
@@ -14,6 +15,7 @@ Page({
   },
 
   onLoad() {
+    this.reportPosterOwner = currentReportOwner();
     const growth = getGrowth();
     const complete = growth.viaComplete();
     const via = growth.get().via || {};
@@ -51,6 +53,10 @@ Page({
 
   goCross() {
     wx.navigateTo({ url: '/pages/via-mbti/via-mbti' });
+  },
+
+  goShare() {
+    openReportPoster('via', this.data, this.reportPosterOwner);
   },
 
   goTypes() {

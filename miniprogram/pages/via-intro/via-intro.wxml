@@ -7,9 +7,8 @@
 
   <view class="via-hero">
     <view class="via-hero-icon"><view class="ui-icon ui-icon--leaf"></view></view>
-    <view class="via-hero-title">发现那些，</view>
-    <view class="via-hero-title">你自然会用的力量。</view>
-    <view class="via-hero-sub">性格偏好之外，也看看你如何把事情做好。</view>
+    <view class="via-hero-title">发现你的优势</view>
+    <view class="via-hero-sub">从日常选择，了解你的长处。</view>
   </view>
 
   <view class="via-facts">
@@ -25,7 +24,7 @@
   <button class="gk-secondary" bindtap="viewSample">先看结果排版样例</button>
 
   <view class="via-section-heading">
-    <view class="via-section-title">从六个角度，看见你的优势</view>
+    <view class="via-section-title">六类优势</view>
   </view>
   <view class="via-virtues">
     <view wx:for="{{virtues}}" wx:key="name" class="via-virtue-card">
@@ -34,5 +33,5 @@
     </view>
   </view>
 
-  <view class="gk-footer-note">题目采用提供的 72 题版本；每项 3 题取均分后排序。<text class="via-br"></text>选中即保留本轮答案，随后自动进入下一题。<text class="via-br"></text>作答进度保存在本机，可随时暂停续答。</view>
+  <view class="gk-footer-note">本轮采用 72 题探索性自评；每项 3 题取均分后排序。<text class="via-br"></text>选中即保留本轮答案，随后自动进入下一题。<text class="via-br"></text>作答进度保存在本机，可随时暂停续答。</view>
 </view>

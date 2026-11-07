@@ -39,7 +39,7 @@ Page({
   submit() {
     if (this.data.expired) return;
     if (!this.data.reviewText.trim() || !this.data.reviewOutcome.trim()) {
-      wx.showToast({ title: '请写下实际尝试和发生的变化', icon: 'none' });
+      wx.showToast({ title: '请把前两项补充完整', icon: 'none' });
       return;
     }
     getGrowth().submitReflection({

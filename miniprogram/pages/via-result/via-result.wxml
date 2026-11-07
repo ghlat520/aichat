@@ -2,16 +2,15 @@
   <view class="gk-head">
     <button class="ui-back" bindtap="goBack" aria-label="返回"><view class="ui-icon ui-icon--back"></view></button>
     <view class="gk-head-title">VIA 性格优势结果</view>
-    <text class="gk-head-tag">{{demo ? '排版样例' : '本轮自评'}}</text>
+    <button id="via-poster" class="gk-head-share" bindtap="goShare">生成海报</button>
   </view>
 
   <view class="vr-note {{demo ? 'vr-note--example' : ''}}">{{modeNote}}</view>
 
   <view class="vr-heading">
     <view class="vr-heading-icon"><view class="ui-icon ui-icon--leaf"></view></view>
-    <view class="vr-heading-title">看见你的优势，</view>
-    <view class="vr-heading-title">也看见更多可能。</view>
-    <view class="vr-heading-sub">24 项优势人人都拥有，排序靠后也不代表缺点。</view>
+    <view class="vr-heading-title">你的优势排序</view>
+    <view class="vr-heading-sub">24 项优势，排序靠后不等于缺点。</view>
   </view>
 
   <view class="vr-section-heading">
@@ -30,7 +29,7 @@
   <view class="vr-small-note">同分项按原题顺序显示，前 5 仅作本次自评参考。</view>
 
   <view class="vr-ranking-card">
-    <view class="vr-ranking-title">完整 24 项优势排序</view>
+    <view class="vr-ranking-title">24 项优势排序</view>
     <view wx:for="{{ranking}}" wx:key="no" class="vr-rank-row">
       <text class="vr-rank-no">{{item.no}}</text>
       <view class="vr-rank-main">
@@ -48,6 +47,6 @@
 
   <button class="gk-primary" bindtap="goCross">看看 VIA × MBTI 对照表</button>
   <button class="gk-secondary" bindtap="secondaryAction">{{secondaryLabel}}</button>
-  <button class="gk-secondary" bindtap="goTypes">看看 MBTI 16 型优缺点</button>
+  <button class="gk-secondary" bindtap="goTypes">16 型名人图鉴</button>
   <button class="gk-secondary" bindtap="goDiscover">返回自测首页</button>
 </view>
